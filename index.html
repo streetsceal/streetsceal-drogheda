@@ -795,10 +795,12 @@ function showToast(msg, duration = 2800) {
 
 // ── Entry ────────────────────────────────────────────────────────────
 function enterTrail() {
+  window._audio = new Audio();
   buildTrailList();
   showScreen('trail');
   startGPS();
 }
+
 
 // ── Trail list ───────────────────────────────────────────────────────
 function buildTrailList() {
