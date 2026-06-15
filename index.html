@@ -779,6 +779,16 @@ let audioTick = null;
 let audioSeconds = 0;
 let demoIndex = 0;
 
+// ── Audio unlock for mobile ──────────────────────────────────────────
+function unlockAudio() {
+  if (!window._audio) window._audio = new Audio();
+  window._audio.play().catch(() => {});
+  window._audio.pause();
+  window._audio.currentTime = 0;
+  document.removeEventListener('touchstart', unlockAudio);
+}
+document.addEventListener('touchstart', unlockAudio);
+
 // ── Screen management ────────────────────────────────────────────────
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
@@ -796,6 +806,7 @@ function showToast(msg, duration = 2800) {
 
 // ── Entry ────────────────────────────────────────────────────────────
 function enterTrail() {
+  window._audio = new Audio();
   buildTrailList();
   showScreen('trail');
   startGPS();
@@ -955,9 +966,9 @@ function toggleAudio() {
 
   if (audioPlaying) {
     if (currentStop.audioSrc) {
-      if (!window._audio) window._audio = new Audio();
-      window._audio.src = currentStop.audioSrc;
-      window._audio.play().catch(e => console.warn('Audio play failed:', e));
+        if (!window._audio) window._audio = new Audio();
+        window._audio.src = currentStop.audioSrc;
+        window._audio.play();
     }
     animateWaveform();
     audioTick = setInterval(() => {
