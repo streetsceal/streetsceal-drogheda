@@ -1089,12 +1089,11 @@ function launchAR() {
         addARDemoOverlay(container);
       });
   }
+
 if (currentStop.audioSrc) {
-  if (!window._audio) window._audio = new Audio();
   window._audio.src = currentStop.audioSrc;
   window._audio.play().catch(e => console.warn('Audio play failed:', e));
 }
-
   showScreen('ar');
 }
 
