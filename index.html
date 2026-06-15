@@ -1052,8 +1052,8 @@ function launchAR() {
           </a-text>
           <!-- Atmospheric particle plane -->
           <a-plane
-            color="#8b3a2a"
-            opacity="0.75"
+            color="#e8e0d0"
+            opacity="0.55"
             width="1" height="0.6"
             position="0 0 -0.001"
             animation="property: opacity; from: 0; to: 0.18; dur: 800">
@@ -1088,6 +1088,11 @@ function launchAR() {
         addARDemoOverlay(container);
       });
   }
+if (currentStop.audioSrc) {
+  if (!window._audio) window._audio = new Audio();
+  window._audio.src = currentStop.audioSrc;
+  window._audio.play().catch(e => console.warn('Audio play failed:', e));
+}
 
   showScreen('ar');
 }
