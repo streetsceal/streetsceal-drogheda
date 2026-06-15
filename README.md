@@ -1,4 +1,4 @@
-# Streetscéal
+# StreetScéal
 
 *Street Story — a distributed, open-ended audio-visual artwork embedded in the streets of Irish towns*
 
@@ -11,7 +11,7 @@
 
 ## About the work
 
-*Streetscéal* — street story — is a distributed, open-ended audio-visual artwork that surfaces the voices, histories, and memories held in the streets, buildings, and public spaces of Irish towns. Accessible to anyone with a smartphone, from any point in the town, it returns stories to the places they belong.
+*StreetScéal* — street story — is a distributed, open-ended audio-visual artwork that surfaces the voices, histories, and memories held in the streets, buildings, and public spaces of Irish towns. Accessible to anyone with a smartphone, from any point in the town, it returns stories to the places they belong.
 
 There is no fixed start. No designated route. No end date. The work grows over time as new voices, archive sources, and community contributions are added. The town itself is the canvas. Presence in it is the only entry requirement.
 
