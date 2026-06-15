@@ -15,10 +15,10 @@
       --ink:        #1a1612;
       --paper:      #e8e0d0;
       --paper-dark: #cfc5b0;
-      --rust:       #962914;
-      --rust-light: #883322;
-      --ghost:      rgba(70, 70, 24, 0.178);
-      --fog:        rgba(92, 82, 73, 0.72);
+      --rust:       #8b3a2a;
+      --rust-light: #a8503e;
+      --ghost:      rgba(232, 224, 208, 0.08);
+      --fog:        rgba(26, 22, 18, 0.72);
 
       --display: 'Playfair Display', Georgia, serif;
       --body:    'EB Garamond', 'Garamond', Georgia, serif;
@@ -309,6 +309,7 @@
       justify-content: flex-start;
       padding: 0;
       overflow-y: auto;
+      z-index: 20;
     }
 
     .stop-header {
@@ -780,15 +781,9 @@ let demoIndex = 0;
 
 // ── Screen management ────────────────────────────────────────────────
 function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => {
-    s.classList.add('hidden');
-    s.style.display = 'none';
-  });
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
   const el = document.getElementById('screen-' + name);
-  if (el) {
-    el.style.display = 'flex';
-    el.classList.remove('hidden');
-  }
+  if (el) el.classList.remove('hidden');
   currentScreen = name;
 }
 
