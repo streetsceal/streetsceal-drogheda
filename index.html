@@ -1132,6 +1132,18 @@ function closeAR() {
   document.getElementById('ar-scene-container').innerHTML = '';
   showScreen('stop');
 }
+
+function stopARAudio() {
+  if (window._audio) {
+    if (window._audio.paused) {
+      window._audio.play().catch(e => console.warn(e));
+      document.getElementById('ar-audio-btn').textContent = '⏸ Audio';
+    } else {
+      window._audio.pause();
+      document.getElementById('ar-audio-btn').textContent = '▶ Audio';
+    }
+  }
+}
 </script>
 
 </body>
