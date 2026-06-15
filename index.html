@@ -778,6 +778,16 @@ let audioTick = null;
 let audioSeconds = 0;
 let demoIndex = 0;
 
+// ── Audio unlock for mobile ──────────────────────────────────────────
+function unlockAudio() {
+  if (!window._audio) window._audio = new Audio();
+  window._audio.play().catch(() => {});
+  window._audio.pause();
+  window._audio.currentTime = 0;
+  document.removeEventListener('touchstart', unlockAudio);
+}
+document.addEventListener('touchstart', unlockAudio);
+
 // ── Screen management ────────────────────────────────────────────────
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
