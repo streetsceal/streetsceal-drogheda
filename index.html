@@ -952,9 +952,12 @@ function toggleAudio() {
   document.getElementById('play-icon').style.display = audioPlaying ? 'none' : 'block';
   document.getElementById('pause-icon').style.display = audioPlaying ? 'block' : 'none';
 
-  if (audioPlaying) {
-    // In production: play real audio file via Web Audio API
-    // For demo: animate waveform and increment timer
+ if (audioPlaying) {
+    if (currentStop.audioSrc) {
+        if (!window._audio) window._audio = new Audio();
+        window._audio.src = currentStop.audioSrc;
+        window._audio.play();
+    }
     animateWaveform();
     audioTick = setInterval(() => {
       audioSeconds++;
@@ -963,9 +966,10 @@ function toggleAudio() {
       document.getElementById('audio-dur').textContent = m + ':' + s;
     }, 1000);
   } else {
+    if (window._audio) window._audio.pause();
     clearInterval(audioTick);
     stopWaveformAnimation();
-  }
+}
 }
 
 function resetAudio() {
