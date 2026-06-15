@@ -6,9 +6,8 @@
   <title>Streetscéal — Drogheda</title>
 
   <!-- MindAR + A-Frame for image tracking -->
-   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-  
 
   <style>
     /* ── Tokens ───────────────────────────────────────────────────── */
@@ -16,9 +15,9 @@
       --ink:        #1a1612;
       --paper:      #e8e0d0;
       --paper-dark: #cfc5b0;
-      --rust:       #898b2a;
+      --rust:       #8b3a2a;
       --rust-light: #a8503e;
-      --ghost:      rgba(114, 83, 22, 0.08);
+      --ghost:      rgba(232, 224, 208, 0.08);
       --fog:        rgba(26, 22, 18, 0.72);
 
       --display: 'Playfair Display', Georgia, serif;
@@ -35,7 +34,7 @@
       background: var(--ink);
       color: var(--paper);
       font-family: var(--body);
-      font-size: 18px;
+      font-size: 16px;
       line-height: 1.6;
       overflow: hidden;
     }
@@ -52,7 +51,7 @@
       transition: opacity 0.8s ease;
       z-index: 10;
     }
-    .screen.hidden { opacity: 0; pointer-events: none; }
+    .screen.hidden { opacity: 0; pointer-events: none; display: none; }
 
     /* ── Entry Screen ─────────────────────────────────────────────── */
     #screen-entry {
@@ -627,7 +626,7 @@
 ══════════════════════════════════════════════ -->
 <div class="screen hidden" id="screen-stop" style="justify-content:flex-start; overflow-y:auto;">
   <div class="stop-header">
-    <button class="back-btn" onclick="showScreen('trail')">&larr; Trail</button>
+    <button class="back-btn" onclick="showScreen('trail')">← Trail</button>
     <p class="stop-detail-eyebrow" id="detail-eyebrow"></p>
     <h2 class="stop-detail-title" id="detail-title"></h2>
     <p class="stop-detail-subtitle" id="detail-subtitle"></p>
@@ -703,7 +702,7 @@ const STOPS = [
     era: '1963',
     description: 'Where Brendan Behan held court',
     lore: '"He was sitting there at the bar, large as life. That was Brendan." — Paul Murphy, former editor, Drogheda Independent.',
-    text: 'In the summer of 1963, a young journalist walked into the White Horse Hotel on West Street to interview a man who had already become a legend. Paul Murphy, then working for the Drogheda Independent, found Brendan Behan at the bar. What followed was a conversation that stayed with him for sixty years.',
+    text: 'In the summer of 1963, a young journalist walked into the White Horse Hotel on Shop Street to interview a man who had already become a legend. Paul Murphy, then working for the Drogheda Independent, found Brendan Behan at the bar. What followed was a conversation that stayed with him for sixty years.',
     audioLabel: 'Paul Murphy, 2020',
     audioDuration: '4:12',
     lat: 53.7183,
@@ -711,18 +710,18 @@ const STOPS = [
     tags: ['oral history', 'literary', '1963'],
     // In a real build: audioSrc points to your actual .mp3 file
     // imageSrc points to your .mind target file for AR tracking
-    audioSrc: './audio/white-horse.mp3',
-    imageSrc: './targets/white-horse.mind'
+    audioSrc: null,
+    imageSrc: null
   },
   {
     id: 'connollys-shop',
     number: '02',
-    name: "Connolly&rsquo;s Shop",
+    name: "Connolly's Shop",
     subtitle: 'Shop Street, Drogheda',
     era: '1940s–60s',
     description: 'Commerce, community, memory',
-    lore: '"You&rsquo;d go in for one thing and come out knowing everything that had happened in the town that week." — Maura Byrne, Louth Archives OHA/0112(1).',
-    text: 'Michael Byrne worked in Connolly Brothers on Shop Street. His wife Maura remembers the rituals of the town as it was: the St John&rsquo;s Eve bonfires, the rhythms of a community mapped onto its streets and seasons. This work draws directly from their recorded testimony, held in the Louth County Archives.',
+    lore: '"You'd go in for one thing and come out knowing everything that had happened in the town that week." — Maura Byrne, Louth Archives OHA/0112(1).',
+    text: 'Michael Byrne worked in Connolly Brothers on Shop Street. His wife Maura remembers the rituals of the town as it was: the St John's Eve bonfires, the rhythms of a community mapped onto its streets and seasons. This work draws directly from their recorded testimony, held in the Louth County Archives.',
     audioLabel: 'Maura & Michael Byrne — Louth Archives OHA/0112(1)',
     audioDuration: '6:38',
     lat: 53.7190,
@@ -779,16 +778,6 @@ let audioTick = null;
 let audioSeconds = 0;
 let demoIndex = 0;
 
-// ── Audio unlock for mobile ──────────────────────────────────────────
-function unlockAudio() {
-  if (!window._audio) window._audio = new Audio();
-  window._audio.play().catch(() => {});
-  window._audio.pause();
-  window._audio.currentTime = 0;
-  document.removeEventListener('touchstart', unlockAudio);
-}
-document.addEventListener('touchstart', unlockAudio);
-
 // ── Screen management ────────────────────────────────────────────────
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
@@ -806,12 +795,10 @@ function showToast(msg, duration = 2800) {
 
 // ── Entry ────────────────────────────────────────────────────────────
 function enterTrail() {
-  window._audio = new Audio();
   buildTrailList();
   showScreen('trail');
   startGPS();
 }
-
 
 // ── Trail list ───────────────────────────────────────────────────────
 function buildTrailList() {
@@ -965,11 +952,11 @@ function toggleAudio() {
   document.getElementById('play-icon').style.display = audioPlaying ? 'none' : 'block';
   document.getElementById('pause-icon').style.display = audioPlaying ? 'block' : 'none';
 
- if (audioPlaying) {
+  if (audioPlaying) {
     if (currentStop.audioSrc) {
-        if (!window._audio) window._audio = new Audio();
-        window._audio.src = currentStop.audioSrc;
-        window._audio.play();
+      if (!window._audio) window._audio = new Audio();
+      window._audio.src = currentStop.audioSrc;
+      window._audio.play().catch(e => console.warn('Audio play failed:', e));
     }
     animateWaveform();
     audioTick = setInterval(() => {
@@ -982,7 +969,7 @@ function toggleAudio() {
     if (window._audio) window._audio.pause();
     clearInterval(audioTick);
     stopWaveformAnimation();
-}
+  }
 }
 
 function resetAudio() {
