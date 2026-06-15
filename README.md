@@ -1,4 +1,4 @@
-# Streetscéal
+# StreetScéal
 
 *Street Story — a distributed, open-ended audio-visual artwork embedded in the streets of Irish towns*
 
@@ -11,11 +11,11 @@
 
 ## About the work
 
-*Streetscéal* — street story — is a distributed, open-ended audio-visual artwork that surfaces the voices, histories, and memories held in the streets, buildings, and public spaces of Irish towns. Accessible to anyone with a smartphone, from any point in the town, it returns stories to the places they belong.
+*StreetScéal* — street story — is a distributed, open-ended audio-visual artwork that surfaces the voices, histories, and memories held in the streets, buildings, and public spaces of Irish towns. Accessible to anyone with a smartphone, from any point in the town, it returns stories to the places they belong.
 
 There is no fixed start. No designated route. No end date. The work grows over time as new voices, archive sources, and community contributions are added. The town itself is the canvas. Presence in it is the only entry requirement.
 
-The pilot is **Streetscéal — Drogheda**, developed from *Populated Solitude* (2020–), an ongoing practice-based artwork rooted in oral history, archival research, and the specific memory of Drogheda, Co. Louth. Streetscéal extends that methodology into a replicable civic model applicable to any Irish town.
+The pilot is **StreetScéal — Drogheda**, developed from *Populated Solitude* (2020–), an ongoing practice-based artwork rooted in oral history, archival research, and the specific memory of Drogheda, Co. Louth. Streetscéal extends that methodology into a replicable civic model applicable to any Irish town.
 
 ---
 
@@ -37,7 +37,7 @@ The stack is entirely open source and self-hosted:
 
 ## Structure
 
-Streetscéal is designed as a replicable model. Each town is a standalone deployment within the same GitHub organisation:
+StreetScéal is designed as a replicable model. Each town is a standalone deployment within the same GitHub organisation:
 
 ```
 github.com/streetsceal/
@@ -60,7 +60,7 @@ dundalk.streetsceal.ie
 
 ---
 
-## Pilot: Streetscéal — Drogheda
+## Pilot: StreetScéal — Drogheda
 
 Developed from *Populated Solitude* (Claire Fitch, 2020–), seed-funded by Droichead Arts and first presented on Culture Night 2020. The Drogheda pilot draws on oral history recordings and archival material held at the Louth County Archives.
 
@@ -137,7 +137,7 @@ streetsceal-drogheda/
 | 2020 | *Populated Solitude* commissioned for Culture Night 2020 by Brian Hegarty. First work: *On A Summer Morning In 1963*, an audio response to Paul Murphy's account of meeting Brendan Behan at the White Horse Hotel |
 | 2021 | Seed funding awarded by Droichead Arts, Drogheda |
 | 2022 | Expanded to a four-stop audio walk, deployed via the ECHOES GPS-triggered sound walk app. New work developed from Louth County Archives oral history recordings |
-| 2024– | *Streetscéal* — current development. Web AR iteration: GPS + image tracking, self-hosted on GitHub Pages, no app required. Replicable model for any Irish town |
+| 2024– | *StreetScéal* — current development. Web AR iteration: GPS + image tracking, self-hosted on GitHub Pages, no app required. Replicable model for any Irish town |
 
 ---
 
