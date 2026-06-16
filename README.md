@@ -143,7 +143,8 @@ Each new trail is a self-contained HTML file within this repository:
 
 ## Credits
 
-**Artist:** Claire Fitch  
+**Artists:** Claire Fitch & Martina Murray
+
 **Seed funding:** Droichead Arts, 2021  
 **Archival partnership:** Louth County Archives  
 **Original commission:** Culture Night 2020
