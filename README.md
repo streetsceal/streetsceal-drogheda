@@ -2,9 +2,7 @@
 
 *Street Story — a distributed, open-ended audio-visual artwork embedded in the streets of Drogheda, Co. Louth*
 
-**Artists:** Claire Fitch & Martina Murray
-
-
+**Artist:** Claire Fitch  
 **Live:** [streetsceal.ie](https://streetsceal.ie)  
 **Medium:** Web AR, oral history, archival audio, GPS-triggered sound  
 **Project site:** [populatedsolitude2020.wordpress.com](https://populatedsolitude2020.wordpress.com) *(original Populated Solitude documentation)*
@@ -30,18 +28,19 @@ Voices, memories, everyday life — the Drogheda that people remember.
 
 | Stop | Location | Era |
 |------|----------|-----|
-| The Marcy Hotel (White Horse) | West Street | 1963 |
-| Wogans (Connolly's Shop) | Shop Street | 1940s–60s |
+| The Marcy Hotel (White Horse) | Shop Street | 1963 |
+| Connolly's Shop | Shop Street | 1940s–60s |
 | Millmount | Millmount Square | Ancient–present |
 | St Laurence's Gate | Laurence Street | 13th century |
-| The Quayside | West Gate / River Boyne | 18th–20th century |
-| St Peter's Church | West Street, Drogheda | 1921–present |
+| St Peter's Church ↗ | West Street, Drogheda | 1921–present |
+| The Quayside ↗ | West Gate / River Boyne | 18th–20th century |
 
 ### The Plunkett Trail · *In development*
 A martyr's journey across Europe — from Drogheda to Ghent, Rome, London and beyond.
 
 | Stop | Location | Era |
 |------|----------|-----|
+| The Quayside ↗ | West Gate / River Boyne, Drogheda | Linking stop |
 | St Peter's Church | West Street, Drogheda | 1921–present |
 | Loughcrew | Oldcastle, Co. Meath | 1625 |
 | Pontificio Collegio Irlandese | Rome, Italy | 1647–1669 |
@@ -55,11 +54,16 @@ Drogheda to Liverpool, Bordeaux and beyond — following the routes of those who
 
 | Stop | Location |
 |------|----------|
-| The Quayside | Drogheda — the departure point |
+| The Quayside ↗ | Drogheda — the departure point |
+| St Peter's Church ↗ | West Street, Drogheda — the European connection |
 | Liverpool | TBC |
 | Bordeaux | TBC |
 
-The Quayside appears in both the Town Trail and the Diaspora Trail — the linking point between local memory and the wider world.
+**Linking stops** — two stops appear across all three trails:
+- **The Quayside** — the departure point; links Town Trail to Diaspora Trail
+- **St Peter's Church** — the shrine and relic; links Town Trail to Plunkett Trail
+
+The ↗ symbol denotes a linking stop. Every trail connects to the others through these two locations.
 
 ---
 
@@ -130,7 +134,7 @@ Each new trail is a self-contained HTML file within this repository:
 | 2020 | *Populated Solitude* commissioned for Culture Night 2020. First work: *On A Summer Morning In 1963*, an audio response to Paul Murphy's account of meeting Brendan Behan at the White Horse Hotel |
 | 2021 | Seed funding awarded by Droichead Arts, Drogheda |
 | 2022 | Expanded to a four-stop audio walk deployed via the ECHOES GPS-triggered sound walk app. New work developed from Louth County Archives oral history recordings |
-| 2026 | *Streetscéal* — Web AR iteration. GPS + image tracking, self-hosted on GitHub Pages, no app required. Multi-trail platform with Town Trail, Plunkett Trail, and Diaspora Trail |
+| 2026 | *StreetScéal* — Web AR iteration. GPS + image tracking, self-hosted on GitHub Pages, no app required. Multi-trail platform with Town Trail, Plunkett Trail, and Diaspora Trail |
 
 ---
 
@@ -144,13 +148,15 @@ Each new trail is a self-contained HTML file within this repository:
 
 ## Credits
 
-**Artists:** Claire Fitch & Martina Murray
-
+**Artist:** Claire Fitch  
+**Historian and writer:** Martina Murray  
 **Seed funding:** Droichead Arts, 2021  
 **Archival partnership:** Louth County Archives  
 **Original commission:** Culture Night 2020
 
 Claire Fitch is a composer, sound designer, and lecturer at Dundalk Institute of Technology. Her practice spans electroacoustic composition, oral history, and site-specific audio art.
+
+Martina Murray is a historian, writer, and author based in Co. Louth. She is a contributor to Totally Dublin and founder of Greenlight. Her historical research and narrative writing forms the documentary core of the StreetScéal trails.
 
 [clairefitch.github.io](https://clairefitch.github.io) · [fitchsounds.com](https://fitchsounds.com)
 
