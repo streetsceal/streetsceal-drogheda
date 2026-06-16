@@ -2,7 +2,7 @@
 
 *Street Story — a distributed, open-ended audio-visual artwork embedded in the streets of Irish towns*
 
-**Artist:** Claire Fitch  
+**Founders:** Claire Fitch & Martina Murray 
 **Pilot location:** Drogheda, Co. Louth  
 **Medium:** Web AR, oral history, archival audio, GPS-triggered sound  
 **Project site:** [populatedsolitude2020.wordpress.com](https://populatedsolitude2020.wordpress.com) *(original Populated Solitude documentation)*
