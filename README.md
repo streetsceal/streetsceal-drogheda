@@ -4,6 +4,7 @@
 
 **Artists:** Claire Fitch & Martina Murray
 
+
 **Pilot location:** Drogheda, Co. Louth  
 **Medium:** Web AR, oral history, archival audio, GPS-triggered sound  
 **Project site:** [populatedsolitude2020.wordpress.com](https://populatedsolitude2020.wordpress.com) *(original Populated Solitude documentation)*
