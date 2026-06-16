@@ -956,7 +956,7 @@ function unlockAllForDemo() {
     if (card) {
       card.classList.remove('locked');
       const prox = document.getElementById('prox-' + stop.id);
-      if (prox) prox.innerHTML = '<span class="proximity-dot"></span>nearby';
+      if (prox) prox.innerHTML = '<span class="proximity-dot near"></span>Demo mode';
     }
   });
   setGPSStatus(false, 'Demo mode — all stops unlocked');
