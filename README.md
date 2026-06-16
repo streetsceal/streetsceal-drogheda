@@ -2,7 +2,8 @@
 
 *Street Story — a distributed, open-ended audio-visual artwork embedded in the streets of Irish towns*
 
-**Artist:** Claire Fitch  
+**Artists:** Claire Fitch & Martina Murray
+
 **Pilot location:** Drogheda, Co. Louth  
 **Medium:** Web AR, oral history, archival audio, GPS-triggered sound  
 **Project site:** [populatedsolitude2020.wordpress.com](https://populatedsolitude2020.wordpress.com) *(original Populated Solitude documentation)*
@@ -42,12 +43,12 @@ StreetScéal is designed as a replicable model. Each town is a standalone deploy
 ```
 github.com/streetsceal/
 ├── streetsceal-drogheda      ← pilot
-├── streetsceal-dundalk
-├── streetsceal-ardee
-└── streetsceal-[town]
+├── streetsceal-stoliverplunkett
+├── streetsceal-diaspora
+└── streetsceal-[subject or town]
 ```
 
-Each town deploys to its own URL:
+Each trail deploys to its own URL:
 ```
 streetsceal-drogheda.github.io
 ```
@@ -55,7 +56,7 @@ streetsceal-drogheda.github.io
 Or, with the custom domain, via subdomain:
 ```
 drogheda.streetsceal.ie
-dundalk.streetsceal.ie
+stoliverplunkett.streetsceal.ie
 ```
 
 ---
@@ -92,7 +93,7 @@ One of the finest surviving medieval barbican gates in Ireland. The road through
 
 ## Adding a new town
 
-1. Fork this repository as `streetsceal-[townname]`
+1. Fork this repository as `streetsceal-[trailname]`
 2. Update the `STOPS` array with local locations, coordinates, and content
 3. Replace audio and image target files with town-specific material
 4. Enable GitHub Pages on the new repo
