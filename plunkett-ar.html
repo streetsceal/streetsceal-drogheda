@@ -177,9 +177,8 @@
 const AUDIO_SRC = './audio/GoodLuckYoungSage.wav';
 
 // Update this path to the Rhubarb JSON file for this audio
-// Generate with: rhubarb -f json -o st-peters.json st-peters.mp3
-// Or use the WebAssembly version at: github.com/danieloquelis/rhubarb-lip-sync-wasm
-const LIPSYNC_SRC = './sprites/st-peters-lipsync.json';
+// Generate with: rhubarb -f json -o output.json yourfile.wav
+const LIPSYNC_SRC = './sprites/output.json';
 
 // ── Mouth shape map ──────────────────────────────────────────────────
 // Maps Rhubarb shape letters to A-Frame asset IDs
@@ -332,7 +331,7 @@ function closeAR() {
   cancelAnimationFrame(animFrame);
   isPlaying = false;
   // Return to trail — adjust href to match your file structure
-  window.location.href = './town-trail.html';
+  window.location.href = './plunkett-trail.html';
 }
 </script>
 

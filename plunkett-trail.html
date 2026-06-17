@@ -712,8 +712,8 @@ const STOPS = [
     lat: 53.7185,
     lng: -6.3558,
     tags: ['town trail', 'linking stop', 'shrine'],
-    audioSrc: null,
-    imageSrc: null
+    audioSrc: './audio/GoodLuckYoungSage.wav',
+    imageSrc: './targets/st-peters.mind'
   },
   {
     id: 'loughcrew',
@@ -1068,6 +1068,14 @@ function stopWaveformAnimation() {
 // ── AR ───────────────────────────────────────────────────────────────
 function launchAR() {
   if (!currentStop) return;
+
+  // St Peter's uses the dedicated lip-sync AR experience instead of
+  // the standard image-tracking overlay used by other stops
+  if (currentStop.id === 'st-peters') {
+    if (window._audio) window._audio.pause();
+    window.location.href = './plunkett-ar.html';
+    return;
+  }
 
   document.getElementById('ar-stop-name').textContent = currentStop.name;
 
