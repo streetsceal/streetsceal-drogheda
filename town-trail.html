@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>StreetScéal — Drogheda</title>
+  <title>Streetscéal — Drogheda</title>
 
   <!-- MindAR + A-Frame for image tracking -->
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
@@ -151,11 +151,32 @@
 
     .trail-header {
       width: 100%;
-      padding: 2rem 1.5rem 1rem;
+      padding: 1rem 1.5rem 1rem;
       border-bottom: 1px solid rgba(232,224,208,0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .all-trails-link {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--rust-light);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      width: fit-content;
+    }
+    .all-trails-link:hover { color: var(--paper); }
+
+    .trail-header-row {
       display: flex;
       align-items: baseline;
       justify-content: space-between;
+      width: 100%;
     }
 
     .trail-header-title {
@@ -611,8 +632,11 @@
 ══════════════════════════════════════════════ -->
 <div class="screen hidden" id="screen-trail" style="justify-content:flex-start; overflow-y:auto;">
   <div class="trail-header">
-    <span class="trail-header-title">Streetscéal</span>
-    <span class="trail-header-count" id="trail-count">0 of 4 visited</span>
+    <a class="all-trails-link" href="./index.html">&larr; All trails</a>
+    <div class="trail-header-row">
+      <span class="trail-header-title">Streetscéal</span>
+      <span class="trail-header-count" id="trail-count">0 of 4 visited</span>
+    </div>
   </div>
 
   <div class="trail-list" id="trail-list"></div>
@@ -702,7 +726,7 @@ const STOPS = [
     id: 'white-horse',
     number: '01',
     name: 'The White Horse Hotel',
-    subtitle: 'West Street, Drogheda',
+    subtitle: 'Shop Street, Drogheda',
     era: '1963',
     description: 'Where Brendan Behan held court',
     lore: '"He was sitting there at the bar, large as life. That was Brendan." — Paul Murphy, former editor, Drogheda Independent.',
@@ -712,8 +736,8 @@ const STOPS = [
     lat: 53.7183,
     lng: -6.3540,
     tags: ['oral history', 'literary', '1963'],
-    // audioSrc points to .mp3 file
-    // imageSrc points to .mind target file for AR tracking
+    // In a real build: audioSrc points to your actual .mp3 file
+    // imageSrc points to your .mind target file for AR tracking
     audioSrc: './audio/white-horse.mp3',
     imageSrc: './targets/white-horse.mind'
   },
@@ -731,8 +755,8 @@ const STOPS = [
     lat: 53.7190,
     lng: -6.3545,
     tags: ['oral history', 'archive', 'commerce'],
-    audioSrc: './audio/connollys-shop.mp3',
-    imageSrc: './targets/connollys-shop.mind'
+    audioSrc: null,
+    imageSrc: null
   },
   {
     id: 'millmount',
@@ -743,7 +767,7 @@ const STOPS = [
     description: 'The mound that remembers everything',
     lore: 'Neolithic passage tomb. Viking settlement. Cromwellian siege. 1922 Civil War shelling. Every layer still present beneath the surface.',
     text: 'Stand at Millmount and you stand on five thousand years of continuous human presence. The mound has been a burial site, a military fortification, a signal tower, and a site of political violence. It is now a museum. The town grew around it, grew from it, and cannot be understood without it.',
-    audioLabel: `Millmount ambient soundscape`,
+    audioLabel: 'Millmount ambient soundscape',
     audioDuration: '3:20',
     lat: 53.7155,
     lng: -6.3498,
@@ -774,16 +798,16 @@ const STOPS = [
     name: `St Peter's Church`,
     subtitle: 'West Street, Drogheda',
     era: '1921–present',
-    description: `The shrine of Oliver Plunkett — a link to Europe`,
-    lore: `The head of Saint Oliver Plunkett has been enshrined here since 1921. A relic of the True Cross, gifted by St Bavo's Cathedral in Ghent in 2009, connects this spot directly to Belgium.`,
-    text: `St Peter's Church on West Street is the National Shrine of Saint Oliver Plunkett, Archbishop of Armagh, martyred at Tyburn in 1681. His head has been kept here since 1921. Also on display is the door of the condemned cell from Newgate Prison, London. This stop connects the Town Trail to the Plunkett Trail — a journey that begins here and extends across Europe.`,
-    audioLabel: `St Peter's Church — archive and oral history`,
+    description: `The National Shrine — a link to the Plunkett Trail`,
+    lore: `A relic of the True Cross, gifted by St Bavo's Cathedral in Ghent in 2009, connects this church directly to Belgium.`,
+    text: `The head of Saint Oliver Plunkett, Archbishop of Armagh, has been enshrined at St Peter's Church since 1921. Also on display is the door of the condemned cell from Newgate Prison, London. This stop connects the Town Trail to the Plunkett Trail.`,
+    audioLabel: `St Peter's Church — the shrine`,
     audioDuration: '0:00',
     lat: 53.7185,
     lng: -6.3558,
-    tags: ['plunkett trail', 'shrine', 'european link'],
-    audioSrc: null,
-    imageSrc: null
+    tags: ['plunkett trail', 'linking stop', 'shrine'],
+    audioSrc: './audio/GoodLuckYoungSage.wav',
+    imageSrc: './targets/st-peters.mind'
   },
   {
     id: 'quayside',
@@ -791,14 +815,14 @@ const STOPS = [
     name: 'The Quayside',
     subtitle: 'West Gate, River Boyne, Drogheda',
     era: '18th–20th century',
-    description: 'Where Drogheda met the world',
+    description: `Where Drogheda met the world — a link to the Diaspora Trail`,
     lore: `The river was the reason for the town. Everything that came in and went out — goods, people, stories — passed through here.`,
-    text: `The quayside on the River Boyne was Drogheda's connection to the wider world for centuries. Merchant ships carried wine from Bordeaux, coal from Liverpool, timber from Scandinavia. People left from here too — for England, for America, for wherever work or necessity took them. This stop connects the Town Trail to the Diaspora Trail. Follow the river outward.`,
-    audioLabel: `The Quayside — archive and oral history`,
+    text: `The quayside on the River Boyne was Drogheda's connection to the wider world for centuries. People left from here too — for England, for America, for wherever work or necessity took them. This stop connects the Town Trail to the Diaspora Trail.`,
+    audioLabel: 'Quayside — soundscape and departure',
     audioDuration: '0:00',
     lat: 53.7173,
     lng: -6.3530,
-    tags: ['diaspora trail', 'river', 'departure'],
+    tags: ['diaspora trail', 'linking stop', 'departure'],
     audioSrc: null,
     imageSrc: null
   }
@@ -955,6 +979,7 @@ function unlockAllForDemo() {
     const card = document.getElementById('card-' + stop.id);
     if (card) {
       card.classList.remove('locked');
+      card.classList.add('active');
       const prox = document.getElementById('prox-' + stop.id);
       if (prox) prox.innerHTML = '<span class="proximity-dot near"></span>Demo mode';
     }
@@ -1053,29 +1078,31 @@ function stopWaveformAnimation() {
 function launchAR() {
   if (!currentStop) return;
 
-  // In a real build: use currentStop.imageSrc as the .mind target file
-  // and currentStop.audioSrc for the audio overlay.
-  // Here we build a working A-Frame scene with a placeholder overlay.
+  // St Peter's uses the dedicated lip-sync AR experience instead of
+  // the standard image-tracking overlay used by other stops
+  if (currentStop.id === 'st-peters') {
+    if (window._audio) window._audio.pause();
+    window.location.href = './plunkett-ar.html';
+    return;
+  }
+
   document.getElementById('ar-stop-name').textContent = currentStop.name;
 
   const container = document.getElementById('ar-scene-container');
   container.innerHTML = '';
 
-  // Determine if we have a real .mind file or use placeholder
   const hasMindFile = !!currentStop.imageSrc;
 
-  if (hasMindFile) {
-    // Real AR scene with image tracking
-    container.innerHTML = `
-      <a-scene
-        mindar-image="imageTargetSrc: ${currentStop.imageSrc}; autoStart: true; uiLoading: no; uiScanning: no; uiError: no;"
-        color-space="sRGB"
-        renderer="colorManagement: true"
-        vr-mode-ui="enabled: false"
-        device-orientation-permission-ui="enabled: false">
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-        <a-entity mindar-image-target="targetIndex: 0">
-          <!-- Overlay: fade in title text above the target image -->
+  // Determine number of targets — audioTargets array or fall back to single audioSrc
+  const audioTargets = currentStop.audioTargets || (currentStop.audioSrc ? [currentStop.audioSrc] : []);
+  const numTargets = audioTargets.length || 1;
+
+  // Build one a-entity per target index
+  function buildTargetEntities() {
+    let entities = '';
+    for (let i = 0; i < numTargets; i++) {
+      entities += `
+        <a-entity mindar-image-target="targetIndex: ${i}" id="ar-target-${i}">
           <a-text
             value="${currentStop.name}"
             font="https://cdn.aframe.io/fonts/Exo2Bold.fnt"
@@ -1085,7 +1112,6 @@ function launchAR() {
             position="0 0.35 0"
             animation="property: opacity; from: 0; to: 1; dur: 1200; easing: easeInQuad">
           </a-text>
-          <!-- Atmospheric particle plane -->
           <a-plane
             color="#e8e0d0"
             opacity="0.85"
@@ -1093,7 +1119,6 @@ function launchAR() {
             position="0 0 -0.001"
             animation="property: opacity; from: 0; to: 0.85; dur: 800">
           </a-plane>
-          <!-- Era label -->
           <a-text
             value="${currentStop.era}"
             font="https://cdn.aframe.io/fonts/mozillavr.fnt"
@@ -1103,10 +1128,45 @@ function launchAR() {
             position="0 -0.35 0"
             animation="property: opacity; from: 0; to: 1; dur: 1500; easing: easeInQuad">
           </a-text>
-        </a-entity>
+        </a-entity>`;
+    }
+    return entities;
+  }
+
+  if (hasMindFile) {
+    container.innerHTML = `
+      <a-scene
+        mindar-image="imageTargetSrc: ${currentStop.imageSrc}; autoStart: true; uiLoading: no; uiScanning: no; uiError: no;"
+        color-space="sRGB"
+        renderer="colorManagement: true"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false">
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        ${buildTargetEntities()}
       </a-scene>`;
+
+    // Wire up per-target audio once scene is in the DOM
+    setTimeout(() => {
+      for (let i = 0; i < numTargets; i++) {
+        const entity = document.querySelector(`#ar-target-${i}`);
+        if (!entity) continue;
+        const src = audioTargets[i];
+        if (src) {
+          entity.addEventListener('targetFound', () => {
+            window._audio.src = src;
+            window._audio.play().catch(e => console.warn('Audio play failed:', e));
+            document.getElementById('ar-audio-btn').textContent = '⏸ Audio';
+          });
+          entity.addEventListener('targetLost', () => {
+            window._audio.pause();
+            document.getElementById('ar-audio-btn').textContent = '▶ Audio';
+          });
+        }
+      }
+    }, 500);
+
   } else {
-    // Demo: camera feed with overlay UI (no .mind file needed)
+    // Demo: camera feed with overlay
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
       .then(stream => {
         const video = document.createElement('video');
@@ -1116,18 +1176,22 @@ function launchAR() {
         video.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';
         container.appendChild(video);
         addARDemoOverlay(container);
+        // In demo mode play first audio if available
+        if (audioTargets[0]) {
+          window._audio.src = audioTargets[0];
+          window._audio.play().catch(e => console.warn('Audio play failed:', e));
+        }
       })
       .catch(() => {
-        // No camera access in iframe — show static demo
         container.style.background = 'linear-gradient(135deg, #1a1612 0%, #2a1f18 100%)';
         addARDemoOverlay(container);
+        if (audioTargets[0]) {
+          window._audio.src = audioTargets[0];
+          window._audio.play().catch(e => console.warn('Audio play failed:', e));
+        }
       });
   }
 
-if (currentStop.audioSrc) {
-  window._audio.src = currentStop.audioSrc;
-  window._audio.play().catch(e => console.warn('Audio play failed:', e));
-}
   showScreen('ar');
 }
 

@@ -331,7 +331,12 @@ function closeAR() {
   cancelAnimationFrame(animFrame);
   isPlaying = false;
   // Return to trail — adjust href to match your file structure
-  window.location.href = './plunkett-trail.html';
+  // Return to whichever trail launched this AR view
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    window.location.href = './index.html';
+  }
 }
 </script>
 
