@@ -204,15 +204,17 @@ let targetFound = false;
 
 // ── Load lip sync JSON ───────────────────────────────────────────────
 async function loadLipSync() {
+  const debugEl = document.getElementById('mouth-debug');
   try {
     const res = await fetch(LIPSYNC_SRC);
-    if (!res.ok) throw new Error('Lip sync file not found');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     lipSyncData = await res.json();
     console.log('Lip sync loaded:', lipSyncData.mouthCues.length, 'cues');
+    if (debugEl) debugEl.textContent = `Lip sync loaded: ${lipSyncData.mouthCues.length} cues`;
   } catch (e) {
     console.warn('Lip sync JSON not found — using silence shape only:', e.message);
-    // Fallback: just show closed mouth, audio still plays
     lipSyncData = null;
+    if (debugEl) debugEl.textContent = `Lip sync FAILED: ${e.message} (${LIPSYNC_SRC})`;
   }
 }
 
