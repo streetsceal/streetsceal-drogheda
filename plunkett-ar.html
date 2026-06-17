@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Plunkett AR — Lip Sync Test</title>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #000; overflow: hidden; }
+
+    #ui-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+      font-family: 'Courier New', monospace;
+    }
+
+    #top-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      padding: 1.2rem 1.5rem;
+      background: linear-gradient(180deg, rgba(0,0,0,0.75) 0%, transparent 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: auto;
+    }
+
+    #stop-title {
+      font-family: Georgia, serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: #e8e0d0;
+    }
+
+    #close-btn {
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #cfc5b0;
+      background: none;
+      border: 1px solid rgba(232,224,208,0.3);
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    #audio-btn {
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #cfc5b0;
+      background: none;
+      border: 1px solid rgba(232,224,208,0.3);
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      pointer-events: auto;
+      margin-right: 0.5rem;
+    }
+
+    #status-bar {
+      position: absolute;
+      bottom: 2rem;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 0.58rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(232,224,208,0.45);
+    }
+
+    #mouth-debug {
+      position: absolute;
+      bottom: 4rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: rgba(139,58,42,0.7);
+      text-align: center;
+    }
+
+    /* Corner frame marks */
+    .corner {
+      position: absolute;
+      width: 24px; height: 24px;
+      border-color: #8b3a2a;
+      border-style: solid;
+      opacity: 0.6;
+    }
+    .tl { top: 72px; left: 20px; border-width: 2px 0 0 2px; }
+    .tr { top: 72px; right: 20px; border-width: 2px 2px 0 0; }
+    .bl { bottom: 60px; left: 20px; border-width: 0 0 2px 2px; }
+    .br { bottom: 60px; right: 20px; border-width: 0 2px 2px 0; }
+  </style>
+</head>
+<body>
+
+<!-- ── A-Frame AR Scene ────────────────────────────────────────────── -->
+<a-scene
+  id="ar-scene"
+  mindar-image="imageTargetSrc: ./targets/st-peters.mind; autoStart: true; uiLoading: no; uiScanning: no; uiError: no;"
+  color-space="sRGB"
+  renderer="colorManagement: true"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false">
+
+  <a-assets>
+    <!-- Figure with transparent mouth hole -->
+    <img id="plunkett-figure" src="./sprites/figure-base.png" crossorigin="anonymous"/>
+    <!-- Six mouth shape PNGs -->
+    <img id="mouth-X" src="./sprites/mouth-X.png" crossorigin="anonymous"/>
+    <img id="mouth-A" src="./sprites/mouth-A.png" crossorigin="anonymous"/>
+    <img id="mouth-B" src="./sprites/mouth-B.png" crossorigin="anonymous"/>
+    <img id="mouth-C" src="./sprites/mouth-C.png" crossorigin="anonymous"/>
+    <img id="mouth-D" src="./sprites/mouth-D.png" crossorigin="anonymous"/>
+    <img id="mouth-E" src="./sprites/mouth-E.png" crossorigin="anonymous"/>
+  </a-assets>
+
+  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+  <a-entity mindar-image-target="targetIndex: 0" id="plunkett-target">
+
+    <!--
+      FINE-TUNED POSITION — averaged from manual alignment testing across
+      all six mouth shapes in alignment-preview.html. This is a single
+      FIXED box; only the image swaps per shape, the position never moves.
+    -->
+
+    <!-- Static figure with transparent mouth hole -->
+    <a-plane
+      id="figure-plane"
+      src="#plunkett-figure"
+      width="0.8"
+      height="1.2"
+      position="0 0 0"
+      material="transparent: true; alphaTest: 0.1; side: double">
+    </a-plane>
+
+    <!-- Animated mouth plane — sits in front of figure, precisely over the hole -->
+    <a-plane
+      id="mouth-plane"
+      src="#mouth-X"
+      width="0.1064"
+      height="0.0294"
+      position="0.0250 0.4366 0.001"
+      material="transparent: true; alphaTest: 0.1; side: double">
+    </a-plane>
+
+  </a-entity>
+</a-scene>
+
+<!-- ── UI Overlay ─────────────────────────────────────────────────── -->
+<div id="ui-overlay">
+  <div id="top-bar">
+    <span id="stop-title">Oliver Plunkett — St Peter's Church</span>
+    <div>
+      <button id="audio-btn" onclick="toggleAudio()">▶ Audio</button>
+      <button id="close-btn" onclick="closeAR()">Close</button>
+    </div>
+  </div>
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+  <div id="mouth-debug">Mouth: X (silence)</div>
+  <div id="status-bar">Point camera at the image</div>
+</div>
+
+<!-- ── JavaScript ─────────────────────────────────────────────────── -->
+<script>
+// ── Configuration ────────────────────────────────────────────────────
+// Update this path to the audio file for this stop
+const AUDIO_SRC = './audio/st-peters.mp3';
+
+// Update this path to the Rhubarb JSON file for this audio
+// Generate with: rhubarb -f json -o st-peters.json st-peters.mp3
+// Or use the WebAssembly version at: github.com/danieloquelis/rhubarb-lip-sync-wasm
+const LIPSYNC_SRC = './sprites/st-peters-lipsync.json';
+
+// ── Mouth shape map ──────────────────────────────────────────────────
+// Maps Rhubarb shape letters to A-Frame asset IDs
+const MOUTH_SHAPES = {
+  'X': '#mouth-X',  // silence / closed
+  'A': '#mouth-A',  // slightly open
+  'B': '#mouth-B',  // open showing teeth
+  'C': '#mouth-C',  // wide open
+  'D': '#mouth-D',  // rounded O
+  'E': '#mouth-E',  // small tight opening
+  // Rhubarb may also output F, G, H — map to nearest equivalent
+  'F': '#mouth-B',
+  'G': '#mouth-C',
+  'H': '#mouth-D'
+};
+
+// ── State ────────────────────────────────────────────────────────────
+let audio = null;
+let lipSyncData = null;
+let animFrame = null;
+let isPlaying = false;
+let targetFound = false;
+
+// ── Load lip sync JSON ───────────────────────────────────────────────
+async function loadLipSync() {
+  try {
+    const res = await fetch(LIPSYNC_SRC);
+    if (!res.ok) throw new Error('Lip sync file not found');
+    lipSyncData = await res.json();
+    console.log('Lip sync loaded:', lipSyncData.mouthCues.length, 'cues');
+  } catch (e) {
+    console.warn('Lip sync JSON not found — using silence shape only:', e.message);
+    // Fallback: just show closed mouth, audio still plays
+    lipSyncData = null;
+  }
+}
+
+// ── Audio setup ──────────────────────────────────────────────────────
+function setupAudio() {
+  audio = new Audio();
+  audio.src = AUDIO_SRC;
+  audio.preload = 'auto';
+  audio.addEventListener('ended', () => {
+    isPlaying = false;
+    document.getElementById('audio-btn').textContent = '▶ Audio';
+    setMouthShape('X');
+    cancelAnimationFrame(animFrame);
+  });
+}
+
+// ── Mouth animation loop ─────────────────────────────────────────────
+function animateMouth() {
+  if (!isPlaying || !audio) return;
+
+  const currentTime = audio.currentTime;
+
+  if (lipSyncData && lipSyncData.mouthCues) {
+    // Find which cue is active at current audio time
+    const activeCue = lipSyncData.mouthCues.find(cue =>
+      currentTime >= cue.start && currentTime < cue.end
+    );
+    if (activeCue) {
+      setMouthShape(activeCue.value);
+    } else {
+      setMouthShape('X');
+    }
+  }
+
+  animFrame = requestAnimationFrame(animateMouth);
+}
+
+// ── Set mouth shape ──────────────────────────────────────────────────
+function setMouthShape(shape) {
+  const mouthPlane = document.getElementById('mouth-plane');
+  if (!mouthPlane) return;
+
+  const assetId = MOUTH_SHAPES[shape] || '#mouth-X';
+  mouthPlane.setAttribute('src', assetId);
+
+  // Update debug label
+  const labels = {
+    'X': 'silence', 'A': 'slightly open', 'B': 'teeth',
+    'C': 'wide open', 'D': 'rounded O', 'E': 'tight'
+  };
+  document.getElementById('mouth-debug').textContent =
+    `Mouth: ${shape} (${labels[shape] || shape})`;
+}
+
+// ── Toggle audio playback ────────────────────────────────────────────
+function toggleAudio() {
+  if (!audio) return;
+
+  if (isPlaying) {
+    audio.pause();
+    isPlaying = false;
+    document.getElementById('audio-btn').textContent = '▶ Audio';
+    cancelAnimationFrame(animFrame);
+    setMouthShape('X');
+  } else {
+    audio.play().catch(e => console.warn('Audio play failed:', e));
+    isPlaying = true;
+    document.getElementById('audio-btn').textContent = '⏸ Audio';
+    animateMouth();
+  }
+}
+
+// ── AR target events ─────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const target = document.getElementById('plunkett-target');
+
+  target.addEventListener('targetFound', () => {
+    targetFound = true;
+    document.getElementById('status-bar').textContent = 'Target found';
+    setTimeout(() => {
+      document.getElementById('status-bar').textContent = '';
+    }, 2000);
+
+    // Auto-play audio when target is found
+    if (audio && !isPlaying) {
+      audio.play().catch(e => console.warn('Autoplay blocked:', e));
+      isPlaying = true;
+      document.getElementById('audio-btn').textContent = '⏸ Audio';
+      animateMouth();
+    }
+  });
+
+  target.addEventListener('targetLost', () => {
+    targetFound = false;
+    // Pause when camera looks away
+    if (audio && isPlaying) {
+      audio.pause();
+      isPlaying = false;
+      document.getElementById('audio-btn').textContent = '▶ Audio';
+      cancelAnimationFrame(animFrame);
+      setMouthShape('X');
+    }
+  });
+
+  // Initialise
+  setupAudio();
+  loadLipSync();
+});
+
+// ── Close AR ─────────────────────────────────────────────────────────
+function closeAR() {
+  if (audio) {
+    audio.pause();
+    audio.currentTime = 0;
+  }
+  cancelAnimationFrame(animFrame);
+  isPlaying = false;
+  // Return to trail — adjust href to match your file structure
+  window.location.href = './town-trail.html';
+}
+</script>
+
+</body>
+</html>

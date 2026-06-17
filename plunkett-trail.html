@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>StreetScéal — The Plunkett Trail</title>
+
+  <!-- MindAR + A-Frame for image tracking -->
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    /* ── Tokens ───────────────────────────────────────────────────── */
+    :root {
+      --ink:        #1a1612;
+      --paper:      #e8e0d0;
+      --paper-dark: #cfc5b0;
+      --rust:       #8b3a2a;
+      --rust-light: #a8503e;
+      --ghost:      rgba(232, 224, 208, 0.08);
+      --fog:        rgba(26, 22, 18, 0.72);
+
+      --display: 'Playfair Display', Georgia, serif;
+      --body:    'EB Garamond', 'Garamond', Georgia, serif;
+      --mono:    'Courier New', monospace;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--body);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow: hidden;
+    }
+
+    /* ── Screens ──────────────────────────────────────────────────── */
+    .screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      transition: opacity 0.8s ease;
+      z-index: 10;
+    }
+    .screen.hidden { opacity: 0; pointer-events: none; }
+
+    /* ── Entry Screen ─────────────────────────────────────────────── */
+    #screen-entry {
+      background: var(--ink);
+      text-align: center;
+      gap: 0;
+    }
+
+    .entry-rule {
+      width: 1px;
+      height: 60px;
+      background: var(--rust);
+      margin: 0 auto 2rem;
+    }
+
+    .entry-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--rust-light);
+      margin-bottom: 1.5rem;
+    }
+
+    .entry-title {
+      font-family: var(--display);
+      font-size: clamp(2.4rem, 8vw, 3.8rem);
+      font-weight: 400;
+      line-height: 1.1;
+      color: var(--paper);
+      margin-bottom: 0.4rem;
+    }
+
+    .entry-title em {
+      font-style: italic;
+      color: var(--paper-dark);
+    }
+
+    .entry-subtitle {
+      font-family: var(--body);
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--paper-dark);
+      margin-bottom: 3rem;
+      max-width: 280px;
+      line-height: 1.5;
+    }
+
+    .entry-location {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--rust);
+      margin-bottom: 3rem;
+      text-transform: uppercase;
+    }
+
+    /* Signature element: the grain texture overlay */
+    #screen-entry::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+      background-size: 256px;
+      pointer-events: none;
+      opacity: 0.4;
+      z-index: 0;
+    }
+    #screen-entry > * { position: relative; z-index: 1; }
+
+    /* ── Button ───────────────────────────────────────────────────── */
+    .btn-primary {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--paper);
+      background: transparent;
+      border: 1px solid var(--rust);
+      padding: 0.9rem 2.2rem;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+    .btn-primary:hover, .btn-primary:focus {
+      background: var(--rust);
+      color: var(--paper);
+      outline: none;
+    }
+
+    /* ── Trail Screen ─────────────────────────────────────────────── */
+    #screen-trail {
+      background: var(--ink);
+      justify-content: flex-start;
+      padding: 0;
+      overflow-y: auto;
+    }
+
+    .trail-header {
+      width: 100%;
+      padding: 2rem 1.5rem 1rem;
+      border-bottom: 1px solid rgba(232,224,208,0.12);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    .trail-header-title {
+      font-family: var(--display);
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--paper-dark);
+    }
+
+    .trail-header-count {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: var(--rust);
+      text-transform: uppercase;
+    }
+
+    .trail-list {
+      width: 100%;
+      padding: 1rem 0 6rem;
+    }
+
+    .stop-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.2rem;
+      padding: 1.4rem 1.5rem;
+      border-bottom: 1px solid rgba(232,224,208,0.08);
+      cursor: pointer;
+      transition: background 0.2s;
+      position: relative;
+    }
+    .stop-card:hover { background: var(--ghost); }
+
+    .stop-card.active {
+      background: rgba(139, 58, 42, 0.12);
+      border-left: 2px solid var(--rust);
+    }
+
+    .stop-card.locked { opacity: 0.38; cursor: default; }
+    .stop-card.locked:hover { background: transparent; }
+
+    .stop-number {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--rust);
+      letter-spacing: 0.1em;
+      padding-top: 0.2rem;
+      min-width: 2rem;
+    }
+
+    .stop-info { flex: 1; }
+
+    .stop-name {
+      font-family: var(--display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--paper);
+      margin-bottom: 0.2rem;
+    }
+
+    .stop-description {
+      font-family: var(--body);
+      font-style: italic;
+      font-size: 0.82rem;
+      color: var(--paper-dark);
+      line-height: 1.45;
+      margin-bottom: 0.5rem;
+    }
+
+    .stop-meta {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--rust-light);
+    }
+
+    .stop-proximity {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--paper-dark);
+      text-align: right;
+      white-space: nowrap;
+      padding-top: 0.2rem;
+    }
+
+    .proximity-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--rust);
+      margin-right: 0.3rem;
+      vertical-align: middle;
+    }
+    .proximity-dot.near { background: #5a9a6a; animation: pulse 1.8s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(1.4); }
+    }
+
+    /* ── GPS Status bar ───────────────────────────────────────────── */
+    .gps-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--ink);
+      border-top: 1px solid rgba(232,224,208,0.12);
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      z-index: 20;
+    }
+
+    .gps-icon {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--rust);
+      flex-shrink: 0;
+    }
+    .gps-icon.active { background: #5a9a6a; animation: pulse 2s infinite; }
+
+    .gps-text {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--paper-dark);
+      flex: 1;
+    }
+
+    .gps-demo-btn {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--rust-light);
+      background: transparent;
+      border: 1px solid rgba(139,58,42,0.4);
+      padding: 0.3rem 0.7rem;
+      cursor: pointer;
+    }
+
+    /* ── Stop Detail Screen ───────────────────────────────────────── */
+    #screen-stop {
+      background: var(--ink);
+      justify-content: flex-start;
+      padding: 0.8rem 1rem;
+      overflow-y: auto;
+      z-index: 30;
+    }
+
+    .stop-header {
+      width: 100%;
+      padding: 2rem 1.5rem 1.5rem;
+      background: linear-gradient(180deg, rgba(139,58,42,0.15) 0%, transparent 100%);
+    }
+
+    .back-btn {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--rust-light);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .stop-detail-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 0.6rem;
+    }
+
+    .stop-detail-title {
+      font-family: var(--display);
+      font-size: clamp(1.6rem, 6vw, 2.4rem);
+      font-weight: 700;
+      color: var(--paper);
+      line-height: 1.15;
+      margin-bottom: 0.5rem;
+    }
+
+    .stop-detail-subtitle {
+      font-family: var(--body);
+      font-style: italic;
+      color: var(--paper-dark);
+      font-size: 0.9rem;
+    }
+
+    .stop-body {
+      padding: 1.5rem 1.5rem 8rem;
+    }
+
+    .stop-lore {
+      font-family: var(--body);
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: var(--paper-dark);
+      margin-bottom: 2rem;
+      border-left: 2px solid var(--rust);
+      padding-left: 1rem;
+      font-style: italic;
+    }
+
+    .stop-text {
+      font-family: var(--body);
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: var(--paper);
+      margin-bottom: 2rem;
+    }
+
+    /* Audio player */
+    .audio-block {
+      background: rgba(232,224,208,0.05);
+      border: 1px solid rgba(232,224,208,0.12);
+      padding: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .audio-label {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 0.8rem;
+    }
+
+    .audio-player {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .audio-play-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--rust);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    .audio-play-btn:hover { background: var(--rust-light); }
+    .audio-play-btn svg { margin-left: 2px; }
+
+    .audio-waveform {
+      flex: 1;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .wave-bar {
+      flex: 1;
+      background: rgba(232,224,208,0.2);
+      border-radius: 1px;
+      transition: background 0.3s;
+    }
+
+    .audio-duration {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--paper-dark);
+    }
+
+    /* AR launch */
+    .ar-launch-btn {
+      width: 100%;
+      padding: 1.1rem;
+      background: transparent;
+      border: 1px solid var(--rust);
+      color: var(--paper);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      transition: background 0.3s;
+      margin-bottom: 1rem;
+    }
+    .ar-launch-btn:hover { background: rgba(139,58,42,0.2); }
+
+    .ar-icon {
+      width: 18px; height: 18px;
+      opacity: 0.8;
+    }
+
+    .ar-note {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.08em;
+      color: rgba(232,224,208,0.35);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* ── AR Screen ────────────────────────────────────────────────── */
+    #screen-ar {
+      background: #000;
+      z-index: 100;
+      padding: 0;
+      justify-content: flex-start;
+      pointer-events: none;
+    }
+
+    #ar-scene-container {
+      position: absolute;
+      inset: 0;
+    }
+
+    .ar-ui-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 200;
+    }
+
+    .ar-top-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      padding: 1.2rem 1.5rem;
+      background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .ar-stop-name {
+      font-family: var(--display);
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--paper);
+    }
+
+    .ar-close-btn {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--paper-dark);
+      background: none;
+      border: 1px solid rgba(232,224,208,0.3);
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+       pointer-events: auto;
+    }
+
+    .ar-hint {
+      position: absolute;
+      bottom: 2.5rem; left: 0; right: 0;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(232,224,208,0.5);
+      animation: fadeInOut 3s ease 1s forwards;
+    }
+
+    @keyframes fadeInOut {
+      0%   { opacity: 0; }
+      20%  { opacity: 1; }
+      80%  { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* Corner frame — the signature AR element */
+    .ar-frame-corner {
+      position: absolute;
+      width: 28px; height: 28px;
+      border-color: var(--rust);
+      border-style: solid;
+      opacity: 0.7;
+    }
+    .ar-frame-corner.tl { top: 80px; left: 24px; border-width: 2px 0 0 2px; }
+    .ar-frame-corner.tr { top: 80px; right: 24px; border-width: 2px 2px 0 0; }
+    .ar-frame-corner.bl { bottom: 80px; left: 24px; border-width: 0 0 2px 2px; }
+    .ar-frame-corner.br { bottom: 80px; right: 24px; border-width: 0 2px 2px 0; }
+
+    /* ── AR Scene styles (A-Frame overrides) ──────────────────────── */
+    a-scene { position: absolute; inset: 0; }
+
+    /* ── Notification toast ───────────────────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--rust);
+      color: var(--paper);
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.7rem 1.2rem;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 2px; }
+    ::-webkit-scrollbar-thumb { background: var(--rust); }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 1 — ENTRY
+══════════════════════════════════════════════ -->
+<div class="screen" id="screen-entry">
+  <div class="entry-rule"></div>
+  <p class="entry-eyebrow">The Plunkett Trail</p>
+  <h1 class="entry-title">Street<br><em>scéal</em></h1>
+  <p class="entry-subtitle">A martyr's journey across Europe. From Drogheda to Ghent, Rome, London and beyond.</p>
+  <p class="entry-location">53°43′N · 6°21′W · to 51°03′N · 3°43′E</p>
+  <button class="btn-primary" id="btn-enter" onclick="enterTrail()">Begin the trail</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 2 — TRAIL MAP / STOP LIST
+══════════════════════════════════════════════ -->
+<div class="screen hidden" id="screen-trail" style="justify-content:flex-start; overflow-y:auto;">
+  <div class="trail-header">
+    <span class="trail-header-title">The Plunkett Trail</span>
+    <span class="trail-header-count" id="trail-count">0 of 4 visited</span>
+  </div>
+
+  <div class="trail-list" id="trail-list"></div>
+
+  <div class="gps-bar">
+    <div class="gps-icon" id="gps-icon"></div>
+    <span class="gps-text" id="gps-text">Requesting location…</span>
+    <button class="gps-demo-btn" onclick="simulateNearby()">Demo mode</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 3 — STOP DETAIL
+══════════════════════════════════════════════ -->
+<div class="screen hidden" id="screen-stop" style="justify-content:flex-start; overflow-y:auto;">
+  <div class="stop-header">
+    <button class="back-btn" onclick="showScreen('trail')">&larr; Trail</button>
+    <p class="stop-detail-eyebrow" id="detail-eyebrow"></p>
+    <h2 class="stop-detail-title" id="detail-title"></h2>
+    <p class="stop-detail-subtitle" id="detail-subtitle"></p>
+  </div>
+  <div class="stop-body">
+    <p class="stop-lore" id="detail-lore"></p>
+    <p class="stop-text" id="detail-text"></p>
+
+    <div class="audio-block">
+      <p class="audio-label">Archive audio</p>
+      <div class="audio-player">
+        <button class="audio-play-btn" onclick="toggleAudio()" id="audio-btn" aria-label="Play">
+          <svg id="play-icon" width="14" height="16" viewBox="0 0 14 16" fill="none">
+            <path d="M2 1l11 7-11 7V1z" fill="#e8e0d0"/>
+          </svg>
+          <svg id="pause-icon" width="14" height="16" viewBox="0 0 14 16" fill="none" style="display:none">
+            <rect x="1" y="1" width="4" height="14" fill="#e8e0d0"/>
+            <rect x="9" y="1" width="4" height="14" fill="#e8e0d0"/>
+          </svg>
+        </button>
+        <div class="audio-waveform" id="waveform"></div>
+        <span class="audio-duration" id="audio-dur">0:00</span>
+      </div>
+    </div>
+
+    <button class="ar-launch-btn" onclick="launchAR()">
+      <svg class="ar-icon" viewBox="0 0 24 24" fill="none" stroke="#e8e0d0" stroke-width="1.5">
+        <path d="M2 8V4h4M18 4h4v4M2 16v4h4M18 20h4v-4"/>
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 5v2M12 17v2M5 12H3M21 12h-2"/>
+      </svg>
+      Open in AR
+    </button>
+    <p class="ar-note">Point your camera at the image at this location.<br>Audio plays automatically.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 4 — AR VIEW
+══════════════════════════════════════════════ -->
+<div class="screen hidden" id="screen-ar">
+  <div id="ar-scene-container">
+    <!-- A-Frame scene injected here by JS -->
+  </div>
+  <div class="ar-ui-overlay">
+   <div class="ar-top-bar">
+  <span class="ar-stop-name" id="ar-stop-name"></span>
+  <button class="ar-close-btn" onclick="stopARAudio()" id="ar-audio-btn">⏸ Audio</button>
+  <button class="ar-close-btn" onclick="closeAR()">Close</button>
+</div>
+    <div class="ar-frame-corner tl"></div>
+    <div class="ar-frame-corner tr"></div>
+    <div class="ar-frame-corner bl"></div>
+    <div class="ar-frame-corner br"></div>
+    <p class="ar-hint">Aim camera at the image</p>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast"></div>
+
+<!-- ══════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════ -->
+<script>
+// ── Trail data ──────────────────────────────────────────────────────
+// Replace lat/lng with real coordinates; audioSrc/imageSrc with real files
+const STOPS = [
+  {
+    id: 'st-peters',
+    number: '01',
+    name: `St Peter's Church`,
+    subtitle: 'West Street, Drogheda',
+    era: '1921–present',
+    description: `The National Shrine — a link to the Town Trail`,
+    lore: `A relic of the True Cross, gifted by St Bavo's Cathedral in Ghent in 2009, connects this church directly to Belgium — the same cathedral where Plunkett was ordained Archbishop in 1669.`,
+    text: `The head of Saint Oliver Plunkett, Archbishop of Armagh, has been enshrined at St Peter's Church since 1921. Also on display is the door of the condemned cell from Newgate Prison, London, presented in 1951. This is the beginning and the end of the journey — the place his memory rests after a life that carried him across half of Europe. This stop connects the Plunkett Trail to the Town Trail.`,
+    audioLabel: `St Peter's Church — the shrine`,
+    audioDuration: '0:00',
+    lat: 53.7185,
+    lng: -6.3558,
+    tags: ['town trail', 'linking stop', 'shrine'],
+    audioSrc: null,
+    imageSrc: null
+  },
+  {
+    id: 'loughcrew',
+    number: '02',
+    name: 'Loughcrew',
+    subtitle: 'Oldcastle, Co. Meath',
+    era: '1625',
+    description: `Birthplace — a link to the Megalithic Trail`,
+    lore: `Plunkett was born here on 1 November 1625, on a hillside already four thousand years old, ringed by passage tombs whose builders no one living could name.`,
+    text: `Oliver Plunkett was born at Loughcrew on 1 November 1625, into a landscape shaped long before by Neolithic hands — the same passage tomb complex that catches the equinox light at Cairn T. He left for Rome as a young man and would not see Ireland again for over twenty years. This stop connects the Plunkett Trail to the Megalithic Trail.`,
+    audioLabel: `Loughcrew — birthplace and beginnings`,
+    audioDuration: '0:00',
+    lat: 53.7394,
+    lng: -7.1219,
+    tags: ['megalithic trail', 'linking stop', 'birthplace'],
+    audioSrc: null,
+    imageSrc: null
+  },
+  {
+    id: 'rome',
+    number: '03',
+    name: 'The Irish College, Rome',
+    subtitle: 'Via dei Santi Quattro, Rome, Italy',
+    era: '1647–1669',
+    description: 'Twenty-two years of exile and study',
+    lore: `Plunkett arrived at the Irish College in Rome in 1647, a young man fleeing a country where his faith could not be practised openly. He would not set foot in Ireland again until he was Archbishop.`,
+    text: `At the Pontificio Collegio Irlandese on Via dei Santi Quattro, Plunkett trained for the priesthood, was ordained on 1 January 1654, and served as professor of theology at Propaganda College for twelve years. Rome was both his refuge and his education — the city that shaped the man who would later return to Ireland to lead a persecuted church.`,
+    audioLabel: 'Rome — the Irish College and ordination',
+    audioDuration: '0:00',
+    lat: 41.8889,
+    lng: 12.4975,
+    tags: ['exile', 'education', 'ordination'],
+    audioSrc: null,
+    imageSrc: null
+  },
+  {
+    id: 'ghent',
+    number: '04',
+    name: `St Bavo's Cathedral`,
+    subtitle: 'Sint-Baafsplein, Ghent, Belgium',
+    era: '1 December 1669',
+    description: 'Ordained Archbishop of Armagh, quietly',
+    lore: `A commemorative plaque was unveiled in the cathedral crypt in 2008, marking the spot where Plunkett was made Archbishop — a ceremony deliberately held away from English eyes.`,
+    text: `Plunkett was ordained Archbishop of Armagh at St Bavo's Cathedral by Bishop Eugene D'Allamont of Ghent on the first Sunday of Advent, 1669. The ceremony was held quietly in Flanders rather than in Ireland or England, where the appointment of a Catholic archbishop would have invited immediate persecution. The connection between Ghent and Drogheda continues today through the 2009 gift of a True Cross relic to St Peter's.`,
+    audioLabel: `Ghent — the ordination at St Bavo's`,
+    audioDuration: '0:00',
+    lat: 51.0537,
+    lng: 3.7256,
+    tags: ['ordination', 'belgium', 'archbishop'],
+    audioSrc: null,
+    imageSrc: null
+  },
+  {
+    id: 'louvain',
+    number: '05',
+    name: 'The Irish College, Louvain',
+    subtitle: 'Louvain (Leuven), Belgium',
+    era: '1669',
+    description: 'Among the Franciscans, before the crossing home',
+    lore: `Louvain was one of the great centres of Irish Catholic intellectual life in exile — scholars, theologians, and clergy gathered here throughout the seventeenth century, producing some of the most important Irish-language texts of the era.`,
+    text: `After his ordination in Ghent, Plunkett stayed briefly with the Franciscans at the Irish College in Louvain before making the crossing back to Ireland to take up his post. The college was part of a wider network of Irish institutions across continental Europe — in Rome, Paris, Salamanca, and here — that kept Irish Catholic scholarship alive while it was suppressed at home.`,
+    audioLabel: 'Louvain — the Irish Colleges network',
+    audioDuration: '0:00',
+    lat: 50.8798,
+    lng: 4.7005,
+    tags: ['franciscans', 'belgium', 'irish colleges'],
+    audioSrc: null,
+    imageSrc: null
+  },
+  {
+    id: 'tyburn',
+    number: '06',
+    name: 'Tyburn',
+    subtitle: 'Marble Arch, London, England',
+    era: '1 July 1681',
+    description: 'The last Catholic martyr to die in England',
+    lore: `Plunkett was hanged, drawn and quartered at Tyburn on trumped-up charges of conspiracy. He forgave his accusers from the scaffold. Friends recovered his remains soon after.`,
+    text: `Oliver Plunkett was executed at Tyburn on 1 July 1681, convicted on fabricated evidence during the anti-Catholic hysteria following the so-called Popish Plot. He was the last Catholic to be martyred in England. Tyburn Convent, founded in 1903, now stands near the site and holds a chapel commemorating those executed there. His remains were exhumed by friends and eventually made their way, by a long route, back toward Ireland.`,
+    audioLabel: 'Tyburn — trial and martyrdom',
+    audioDuration: '0:00',
+    lat: 51.5142,
+    lng: -0.1589,
+    tags: ['martyrdom', 'execution', 'london'],
+    audioSrc: null,
+    imageSrc: null
+  },
+  {
+    id: 'lamspringe',
+    number: '07',
+    name: 'Lamspringe',
+    subtitle: 'Lower Saxony, Germany',
+    era: '1683–1883',
+    description: 'Two hundred years in a Benedictine monastery',
+    lore: `Plunkett had formed a close bond with a Benedictine monk imprisoned alongside him in Newgate. His remains were sent to that monk's monastery at Lamspringe, where they rested for two centuries.`,
+    text: `Exhumed from St Giles Cemetery, London in 1683, Plunkett's remains were sent to the Benedictine monastery at Lamspringe, where they remained for two hundred years before transfer to Downside Abbey in England, and eventually the relic of his head to Drogheda. The Benedictine connection — formed in the last months of his life, in a London prison cell — carried his memory across Europe long after his death.`,
+    audioLabel: 'Lamspringe — the long journey of the remains',
+    audioDuration: '0:00',
+    lat: 51.9572,
+    lng: 10.0027,
+    tags: ['benedictines', 'germany', 'remains'],
+    audioSrc: null,
+    imageSrc: null
+  }
+];
+
+// ── State ────────────────────────────────────────────────────────────
+let currentScreen = 'entry';
+let currentStop = null;
+let userLat = null;
+let userLng = null;
+let gpsWatchId = null;
+let visitedStops = new Set();
+let audioPlaying = false;
+let audioTick = null;
+let audioSeconds = 0;
+let demoIndex = 0;
+
+// ── Audio unlock for mobile ──────────────────────────────────────────
+function unlockAudio() {
+  if (!window._audio) window._audio = new Audio();
+  window._audio.play().catch(() => {});
+  window._audio.pause();
+  window._audio.currentTime = 0;
+  document.removeEventListener('touchstart', unlockAudio);
+}
+document.addEventListener('touchstart', unlockAudio);
+
+// ── Screen management ────────────────────────────────────────────────
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  const el = document.getElementById('screen-' + name);
+  if (el) el.classList.remove('hidden');
+  currentScreen = name;
+}
+
+function showToast(msg, duration = 2800) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ── Entry ────────────────────────────────────────────────────────────
+function enterTrail() {
+  window._audio = new Audio();
+  buildTrailList();
+  showScreen('trail');
+  startGPS();
+}
+
+// ── Trail list ───────────────────────────────────────────────────────
+function buildTrailList() {
+  const list = document.getElementById('trail-list');
+  list.innerHTML = '';
+  STOPS.forEach(stop => {
+    const card = document.createElement('div');
+    card.className = 'stop-card locked';
+    card.id = 'card-' + stop.id;
+    card.innerHTML = `
+      <span class="stop-number">${stop.number}</span>
+      <div class="stop-info">
+        <p class="stop-name">${stop.name}</p>
+        <p class="stop-description">${stop.description}</p>
+        <p class="stop-meta">${stop.tags.join(' · ')}</p>
+      </div>
+      <div class="stop-proximity" id="prox-${stop.id}">
+        <span class="proximity-dot"></span>—
+      </div>`;
+    card.onclick = () => {
+      if (!card.classList.contains('locked')) openStop(stop.id);
+    };
+    list.appendChild(card);
+  });
+}
+
+function updateTrailCount() {
+  document.getElementById('trail-count').textContent =
+    `${visitedStops.size} of ${STOPS.length} visited`;
+}
+
+// ── GPS ──────────────────────────────────────────────────────────────
+function startGPS() {
+  if (!navigator.geolocation) {
+    setGPSStatus(false, 'Geolocation not available');
+    unlockAllForDemo();
+    return;
+  }
+  setGPSStatus(false, 'Finding your location…');
+  gpsWatchId = navigator.geolocation.watchPosition(
+    pos => {
+      userLat = pos.coords.latitude;
+      userLng = pos.coords.longitude;
+      setGPSStatus(true, 'Location active');
+      updateProximity();
+    },
+    err => {
+      setGPSStatus(false, 'Location unavailable — use Demo mode');
+      unlockAllForDemo();
+    },
+    { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+  );
+}
+
+function setGPSStatus(active, msg) {
+  document.getElementById('gps-icon').className = 'gps-icon' + (active ? ' active' : '');
+  document.getElementById('gps-text').textContent = msg;
+}
+
+function distance(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 +
+            Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+            Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function updateProximity() {
+  if (userLat === null) return;
+  STOPS.forEach(stop => {
+    const d = distance(userLat, userLng, stop.lat, stop.lng);
+    const card = document.getElementById('card-' + stop.id);
+    const prox = document.getElementById('prox-' + stop.id);
+    const near = d < 80; // within 80m
+    const dot = near ? '<span class="proximity-dot near"></span>' : '<span class="proximity-dot"></span>';
+    if (near) {
+      card.classList.remove('locked');
+      card.classList.add('active');
+      prox.innerHTML = dot + 'You are here';
+      if (!visitedStops.has(stop.id)) showToast(`${stop.name} — tap to explore`);
+    } else {
+      const label = d < 1000 ? Math.round(d) + 'm' : (d/1000).toFixed(1) + 'km';
+      prox.innerHTML = dot + label;
+      if (d > 200) card.classList.add('locked');
+    }
+  });
+}
+
+// Demo mode — cycle through stops one by one
+function simulateNearby() {
+  unlockAllForDemo();
+  const stop = STOPS[demoIndex % STOPS.length];
+  showToast(`Demo: ${stop.name}`);
+  const card = document.getElementById('card-' + stop.id);
+  card.classList.add('active');
+  document.getElementById('prox-' + stop.id).innerHTML =
+    '<span class="proximity-dot near"></span>Demo mode';
+  demoIndex++;
+}
+
+function unlockAllForDemo() {
+  STOPS.forEach(stop => {
+    const card = document.getElementById('card-' + stop.id);
+    if (card) {
+      card.classList.remove('locked');
+      card.classList.add('active');
+      const prox = document.getElementById('prox-' + stop.id);
+      if (prox) prox.innerHTML = '<span class="proximity-dot near"></span>Demo mode';
+    }
+  });
+  setGPSStatus(false, 'Demo mode — all stops unlocked');
+}
+
+// ── Stop detail ──────────────────────────────────────────────────────
+function openStop(id) {
+  const stop = STOPS.find(s => s.id === id);
+  if (!stop) return;
+  currentStop = stop;
+  visitedStops.add(id);
+  updateTrailCount();
+
+  document.getElementById('detail-eyebrow').textContent = stop.era + ' · ' + stop.subtitle;
+  document.getElementById('detail-title').textContent = stop.name;
+  document.getElementById('detail-subtitle').textContent = stop.description;
+  document.getElementById('detail-lore').textContent = stop.lore;
+  document.getElementById('detail-text').textContent = stop.text;
+  document.getElementById('audio-dur').textContent = stop.audioDuration;
+  buildWaveform();
+  resetAudio();
+
+  showScreen('stop');
+  document.getElementById('screen-stop').scrollTop = 0;
+}
+
+// ── Waveform (decorative — replace with real Web Audio in production) ─
+function buildWaveform() {
+  const wf = document.getElementById('waveform');
+  wf.innerHTML = '';
+  for (let i = 0; i < 36; i++) {
+    const bar = document.createElement('div');
+    const h = 8 + Math.random() * 20;
+    bar.className = 'wave-bar';
+    bar.style.height = h + 'px';
+    wf.appendChild(bar);
+  }
+}
+
+function toggleAudio() {
+  audioPlaying = !audioPlaying;
+  document.getElementById('play-icon').style.display = audioPlaying ? 'none' : 'block';
+  document.getElementById('pause-icon').style.display = audioPlaying ? 'block' : 'none';
+
+  if (audioPlaying) {
+    if (currentStop.audioSrc) {
+        if (!window._audio) window._audio = new Audio();
+        window._audio.src = currentStop.audioSrc;
+        window._audio.play();
+    }
+    animateWaveform();
+    audioTick = setInterval(() => {
+      audioSeconds++;
+      const m = Math.floor(audioSeconds / 60);
+      const s = String(audioSeconds % 60).padStart(2, '0');
+      document.getElementById('audio-dur').textContent = m + ':' + s;
+    }, 1000);
+  } else {
+    if (window._audio) window._audio.pause();
+    clearInterval(audioTick);
+    stopWaveformAnimation();
+  }
+}
+
+function resetAudio() {
+  audioPlaying = false;
+  clearInterval(audioTick);
+  audioSeconds = 0;
+  document.getElementById('play-icon').style.display = 'block';
+  document.getElementById('pause-icon').style.display = 'none';
+  if (currentStop) document.getElementById('audio-dur').textContent = currentStop.audioDuration;
+}
+
+function animateWaveform() {
+  const bars = document.querySelectorAll('.wave-bar');
+  bars.forEach(b => {
+    const animate = () => {
+      if (!audioPlaying) return;
+      b.style.background = `rgba(139, 58, 42, ${0.3 + Math.random() * 0.7})`;
+      b.style.height = (4 + Math.random() * 24) + 'px';
+      setTimeout(animate, 80 + Math.random() * 120);
+    };
+    animate();
+  });
+}
+
+function stopWaveformAnimation() {
+  document.querySelectorAll('.wave-bar').forEach(b => {
+    b.style.background = 'rgba(232,224,208,0.2)';
+  });
+}
+
+// ── AR ───────────────────────────────────────────────────────────────
+function launchAR() {
+  if (!currentStop) return;
+
+  document.getElementById('ar-stop-name').textContent = currentStop.name;
+
+  const container = document.getElementById('ar-scene-container');
+  container.innerHTML = '';
+
+  const hasMindFile = !!currentStop.imageSrc;
+
+  // Determine number of targets — audioTargets array or fall back to single audioSrc
+  const audioTargets = currentStop.audioTargets || (currentStop.audioSrc ? [currentStop.audioSrc] : []);
+  const numTargets = audioTargets.length || 1;
+
+  // Build one a-entity per target index
+  function buildTargetEntities() {
+    let entities = '';
+    for (let i = 0; i < numTargets; i++) {
+      entities += `
+        <a-entity mindar-image-target="targetIndex: ${i}" id="ar-target-${i}">
+          <a-text
+            value="${currentStop.name}"
+            font="https://cdn.aframe.io/fonts/Exo2Bold.fnt"
+            color="#1a1612"
+            align="center"
+            width="1.2"
+            position="0 0.35 0"
+            animation="property: opacity; from: 0; to: 1; dur: 1200; easing: easeInQuad">
+          </a-text>
+          <a-plane
+            color="#e8e0d0"
+            opacity="0.85"
+            width="1" height="0.6"
+            position="0 0 -0.001"
+            animation="property: opacity; from: 0; to: 0.85; dur: 800">
+          </a-plane>
+          <a-text
+            value="${currentStop.era}"
+            font="https://cdn.aframe.io/fonts/mozillavr.fnt"
+            color="#8b3a2a"
+            align="center"
+            width="0.5"
+            position="0 -0.35 0"
+            animation="property: opacity; from: 0; to: 1; dur: 1500; easing: easeInQuad">
+          </a-text>
+        </a-entity>`;
+    }
+    return entities;
+  }
+
+  if (hasMindFile) {
+    container.innerHTML = `
+      <a-scene
+        mindar-image="imageTargetSrc: ${currentStop.imageSrc}; autoStart: true; uiLoading: no; uiScanning: no; uiError: no;"
+        color-space="sRGB"
+        renderer="colorManagement: true"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false">
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        ${buildTargetEntities()}
+      </a-scene>`;
+
+    // Wire up per-target audio once scene is in the DOM
+    setTimeout(() => {
+      for (let i = 0; i < numTargets; i++) {
+        const entity = document.querySelector(`#ar-target-${i}`);
+        if (!entity) continue;
+        const src = audioTargets[i];
+        if (src) {
+          entity.addEventListener('targetFound', () => {
+            window._audio.src = src;
+            window._audio.play().catch(e => console.warn('Audio play failed:', e));
+            document.getElementById('ar-audio-btn').textContent = '⏸ Audio';
+          });
+          entity.addEventListener('targetLost', () => {
+            window._audio.pause();
+            document.getElementById('ar-audio-btn').textContent = '▶ Audio';
+          });
+        }
+      }
+    }, 500);
+
+  } else {
+    // Demo: camera feed with overlay
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      .then(stream => {
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.autoplay = true;
+        video.playsInline = true;
+        video.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';
+        container.appendChild(video);
+        addARDemoOverlay(container);
+        // In demo mode play first audio if available
+        if (audioTargets[0]) {
+          window._audio.src = audioTargets[0];
+          window._audio.play().catch(e => console.warn('Audio play failed:', e));
+        }
+      })
+      .catch(() => {
+        container.style.background = 'linear-gradient(135deg, #1a1612 0%, #2a1f18 100%)';
+        addARDemoOverlay(container);
+        if (audioTargets[0]) {
+          window._audio.src = audioTargets[0];
+          window._audio.play().catch(e => console.warn('Audio play failed:', e));
+        }
+      });
+  }
+
+  showScreen('ar');
+}
+
+function addARDemoOverlay(container) {
+  // Animated overlay that shows what AR content would look like
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position: absolute; inset: 0; display: flex;
+    flex-direction: column; align-items: center; justify-content: center;
+    pointer-events: none;`;
+  overlay.innerHTML = `
+    <div style="
+      border: 1px solid rgba(139,58,42,0.6);
+      padding: 2rem 2.5rem;
+      text-align: center;
+      background: rgba(26,22,18,0.55);
+      backdrop-filter: blur(4px);
+      animation: fadeIn 1.2s ease forwards;
+      opacity: 0;">
+      <p style="font-family:'Courier New',monospace;font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:#8b3a2a;margin-bottom:0.8rem;">${currentStop ? currentStop.era : ''}</p>
+      <p style="font-family:Georgia,serif;font-size:1.5rem;font-style:italic;color:#e8e0d0;margin-bottom:0.5rem;">${currentStop ? currentStop.name : ''}</p>
+      <p style="font-family:Georgia,serif;font-size:0.85rem;color:rgba(232,224,208,0.6);font-style:italic;">${currentStop ? currentStop.description : ''}</p>
+    </div>
+    <style>@keyframes fadeIn{to{opacity:1}}</style>`;
+  container.appendChild(overlay);
+  showToast('In live build: point at the target image');
+}
+
+function closeAR() {
+  // Stop any camera streams
+  const videos = document.querySelectorAll('#ar-scene-container video');
+  videos.forEach(v => {
+    if (v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
+  });
+  document.getElementById('ar-scene-container').innerHTML = '';
+  showScreen('stop');
+}
+
+function stopARAudio() {
+  if (window._audio) {
+    if (window._audio.paused) {
+      window._audio.play().catch(e => console.warn(e));
+      document.getElementById('ar-audio-btn').textContent = '⏸ Audio';
+    } else {
+      window._audio.pause();
+      document.getElementById('ar-audio-btn').textContent = '▶ Audio';
+    }
+  }
+}
+</script>
+
+</body>
+</html>

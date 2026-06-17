@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "soundFile": "C:\\Users\\fitch\\GoodLuckYoungSage.wav",
+    "duration": 2.78
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.11, "value": "F" },
+    { "start": 0.11, "end": 0.32, "value": "H" },
+    { "start": 0.32, "end": 0.39, "value": "C" },
+    { "start": 0.39, "end": 0.88, "value": "B" },
+    { "start": 0.88, "end": 1.02, "value": "C" },
+    { "start": 1.02, "end": 1.40, "value": "B" },
+    { "start": 1.40, "end": 1.49, "value": "A" },
+    { "start": 1.49, "end": 1.56, "value": "B" },
+    { "start": 1.56, "end": 1.76, "value": "C" },
+    { "start": 1.76, "end": 1.83, "value": "B" },
+    { "start": 1.83, "end": 1.90, "value": "G" },
+    { "start": 1.90, "end": 2.25, "value": "B" },
+    { "start": 2.25, "end": 2.39, "value": "E" },
+    { "start": 2.39, "end": 2.46, "value": "F" },
+    { "start": 2.46, "end": 2.60, "value": "C" },
+    { "start": 2.60, "end": 2.74, "value": "H" },
+    { "start": 2.74, "end": 2.78, "value": "X" }
+  ]
+}

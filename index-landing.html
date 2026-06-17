@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>StreetScéal — Drogheda</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
+
+    :root {
+      --ink:        #1a1612;
+      --paper:      #e8e0d0;
+      --paper-dark: #cfc5b0;
+      --rust:       #8b3a2a;
+      --rust-light: #a8503e;
+      --rust-dim:   rgba(139,58,42,0.12);
+      --ghost:      rgba(232,224,208,0.06);
+
+      --display: 'Playfair Display', Georgia, serif;
+      --body:    'EB Garamond', Georgia, serif;
+      --mono:    'Courier New', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--body);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Grain overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+      background-size: 256px;
+      pointer-events: none;
+      opacity: 0.35;
+      z-index: 0;
+    }
+
+    /* ── Layout ── */
+    .page { position: relative; z-index: 1; }
+
+    /* ── Header ── */
+    .site-header {
+      padding: 3rem 2rem 0;
+      text-align: center;
+    }
+
+    .header-rule {
+      width: 1px;
+      height: 48px;
+      background: var(--rust);
+      margin: 0 auto 2rem;
+    }
+
+    .header-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--rust-light);
+      margin-bottom: 1.2rem;
+    }
+
+    .site-title {
+      font-family: var(--display);
+      font-size: clamp(3rem, 12vw, 6rem);
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1;
+      color: var(--paper);
+      margin-bottom: 0.3rem;
+      letter-spacing: -0.02em;
+    }
+
+    .site-title span { color: var(--rust); }
+
+    .site-location {
+      font-family: var(--display);
+      font-size: clamp(1rem, 3vw, 1.4rem);
+      font-weight: 400;
+      color: var(--paper-dark);
+      margin-bottom: 2rem;
+      letter-spacing: 0.05em;
+    }
+
+    .header-coords {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      color: var(--rust);
+      margin-bottom: 3rem;
+    }
+
+    /* ── Intro ── */
+    .intro {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 0 2rem 3rem;
+      text-align: center;
+    }
+
+    .intro p {
+      font-family: var(--body);
+      font-style: italic;
+      font-size: clamp(1rem, 2.5vw, 1.15rem);
+      line-height: 1.75;
+      color: var(--paper-dark);
+    }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: rgba(139,58,42,0.3);
+    }
+
+    .divider-mark {
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--rust);
+    }
+
+    /* ── Trails ── */
+    .trails {
+      padding: 0 1.5rem 4rem;
+      max-width: 680px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .trail-card {
+      display: block;
+      text-decoration: none;
+      position: relative;
+      padding: 2rem 1.8rem;
+      background: var(--ghost);
+      border: 1px solid rgba(232,224,208,0.08);
+      border-left: 3px solid transparent;
+      transition: border-color 0.3s, background 0.3s;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .trail-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--rust-dim);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .trail-card:hover {
+      border-left-color: var(--rust);
+      background: rgba(232,224,208,0.04);
+    }
+
+    .trail-card:hover::before { opacity: 1; }
+
+    .trail-card.coming-soon {
+      opacity: 0.45;
+      cursor: default;
+    }
+    .trail-card.coming-soon:hover {
+      border-left-color: transparent;
+      background: var(--ghost);
+    }
+    .trail-card.coming-soon:hover::before { opacity: 0; }
+
+    .trail-inner { position: relative; z-index: 1; }
+
+    .trail-header-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 0.6rem;
+      gap: 1rem;
+    }
+
+    .trail-name {
+      font-family: var(--display);
+      font-size: clamp(1.3rem, 4vw, 1.7rem);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--paper);
+      line-height: 1.2;
+    }
+
+    .trail-status {
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--rust-light);
+      border: 1px solid rgba(139,58,42,0.4);
+      padding: 0.25rem 0.5rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 0.3rem;
+    }
+
+    .trail-status.live { color: #6a9e72; border-color: rgba(106,158,114,0.4); }
+    .trail-status.soon { color: var(--rust-light); border-color: rgba(139,58,42,0.3); }
+
+    .trail-tagline {
+      font-family: var(--body);
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--paper-dark);
+      margin-bottom: 1.2rem;
+      line-height: 1.5;
+    }
+
+    .trail-stops {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .trail-stop-tag {
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(232,224,208,0.4);
+      background: rgba(232,224,208,0.05);
+      padding: 0.2rem 0.5rem;
+    }
+
+    .trail-arrow {
+      position: absolute;
+      right: 1.8rem;
+      bottom: 2rem;
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--rust);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .trail-card:not(.coming-soon):hover .trail-arrow { opacity: 1; }
+
+    /* ── Map hint ── */
+    .map-hint {
+      text-align: center;
+      padding: 0 2rem 5rem;
+    }
+
+    .map-hint p {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(232,224,208,0.25);
+      line-height: 2;
+    }
+
+    /* ── Footer ── */
+    .site-footer {
+      border-top: 1px solid rgba(232,224,208,0.08);
+      padding: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-brand {
+      font-family: var(--display);
+      font-size: 0.9rem;
+      font-style: italic;
+      color: var(--paper-dark);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-links a {
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--rust-light);
+      text-decoration: none;
+    }
+
+    .footer-links a:hover { color: var(--paper); }
+
+    /* ── Compass decoration ── */
+    .compass-wrap {
+      display: flex;
+      justify-content: center;
+      padding: 2rem 0 0;
+      opacity: 0.18;
+    }
+
+    .compass-wrap svg { width: 48px; height: 48px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .site-header { padding: 2rem 1.5rem 0; }
+      .trails { padding: 0 1rem 4rem; }
+      .trail-card { padding: 1.6rem 1.4rem; }
+      .site-footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-rule"></div>
+    <p class="header-eyebrow">An audio-visual trail</p>
+    <h1 class="site-title">Street<span>scéal</span></h1>
+    <p class="site-location">Drogheda, Co. Louth</p>
+    <p class="header-coords">53°43′N · 6°21′W · Ireland</p>
+
+    <div class="compass-wrap">
+      <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="40,8 44,40 40,34 36,40" fill="#e8e0d0"/>
+        <polygon points="40,72 44,40 40,46 36,40" fill="#8b3a2a"/>
+        <polygon points="8,40 40,36 34,40 40,44" fill="#e8e0d0" opacity="0.6"/>
+        <polygon points="72,40 40,36 46,40 40,44" fill="#8b3a2a" opacity="0.6"/>
+        <circle cx="40" cy="40" r="4" fill="#1a1612" stroke="#e8e0d0" stroke-width="1"/>
+        <circle cx="40" cy="40" r="1.5" fill="#8b3a2a"/>
+        <circle cx="40" cy="40" r="22" fill="none" stroke="#8b3a2a" stroke-width="0.5" stroke-dasharray="2 4"/>
+      </svg>
+    </div>
+  </header>
+
+  <!-- Intro -->
+  <div class="intro">
+    <p>The town holds memory that is not visible. Walk its streets and let them speak.</p>
+  </div>
+
+  <!-- Divider -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <span class="divider-mark">Choose a trail</span>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- Trails -->
+  <div class="trails">
+
+    <!-- Town Trail -->
+    <a class="trail-card" href="./town-trail.html">
+      <div class="trail-inner">
+        <div class="trail-header-row">
+          <h2 class="trail-name">The Town Trail</h2>
+          <span class="trail-status live">Live</span>
+        </div>
+        <p class="trail-tagline">Voices, memories, everyday life — the Drogheda that people remember.</p>
+        <div class="trail-stops">
+          <span class="trail-stop-tag">The Marcy Hotel</span>
+          <span class="trail-stop-tag">Connolly's Shop</span>
+          <span class="trail-stop-tag">Millmount ↗</span>
+          <span class="trail-stop-tag">St Laurence's Gate</span>
+          <span class="trail-stop-tag">St Peter's Church ↗</span>
+          <span class="trail-stop-tag">The Quayside ↗</span>
+        </div>
+        <span class="trail-arrow">Enter trail →</span>
+      </div>
+    </a>
+
+    <!-- Plunkett Trail -->
+    <a class="trail-card" href="./plunkett-trail.html">
+      <div class="trail-inner">
+        <div class="trail-header-row">
+          <h2 class="trail-name">The Plunkett Trail</h2>
+          <span class="trail-status live">Live</span>
+        </div>
+        <p class="trail-tagline">A martyr's journey across Europe — from Drogheda to Ghent, Rome, London and beyond.</p>
+        <div class="trail-stops">
+          <span class="trail-stop-tag">The Quayside ↗</span>
+          <span class="trail-stop-tag">St Peter's Church</span>
+          <span class="trail-stop-tag">Loughcrew ↗</span>
+          <span class="trail-stop-tag">Rome</span>
+          <span class="trail-stop-tag">Ghent</span>
+          <span class="trail-stop-tag">Louvain</span>
+          <span class="trail-stop-tag">London</span>
+          <span class="trail-stop-tag">Lamspringe</span>
+        </div>
+        <span class="trail-arrow">Enter trail →</span>
+      </div>
+    </a>
+
+    <!-- Diaspora Trail -->
+    <a class="trail-card" href="./diaspora-trail.html">
+      <div class="trail-inner">
+        <div class="trail-header-row">
+          <h2 class="trail-name">The Diaspora Trail</h2>
+          <span class="trail-status live">Live</span>
+        </div>
+        <p class="trail-tagline">Drogheda to Liverpool, Bordeaux and beyond — following the routes of those who left.</p>
+        <div class="trail-stops">
+          <span class="trail-stop-tag">The Quayside ↗</span>
+          <span class="trail-stop-tag">St Peter's Church ↗</span>
+          <span class="trail-stop-tag">Liverpool</span>
+          <span class="trail-stop-tag">Bordeaux</span>
+        </div>
+        <span class="trail-arrow">Enter trail →</span>
+      </div>
+    </a>
+
+    <!-- Megalithic Trail -->
+    <a class="trail-card" href="./megalithic-trail.html">
+      <div class="trail-inner">
+        <div class="trail-header-row">
+          <h2 class="trail-name">The Megalithic Trail</h2>
+          <span class="trail-status live">Live</span>
+        </div>
+        <p class="trail-tagline">Five thousand years of continuous presence — Newgrange, Knowth, Dowth, Tara and Loughcrew.</p>
+        <div class="trail-stops">
+          <span class="trail-stop-tag">Millmount ↗</span>
+          <span class="trail-stop-tag">Newgrange</span>
+          <span class="trail-stop-tag">Knowth</span>
+          <span class="trail-stop-tag">Dowth</span>
+          <span class="trail-stop-tag">Fourknocks</span>
+          <span class="trail-stop-tag">Hill of Tara</span>
+          <span class="trail-stop-tag">Loughcrew ↗</span>
+        </div>
+        <span class="trail-arrow">Enter trail →</span>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- Map hint -->
+  <div class="map-hint">
+    <p>Open in any browser · No app required<br>
+    GPS unlocks each stop as you arrive</p>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <span class="footer-brand">StreetScéal · Drogheda</span>
+    <div class="footer-links">
+      <a href="https://clairefitch.github.io">Claire Fitch</a>
+      <a href="https://populatedsolitude2020.wordpress.com">About</a>
+    </div>
+  </footer>
+
+  <!-- Collaborators -->
+  <div style="border-top:1px solid rgba(232,224,208,0.05);padding:1.5rem 2rem;display:flex;flex-wrap:wrap;gap:2rem;position:relative;z-index:1;">
+    <div>
+      <p style="font-family:'Courier New',monospace;font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:#8b3a2a;margin-bottom:0.4rem;">Artist &amp; Sound Design</p>
+      <p style="font-family:'EB Garamond',Georgia,serif;font-style:italic;font-size:0.9rem;color:rgba(232,224,208,0.5);">Claire Fitch</p>
+    </div>
+    <div>
+      <p style="font-family:'Courier New',monospace;font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:#8b3a2a;margin-bottom:0.4rem;">Historian &amp; Writer</p>
+      <p style="font-family:'EB Garamond',Georgia,serif;font-style:italic;font-size:0.9rem;color:rgba(232,224,208,0.5);">Martina Murray</p>
+    </div>
+    <div>
+      <p style="font-family:'Courier New',monospace;font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:#8b3a2a;margin-bottom:0.4rem;">Archive</p>
+      <p style="font-family:'EB Garamond',Georgia,serif;font-style:italic;font-size:0.9rem;color:rgba(232,224,208,0.5);">Louth County Archives</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,195 @@
+# StreetScéal — Drogheda
+
+*Street Story — a distributed, open-ended audio-visual artwork embedded in the streets of Drogheda, Co. Louth*
+
+**Artist:** Claire Fitch  
+**Live:** [streetsceal.ie](https://streetsceal.ie)  
+**Medium:** Web AR, oral history, archival audio, GPS-triggered sound  
+**Project site:** [populatedsolitude2020.wordpress.com](https://populatedsolitude2020.wordpress.com) *(original Populated Solitude documentation)*
+
+---
+
+## About
+
+StreetScéal — street story — surfaces the voices, histories, and memories held in the streets, buildings, and public spaces of Drogheda. Accessible to anyone with a smartphone, from any point in the town, it returns stories to the places they belong.
+
+There is no fixed start. No designated route. No end date. The work grows over time as new voices, archive sources, and community contributions are added. The town itself is the canvas. Presence in it is the only entry requirement.
+
+No app download required. Open [streetsceal.ie](https://streetsceal.ie) on any modern smartphone and walk.
+
+---
+
+## Trails
+
+StreetScéal — Drogheda is structured as four interlocking trails, each with its own stops, audio character, and geographic reach. All four are live and share the same platform, GPS and AR infrastructure, and entry point.
+
+### The Town Trail · *Live*
+Voices, memories, everyday life — the Drogheda that people remember.
+
+| Stop | Location | Era |
+|------|----------|-----|
+| The Marcy Hotel (White Horse) | Shop Street | 1963 |
+| Connolly's Shop | Shop Street | 1940s–60s |
+| Millmount ↗ | Millmount Square | Ancient–present |
+| St Laurence's Gate | Laurence Street | 13th century |
+| St Peter's Church ↗ | West Street, Drogheda | 1921–present |
+| The Quayside ↗ | West Gate / River Boyne | 18th–20th century |
+
+### The Plunkett Trail · *Live*
+A martyr's journey across Europe — from Drogheda to Ghent, Rome, London and beyond.
+
+| Stop | Location | Era |
+|------|----------|-----|
+| The Quayside ↗ | West Gate / River Boyne, Drogheda | Linking stop |
+| St Peter's Church | West Street, Drogheda | 1921–present |
+| Loughcrew | Oldcastle, Co. Meath | 1625 |
+| Pontificio Collegio Irlandese | Rome, Italy | 1647–1669 |
+| St Bavo's Cathedral | Ghent, Belgium | 1 December 1669 |
+| Irish College | Louvain, Belgium | 1669 |
+| Tyburn | London, England | 1 July 1681 |
+| Benedictine Monastery | Lamspringe, Germany | 1683–1883 |
+
+### The Diaspora Trail · *Live*
+Drogheda to Liverpool, Bordeaux and beyond — following the routes of those who left.
+
+| Stop | Location | Era |
+|------|----------|-----|
+| The Quayside ↗ | West Gate, River Boyne, Drogheda | 18th–20th century |
+| St Peter's Church ↗ | West Street, Drogheda | 1921–present |
+| Scotland Road | Vauxhall, Liverpool, England | 1840s–1960s |
+| Irish College, Bordeaux | Rue du Hâ, Bordeaux, France | 1603–18th century |
+| Quai des Chartrons | Bordeaux, France | 18th century–present |
+
+### The Megalithic Trail · *Live*
+Five thousand years of continuous human presence — Newgrange, Knowth, Dowth, Fourknocks, Tara, and Loughcrew.
+
+| Stop | Location | Era |
+|------|----------|-----|
+| Millmount ↗ | Millmount Square, Drogheda | Neolithic–present |
+| Newgrange | Brú na Bóinne, Co. Meath | c. 3200 BC |
+| Knowth | Brú na Bóinne, Co. Meath | c. 3200 BC |
+| Dowth | Brú na Bóinne, Co. Meath | c. 3200 BC |
+| Fourknocks | Stamullen, Co. Meath | c. 2750 BC |
+| Hill of Tara | Co. Meath | Neolithic–medieval |
+| Loughcrew ↗ | Oldcastle, Co. Meath | c. 3300 BC |
+
+---
+
+**Linking stops** — four locations connect the trails into a single fabric:
+
+- **The Quayside** — the departure point; links Town Trail to Diaspora Trail
+- **St Peter's Church** — the shrine and relic; links Town Trail to Plunkett Trail
+- **Loughcrew** — Plunkett's birthplace and a Neolithic passage tomb complex; links Plunkett Trail to Megalithic Trail
+- **Millmount** — a Neolithic mound within the town itself; links Town Trail to Megalithic Trail
+
+The ↗ symbol denotes a linking stop. Every trail connects to at least one other through these four locations — the whole network reads as one fabric rather than four separate projects.
+
+---
+
+## How it works
+
+A visitor opens streetsceal.ie on any modern smartphone. They choose a trail. As they move through the town (or across Europe for the Plunkett Trail), GPS proximity unlocks the stories nearest to them. At each location, pointing the camera at the designated image, building, or object launches an augmented layer of audio and visual content anchored to that surface.
+
+The stack is entirely open source and self-hosted:
+
+- [MindAR.js](https://hiukim.github.io/mind-ar-js-doc/) — browser-based image tracking
+- [A-Frame](https://aframe.io) — WebXR scene rendering
+- Web Geolocation API — GPS proximity detection
+- HTML5 / Web Audio API — audio playback
+- GitHub Pages — free, open hosting
+
+---
+
+## Repository structure
+
+```
+streetsceal-drogheda/
+├── index.html              # Landing page — trail selector
+├── town-trail.html         # Town Trail PWA
+├── plunkett-trail.html     # Plunkett Trail PWA
+├── diaspora-trail.html     # Diaspora Trail PWA
+├── megalithic-trail.html   # Megalithic Trail PWA
+├── CNAME                   # Custom domain: streetsceal.ie
+├── targets/                # MindAR .mind files (one per image target)
+│   ├── white-horse.mind
+│   ├── st-peters.mind
+│   ├── quayside.mind
+│   └── millmount.mind
+├── audio/                  # Archive recordings and soundscapes
+│   ├── white-horse.mp3
+│   ├── st-peters.mp3
+│   ├── quayside.mp3
+│   └── connollys-shop.mp3
+├── sprites/                # AR animated figure assets (lip sync)
+│   ├── plunkett-figure.png
+│   ├── mouth-X.png … mouth-E.png
+│   └── st-peters-lipsync.json
+├── assets/
+│   └── images/             # Target images and documentation assets
+└── README.md
+```
+
+---
+
+## Adding a new stop
+
+1. **Choose a target** — a historical photograph, plaque, mural, or building facade with sufficient visual detail for image tracking
+2. **Photograph it** — straight on, even lighting, distinctive architectural detail filling the frame
+3. **Compile the `.mind` file** — upload the target image to the [MindAR compiler](https://hiukim.github.io/mind-ar-js-doc/tools/compile), download and place in `/targets/`
+4. **Prepare audio** — export as `.mp3`, place in `/audio/`
+5. **Add to the relevant trail HTML file** — add an entry to the `STOPS` array with coordinates, content text, and file paths
+6. **Deploy** — push to GitHub; GitHub Pages builds automatically
+
+---
+
+## Scaling to a new trail
+
+Each new trail is a self-contained HTML file within this repository:
+
+1. Copy `town-trail.html` as a template
+2. Update the `STOPS` array with trail-specific locations, coordinates, and content
+3. Add the trail card to `index.html` — change `coming-soon` class to active, update the `href`
+4. Add audio and image target files
+
+---
+
+## Project history
+
+| Year | Development |
+|------|-------------|
+| 2020 | *Populated Solitude* commissioned for Culture Night 2020. First work: *On A Summer Morning In 1963*, an audio response to Paul Murphy's account of meeting Brendan Behan at the White Horse Hotel |
+| 2021 | Seed funding awarded by Droichead Arts, Drogheda |
+| 2022 | Expanded to a four-stop audio walk deployed via the ECHOES GPS-triggered sound walk app. New work developed from Louth County Archives oral history recordings |
+| 2026 | *StreetScéal* — Web AR iteration. GPS + image tracking, self-hosted on GitHub Pages, no app required. Multi-trail platform with Town Trail, Plunkett Trail, Diaspora Trail, and Megalithic Trail |
+
+---
+
+## Archival sources
+
+- **Louth County Archives** — oral history recordings including OHA/0112(1), Maura and Michael Byrne
+- **Drogheda Independent** — historical press archive
+- Paul Murphy — interview conducted 2020
+
+---
+
+## Credits
+
+**Artist:** Claire Fitch  
+**Historian and writer:** Martina Murray  
+**Seed funding:** Droichead Arts, 2021  
+**Archival partnership:** Louth County Archives  
+**Original commission:** Culture Night 2020
+
+Claire Fitch is a composer, sound designer, and lecturer at Dundalk Institute of Technology. Her practice spans electroacoustic composition, oral history, and site-specific audio art.
+
+Martina Murray is a historian, writer, and author based in Co. Louth. She is a contributor to Totally Dublin and founder of Greenlight. Her historical research and narrative writing forms the documentary core of the StreetScéal trails.
+
+[clairefitch.github.io](https://clairefitch.github.io) · [fitchsounds.com](https://fitchsounds.com)
+
+---
+
+## Licence
+
+Audio content and archival material is subject to the terms of the originating collections. Code is available under MIT licence. Please contact the artist for use of audio content.
+
+© Claire Fitch, 2026

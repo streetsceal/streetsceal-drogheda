@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mouth Alignment Preview</title>
+<style>
+  body { background: #1a1612; color: #e8e0d0; font-family: monospace; text-align: center; padding: 2rem; }
+  .stage { position: relative; width: 320px; margin: 2rem auto; border: 1px solid #8b3a2a; }
+  .stage img.figure { width: 100%; display: block; }
+  .stage img.mouth {
+    position: absolute;
+    left: 37%;
+    top: 13.5%;
+    width: 14.5%;
+    height: 2.6%;
+  }
+  button { background: #8b3a2a; color: #e8e0d0; border: none; padding: 0.6rem 1rem; margin: 0.3rem; cursor: pointer; font-family: monospace; }
+  button:hover { background: #a8503e; }
+  #label { margin-top: 1rem; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.8rem; color: #8b3a2a; }
+</style>
+</head>
+<body>
+
+<h2>Plunkett Lip Sync — Alignment Check</h2>
+<p>No camera or AR needed — just confirms the mouth shapes sit correctly over the hole.</p>
+
+<div class="stage" id="stage">
+  <img class="figure" src="./sprites/figure-base.png">
+  <img class="mouth" id="mouthImg" src="./sprites/mouth-X.png">
+</div>
+
+<div id="label">Shape: X (silence)</div>
+
+<div>
+  <button onclick="setShape('X')">X — silence</button>
+  <button onclick="setShape('A')">A — slight</button>
+  <button onclick="setShape('B')">B — teeth</button>
+  <button onclick="setShape('C')">C — wide</button>
+  <button onclick="setShape('D')">D — round</button>
+  <button onclick="setShape('E')">E — tight</button>
+</div>
+
+<div style="margin-top:1rem;">
+  <button onclick="cycle()">▶ Cycle through all shapes</button>
+</div>
+
+<div style="margin-top:2rem; max-width:340px; margin-left:auto; margin-right:auto; text-align:left;">
+  <p style="margin-bottom:0.5rem;">Left: <span id="vLeft"></span>%
+    <input type="range" id="left" min="20" max="60" step="0.1" style="width:100%"></p>
+  <p style="margin-bottom:0.5rem;">Top: <span id="vTop"></span>%
+    <input type="range" id="top" min="5" max="25" step="0.1" style="width:100%"></p>
+  <p style="margin-bottom:0.5rem;">Width: <span id="vWidth"></span>%
+    <input type="range" id="width" min="5" max="30" step="0.1" style="width:100%"></p>
+  <p style="margin-bottom:0.5rem;">Height: <span id="vHeight"></span>%
+    <input type="range" id="height" min="1" max="8" step="0.1" style="width:100%"></p>
+</div>
+
+<div id="readout" style="margin-top:1.5rem; padding:1rem; background:rgba(232,224,208,0.05); display:inline-block; text-align:left; font-size:0.8rem;"></div>
+
+<script>
+const labels = { X: 'silence', A: 'slightly open', B: 'teeth', C: 'wide open', D: 'rounded O', E: 'tight' };
+function setShape(s) {
+  document.getElementById('mouthImg').src = './sprites/mouth-' + s + '.png';
+  document.getElementById('label').textContent = 'Shape: ' + s + ' (' + labels[s] + ')';
+}
+let cycling = false;
+function cycle() {
+  if (cycling) return;
+  cycling = true;
+  const seq = ['X','A','B','C','D','E','X'];
+  let i = 0;
+  const interval = setInterval(() => {
+    setShape(seq[i]);
+    i++;
+    if (i >= seq.length) { clearInterval(interval); cycling = false; }
+  }, 500);
+}
+
+// ── Live position sliders ──────────────────────────────────────────
+const mouthImg = document.getElementById('mouthImg');
+const sliders = {
+  left: document.getElementById('left'),
+  top: document.getElementById('top'),
+  width: document.getElementById('width'),
+  height: document.getElementById('height')
+};
+
+// Initialise with current CSS values
+const initial = { left: 46.47, top: 12.39, width: 13.30, height: 2.45 };
+for (const key in sliders) {
+  sliders[key].value = initial[key];
+}
+
+function updateMouth() {
+  const left = parseFloat(sliders.left.value);
+  const top = parseFloat(sliders.top.value);
+  const width = parseFloat(sliders.width.value);
+  const height = parseFloat(sliders.height.value);
+
+  mouthImg.style.left = left + '%';
+  mouthImg.style.top = top + '%';
+  mouthImg.style.width = width + '%';
+  mouthImg.style.height = height + '%';
+
+  document.getElementById('vLeft').textContent = left.toFixed(1);
+  document.getElementById('vTop').textContent = top.toFixed(1);
+  document.getElementById('vWidth').textContent = width.toFixed(1);
+  document.getElementById('vHeight').textContent = height.toFixed(1);
+
+  // Convert back to pixel values for the AR file (figure is 1024x1536)
+  const px_x = (left / 100 * 1024).toFixed(0);
+  const px_y = (top / 100 * 1536).toFixed(0);
+  const px_w = (width / 100 * 1024).toFixed(0);
+  const px_h = (height / 100 * 1536).toFixed(0);
+
+  document.getElementById('readout').innerHTML =
+    `<strong>For plunkett-ar.html:</strong><br>
+     Pixel position: (${px_x}, ${px_y})<br>
+     Pixel size: ${px_w} × ${px_h}<br><br>
+     <strong>CSS percentages (this file):</strong><br>
+     left: ${left.toFixed(2)}%; top: ${top.toFixed(2)}%;<br>
+     width: ${width.toFixed(2)}%; height: ${height.toFixed(2)}%;`;
+}
+
+for (const key in sliders) {
+  sliders[key].addEventListener('input', updateMouth);
+}
+updateMouth();
+</script>
+
+</body>
+</html>
