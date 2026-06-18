@@ -21,21 +21,21 @@ No app download required. Open [streetsceal.ie](https://streetsceal.ie) on any m
 
 ## Trails
 
-StreetScéal — Drogheda is structured as three interlocking trails, each with its own stops, audio character, and geographic reach. All three share the same platform, GPS and AR infrastructure, and entry point.
+StreetScéal — Drogheda is structured as four interlocking trails, each with its own stops, audio character, and geographic reach. All four are live and share the same platform, GPS and AR infrastructure, and entry point.
 
 ### The Town Trail · *Live*
 Voices, memories, everyday life — the Drogheda that people remember.
 
 | Stop | Location | Era |
 |------|----------|-----|
-| The Marcy Hotel (White Horse) | Shop Street | 1963 |
+| The Marcy Hotel (White Horse) | West Street | 1963 |
 | Connolly's Shop | Shop Street | 1940s–60s |
-| Millmount | Millmount Square | Ancient–present |
+| Millmount ↗ | Millmount Square | Ancient–present |
 | St Laurence's Gate | Laurence Street | 13th century |
 | St Peter's Church ↗ | West Street, Drogheda | 1921–present |
 | The Quayside ↗ | West Gate / River Boyne | 18th–20th century |
 
-### The Plunkett Trail · *In development*
+### The Plunkett Trail · *Live*
 A martyr's journey across Europe — from Drogheda to Ghent, Rome, London and beyond.
 
 | Stop | Location | Era |
@@ -49,21 +49,40 @@ A martyr's journey across Europe — from Drogheda to Ghent, Rome, London and be
 | Tyburn | London, England | 1 July 1681 |
 | Benedictine Monastery | Lamspringe, Germany | 1683–1883 |
 
-### The Diaspora Trail · *In development*
+### The Diaspora Trail · *Live*
 Drogheda to Liverpool, Bordeaux and beyond — following the routes of those who left.
 
-| Stop | Location |
-|------|----------|
-| The Quayside ↗ | Drogheda — the departure point |
-| St Peter's Church ↗ | West Street, Drogheda — the European connection |
-| Liverpool | TBC |
-| Bordeaux | TBC |
+| Stop | Location | Era |
+|------|----------|-----|
+| The Quayside ↗ | West Gate, River Boyne, Drogheda | 18th–20th century |
+| St Peter's Church ↗ | West Street, Drogheda | 1921–present |
+| Scotland Road | Vauxhall, Liverpool, England | 1840s–1960s |
+| Irish College, Bordeaux | Rue du Hâ, Bordeaux, France | 1603–18th century |
+| Quai des Chartrons | Bordeaux, France | 18th century–present |
 
-**Linking stops** — two stops appear across all three trails:
+### The Megalithic Trail · *Live*
+Five thousand years of continuous human presence — Newgrange, Knowth, Dowth, Fourknocks, Tara, and Loughcrew.
+
+| Stop | Location | Era |
+|------|----------|-----|
+| Millmount ↗ | Millmount Square, Drogheda | Neolithic–present |
+| Newgrange | Brú na Bóinne, Co. Meath | c. 3200 BC |
+| Knowth | Brú na Bóinne, Co. Meath | c. 3200 BC |
+| Dowth | Brú na Bóinne, Co. Meath | c. 3200 BC |
+| Fourknocks | Stamullen, Co. Meath | c. 2750 BC |
+| Hill of Tara | Co. Meath | Neolithic–medieval |
+| Loughcrew ↗ | Oldcastle, Co. Meath | c. 3300 BC |
+
+---
+
+**Linking stops** — four locations connect the trails into a single fabric:
+
 - **The Quayside** — the departure point; links Town Trail to Diaspora Trail
 - **St Peter's Church** — the shrine and relic; links Town Trail to Plunkett Trail
+- **Loughcrew** — Plunkett's birthplace and a Neolithic passage tomb complex; links Plunkett Trail to Megalithic Trail
+- **Millmount** — a Neolithic mound within the town itself; links Town Trail to Megalithic Trail
 
-The ↗ symbol denotes a linking stop. Every trail connects to the others through these two locations.
+The ↗ symbol denotes a linking stop. Every trail connects to at least one other through these four locations — the whole network reads as one fabric rather than four separate projects.
 
 ---
 
@@ -87,17 +106,24 @@ The stack is entirely open source and self-hosted:
 streetsceal-drogheda/
 ├── index.html              # Landing page — trail selector
 ├── town-trail.html         # Town Trail PWA
-├── plunkett-trail.html     # Plunkett Trail PWA (in development)
-├── diaspora-trail.html     # Diaspora Trail PWA (in development)
+├── plunkett-trail.html     # Plunkett Trail PWA
+├── diaspora-trail.html     # Diaspora Trail PWA
+├── megalithic-trail.html   # Megalithic Trail PWA
 ├── CNAME                   # Custom domain: streetsceal.ie
 ├── targets/                # MindAR .mind files (one per image target)
 │   ├── white-horse.mind
 │   ├── st-peters.mind
-│   └── quayside.mind
+│   ├── quayside.mind
+│   └── millmount.mind
 ├── audio/                  # Archive recordings and soundscapes
 │   ├── white-horse.mp3
 │   ├── st-peters.mp3
-│   └── quayside.mp3
+│   ├── quayside.mp3
+│   └── connollys-shop.mp3
+├── sprites/                # AR animated figure assets (lip sync)
+│   ├── figure-base.png
+│   ├── mouth-X.png … mouth-E.png
+│   └── st-peters-lipsync.json
 ├── assets/
 │   └── images/             # Target images and documentation assets
 └── README.md
@@ -134,7 +160,7 @@ Each new trail is a self-contained HTML file within this repository:
 | 2020 | *Populated Solitude* commissioned for Culture Night 2020. First work: *On A Summer Morning In 1963*, an audio response to Paul Murphy's account of meeting Brendan Behan at the White Horse Hotel |
 | 2021 | Seed funding awarded by Droichead Arts, Drogheda |
 | 2022 | Expanded to a four-stop audio walk deployed via the ECHOES GPS-triggered sound walk app. New work developed from Louth County Archives oral history recordings |
-| 2026 | *StreetScéal* — Web AR iteration. GPS + image tracking, self-hosted on GitHub Pages, no app required. Multi-trail platform with Town Trail, Plunkett Trail, and Diaspora Trail |
+| 2026 | *StreetScéal* — Web AR iteration. GPS + image tracking, self-hosted on GitHub Pages, no app required. Multi-trail platform with Town Trail, Plunkett Trail, Diaspora Trail, and Megalithic Trail |
 
 ---
 
