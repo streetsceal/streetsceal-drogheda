@@ -463,6 +463,69 @@
     }
 
     /* AR launch */
+    .location-image-block {
+      margin-bottom: 1.5rem;
+    }
+
+    .location-image-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      border: 1px solid rgba(232,224,208,0.15);
+      background: rgba(232,224,208,0.04);
+    }
+
+    .location-image-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(15%) contrast(1.05);
+    }
+
+    .location-image-caption {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--rust-light);
+      padding: 0.6rem 0.2rem 0;
+    }
+
+    .location-image-frame::before,
+    .location-image-frame::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-color: var(--rust);
+      pointer-events: none;
+    }
+    .location-image-frame::before {
+      top: 8px; left: 8px;
+      border-width: 1.5px 0 0 1.5px;
+    }
+    .location-image-frame::after {
+      bottom: 8px; right: 8px;
+      border-width: 0 1.5px 1.5px 0;
+    }
+
+    .location-image-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(232,224,208,0.25);
+      text-align: center;
+      padding: 1rem;
+    }
+
     .ar-launch-btn {
       width: 100%;
       padding: 1.1rem;
@@ -661,6 +724,13 @@
   <div class="stop-body">
     <p class="stop-lore" id="detail-lore"></p>
     <p class="stop-text" id="detail-text"></p>
+
+    <div class="location-image-block" id="location-image-block">
+      <div class="location-image-frame" id="location-image-frame">
+        <!-- JS fills this with either an <img> or a placeholder -->
+      </div>
+      <p class="location-image-caption" id="location-image-caption"></p>
+    </div>
 
     <div class="audio-block">
       <p class="audio-label">Archive audio</p>
@@ -1003,9 +1073,24 @@ function openStop(id) {
   document.getElementById('audio-dur').textContent = stop.audioDuration;
   buildWaveform();
   resetAudio();
+  renderLocationImage(stop);
 
   showScreen('stop');
   document.getElementById('screen-stop').scrollTop = 0;
+}
+
+// ── Location image ──────────────────────────────────────────────────
+function renderLocationImage(stop) {
+  const frame = document.getElementById('location-image-frame');
+  const caption = document.getElementById('location-image-caption');
+
+  if (stop.locationImage) {
+    frame.innerHTML = `<img src="${stop.locationImage}" alt="${stop.name}" loading="lazy">`;
+    caption.textContent = stop.subtitle;
+  } else {
+    frame.innerHTML = `<div class="location-image-placeholder">Photo coming soon</div>`;
+    caption.textContent = stop.subtitle;
+  }
 }
 
 // ── Waveform (decorative — replace with real Web Audio in production) ─
