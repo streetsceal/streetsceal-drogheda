@@ -151,11 +151,32 @@
 
     .trail-header {
       width: 100%;
-      padding: 2rem 1.5rem 1rem;
+      padding: 1rem 1.5rem 1rem;
       border-bottom: 1px solid rgba(232,224,208,0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .all-trails-link {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--rust-light);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      width: fit-content;
+    }
+    .all-trails-link:hover { color: var(--paper); }
+
+    .trail-header-row {
       display: flex;
       align-items: baseline;
       justify-content: space-between;
+      width: 100%;
     }
 
     .trail-header-title {
@@ -600,7 +621,7 @@
 <div class="screen" id="screen-entry">
   <div class="entry-rule"></div>
   <p class="entry-eyebrow">The Diaspora Trail</p>
-  <h1 class="entry-title">Street<br><em>scéal</em></h1>
+  <h1 class="entry-title">Street<br><em>Scéal</em></h1>
   <p class="entry-subtitle">Drogheda to Liverpool, Bordeaux and beyond — following the routes of those who left.</p>
   <p class="entry-location">53°43′N · 6°21′W · to 44°50′N · 0°34′W</p>
   <button class="btn-primary" id="btn-enter" onclick="enterTrail()">Begin the trail</button>
@@ -611,8 +632,11 @@
 ══════════════════════════════════════════════ -->
 <div class="screen hidden" id="screen-trail" style="justify-content:flex-start; overflow-y:auto;">
   <div class="trail-header">
-    <span class="trail-header-title">The Diaspora Trail</span>
-    <span class="trail-header-count" id="trail-count">0 of 4 visited</span>
+    <a class="all-trails-link" href="./index.html">&larr; All trails</a>
+    <div class="trail-header-row">
+      <span class="trail-header-title">The Diaspora Trail</span>
+      <span class="trail-header-count" id="trail-count">0 of 4 visited</span>
+    </div>
   </div>
 
   <div class="trail-list" id="trail-list"></div>
