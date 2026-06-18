@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StreetScéal — Trail Map</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: #f5f0e8;
+      color: #2c2416;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 1.5rem 2rem 1rem;
+      border-bottom: 1px solid #d8ceba;
+      background: #f5f0e8;
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: normal;
+      letter-spacing: 0.02em;
+      color: #2c2416;
+    }
+
+    header h1 em {
+      font-style: italic;
+      color: #8b5e2a;
+    }
+
+    header p {
+      font-size: 0.78rem;
+      color: #9e8c72;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-family: 'Courier New', monospace;
+    }
+
+    .layout {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      flex-shrink: 0;
+      background: #ede8dc;
+      border-right: 1px solid #d8ceba;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .trail-list {
+      padding: 1rem 0;
+    }
+
+    .trail-group {
+      margin-bottom: 0.25rem;
+    }
+
+    .trail-btn {
+      width: 100%;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.7rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-align: left;
+      transition: background 0.15s;
+      color: #6b5840;
+    }
+
+    .trail-btn:hover {
+      background: #e4ddd0;
+    }
+
+    .trail-btn.active {
+      background: #e4ddd0;
+      color: #2c2416;
+    }
+
+    .trail-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .trail-label {
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-family: 'Courier New', monospace;
+    }
+
+    .stops-list {
+      padding: 0 0 0.5rem 0;
+      display: none;
+    }
+
+    .stops-list.open {
+      display: block;
+    }
+
+    .stop-item {
+      padding: 0.45rem 1.2rem 0.45rem 2.8rem;
+      font-size: 0.8rem;
+      color: #9e8c72;
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: all 0.15s;
+      font-family: 'Georgia', serif;
+    }
+
+    .stop-item:hover {
+      color: #8b5e2a;
+      border-left-color: #8b5e2a;
+    }
+
+    .stop-item.remote {
+      font-style: italic;
+      color: #b8a890;
+    }
+
+    .stop-item.remote::before {
+      content: '↗ ';
+      font-style: normal;
+    }
+
+    .sidebar-footer {
+      padding: 1rem 1.2rem;
+      border-top: 1px solid #d8ceba;
+      margin-top: auto;
+    }
+
+    .sidebar-footer a {
+      color: #8b5e2a;
+      text-decoration: none;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      font-family: 'Courier New', monospace;
+    }
+
+    .sidebar-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Map area */
+    .map-container {
+      flex: 1;
+      position: relative;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+      min-height: 500px;
+    }
+
+    /* Legend */
+    .legend {
+      position: absolute;
+      bottom: 2rem;
+      right: 1rem;
+      background: rgba(245, 240, 232, 0.95);
+      border: 1px solid #d8ceba;
+      padding: 0.85rem 1rem;
+      font-size: 0.75rem;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.06em;
+      z-index: 10;
+    }
+
+    .legend-title {
+      color: #9e8c72;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+      font-size: 0.68rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.35rem;
+      color: #6b5840;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Info panel */
+    .info-panel {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: rgba(245, 240, 232, 0.97);
+      border: 1px solid #d8ceba;
+      padding: 1rem 1.2rem;
+      max-width: 260px;
+      z-index: 10;
+      display: none;
+    }
+
+    .info-panel.visible {
+      display: block;
+    }
+
+    .info-trail-tag {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-family: 'Courier New', monospace;
+      margin-bottom: 0.4rem;
+    }
+
+    .info-stop-name {
+      font-size: 1rem;
+      color: #2c2416;
+      margin-bottom: 0.5rem;
+    }
+
+    .info-stop-desc {
+      font-size: 0.78rem;
+      color: #6b5840;
+      line-height: 1.5;
+      margin-bottom: 0.8rem;
+    }
+
+    .info-enter-btn {
+      display: inline-block;
+      padding: 0.4rem 0.9rem;
+      border: 1px solid #8b5e2a;
+      color: #8b5e2a;
+      text-decoration: none;
+      font-size: 0.72rem;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: all 0.15s;
+    }
+
+    .info-enter-btn:hover {
+      background: #8b5e2a;
+      color: #f5f0e8;
+    }
+
+    .info-close {
+      position: absolute;
+      top: 0.6rem;
+      right: 0.8rem;
+      background: none;
+      border: none;
+      color: #b8a890;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .info-close:hover { color: #6b5840; }
+
+    @media (max-width: 640px) {
+      .sidebar { width: 100%; height: 180px; border-right: none; border-bottom: 1px solid #d8ceba; }
+      .layout { flex-direction: column; }
+      .stops-list { display: none !important; }
+      header { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Street<em>Scéal</em></h1>
+  <p>53°43′N · 6°21′W · Drogheda · Trail Map</p>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <nav class="trail-list" id="trailList"></nav>
+    <div class="sidebar-footer">
+      <a href="https://streetsceal.ie" target="_blank">← Return to StreetScéal</a>
+    </div>
+  </aside>
+
+  <div class="map-container">
+    <div id="map"></div>
+
+    <div class="info-panel" id="infoPanel">
+      <button class="info-close" id="infoClose">✕</button>
+      <div class="info-trail-tag" id="infoTrail"></div>
+      <div class="info-stop-name" id="infoName"></div>
+      <div class="info-stop-desc" id="infoDesc"></div>
+      <a class="info-enter-btn" id="infoLink" href="#" target="_blank">Enter trail →</a>
+    </div>
+
+    <div class="legend" id="mapLegend">
+      <div class="legend-title">Trails</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Trail data ─────────────────────────────────────────────────────────────
+  const TRAILS = [
+    {
+      id: 'town',
+      label: 'Town Trail',
+      color: '#c8a96e',
+      url: 'https://streetsceal.ie/town-trail.html',
+      desc: 'Voices, memories, everyday life — the Drogheda that people remember.',
+      stops: [
+        { name: 'The Marcy Hotel', lat: 53.7183, lng: -6.3521, desc: 'A former gathering place at the heart of Drogheda\'s social memory.', remote: false },
+        { name: "Connolly's Shop", lat: 53.7195, lng: -6.3548, desc: 'A local landmark woven into the everyday life of the town.', remote: false },
+        { name: 'Millmount', lat: 53.7157, lng: -6.3474, desc: 'The mound that has watched over Drogheda since before the Normans.', remote: false },
+        { name: "St Laurence's Gate", lat: 53.7199, lng: -6.3524, desc: 'The last surviving gate of the medieval town walls.', remote: false },
+        { name: "St Peter's Church", lat: 53.7201, lng: -6.3562, desc: "Home to the shrine of Oliver Plunkett.", remote: false },
+        { name: 'The Quayside', lat: 53.7178, lng: -6.3507, desc: "Where the Boyne meets the town's mercantile past.", remote: false },
+      ]
+    },
+    {
+      id: 'plunkett',
+      label: 'Plunkett Trail',
+      color: '#6ea8c8',
+      url: 'https://streetsceal.ie/plunkett-trail.html',
+      desc: "A martyr's journey from Drogheda across Europe — Ghent, Rome, London and beyond.",
+      stops: [
+        { name: 'The Quayside', lat: 53.7178, lng: -6.3507, desc: 'The departure point — following Plunkett out of Ireland.', remote: false },
+        { name: "St Peter's Church", lat: 53.7201, lng: -6.3562, desc: 'His head rests here — the end of a journey that crossed a continent.', remote: false },
+        { name: 'Loughcrew', lat: 53.7447, lng: -7.1125, desc: 'Near the Plunkett family lands in Co. Meath.', remote: true },
+        { name: 'Rome', lat: 41.9028, lng: 12.4964, desc: 'Where Plunkett studied and was ordained.', remote: true },
+        { name: 'Ghent', lat: 51.0543, lng: 3.7174, desc: 'One of his European postings during exile.', remote: true },
+        { name: 'Louvain', lat: 50.8798, lng: 4.7005, desc: 'A key centre of Irish Catholic learning abroad.', remote: true },
+        { name: 'London', lat: 51.5074, lng: -0.1278, desc: 'Where he was tried and executed at Tyburn, 1681.', remote: true },
+        { name: 'Lamspringe', lat: 51.9375, lng: 9.9756, desc: 'Benedictine monastery where his body rested.', remote: true },
+      ]
+    },
+    {
+      id: 'diaspora',
+      label: 'Diaspora Trail',
+      color: '#8ec89a',
+      url: 'https://streetsceal.ie/diaspora-trail.html',
+      desc: 'Drogheda to Liverpool, Bordeaux and beyond — the routes of those who left.',
+      stops: [
+        { name: 'The Quayside', lat: 53.7178, lng: -6.3507, desc: 'The point of departure for emigrants leaving by sea.', remote: false },
+        { name: "St Peter's Church", lat: 53.7201, lng: -6.3562, desc: 'A place of farewell and last blessing before emigration.', remote: false },
+        { name: 'Liverpool', lat: 53.4084, lng: -2.9916, desc: 'The most common first landing point for Irish emigrants.', remote: true },
+        { name: 'Bordeaux', lat: 44.8378, lng: -0.5792, desc: 'A wine trade destination with strong Irish merchant connections.', remote: true },
+      ]
+    },
+    {
+      id: 'megalithic',
+      label: 'Megalithic Trail',
+      color: '#c87d6e',
+      url: 'https://streetsceal.ie/megalithic-trail.html',
+      desc: 'Five thousand years of continuous presence — Newgrange, Knowth, Dowth, Tara and Loughcrew.',
+      stops: [
+        { name: 'Millmount', lat: 53.7157, lng: -6.3474, desc: 'A Bronze Age mound repurposed through every era of Drogheda.', remote: false },
+        { name: 'Newgrange', lat: 53.6947, lng: -6.4755, desc: 'Passage tomb older than Stonehenge — winter solstice aligned.', remote: true },
+        { name: 'Knowth', lat: 53.7008, lng: -6.4912, desc: 'The largest passage tomb in Ireland, surrounded by satellite mounds.', remote: true },
+        { name: 'Dowth', lat: 53.7016, lng: -6.4571, desc: 'The third great mound of the Brú na Bóinne complex.', remote: true },
+        { name: 'Fourknocks', lat: 53.6354, lng: -6.3695, desc: 'A Neolithic passage tomb with remarkable carved stone art.', remote: true },
+        { name: 'Hill of Tara', lat: 53.5793, lng: -6.6139, desc: 'The ancient seat of the High Kings of Ireland.', remote: true },
+        { name: 'Loughcrew', lat: 53.7447, lng: -7.1125, desc: 'A hilltop complex of passage tombs — the "Hills of the Witch".', remote: true },
+      ]
+    }
+  ];
+
+  // ── Sidebar render ─────────────────────────────────────────────────────────
+  const trailList = document.getElementById('trailList');
+  const legend = document.getElementById('mapLegend');
+
+  TRAILS.forEach(trail => {
+    const group = document.createElement('div');
+    group.className = 'trail-group';
+
+    const btn = document.createElement('button');
+    btn.className = 'trail-btn';
+    btn.dataset.id = trail.id;
+    btn.innerHTML = `
+      <span class="trail-dot" style="background:${trail.color}"></span>
+      <span class="trail-label">${trail.label}</span>
+    `;
+
+    const stopsList = document.createElement('div');
+    stopsList.className = 'stops-list';
+    stopsList.id = `stops-${trail.id}`;
+
+    trail.stops.forEach(stop => {
+      const item = document.createElement('div');
+      item.className = 'stop-item' + (stop.remote ? ' remote' : '');
+      item.textContent = stop.name;
+      item.addEventListener('click', () => focusStop(trail, stop));
+      stopsList.appendChild(item);
+    });
+
+    btn.addEventListener('click', () => toggleTrail(trail.id, btn, stopsList));
+    group.appendChild(btn);
+    group.appendChild(stopsList);
+    trailList.appendChild(group);
+
+    // Legend
+    const li = document.createElement('div');
+    li.className = 'legend-item';
+    li.innerHTML = `<span class="legend-dot" style="background:${trail.color}"></span><span>${trail.label}</span>`;
+    legend.appendChild(li);
+  });
+
+  function toggleTrail(id, btn, list) {
+    const isOpen = list.classList.contains('open');
+    document.querySelectorAll('.stops-list').forEach(l => l.classList.remove('open'));
+    document.querySelectorAll('.trail-btn').forEach(b => b.classList.remove('active'));
+    if (!isOpen) {
+      list.classList.add('open');
+      btn.classList.add('active');
+      // Pan to trail centroid
+      const trail = TRAILS.find(t => t.id === id);
+      const local = trail.stops.filter(s => !s.remote);
+      if (local.length && map) {
+        const avgLat = local.reduce((a, s) => a + s.lat, 0) / local.length;
+        const avgLng = local.reduce((a, s) => a + s.lng, 0) / local.length;
+        map.panTo({ lat: avgLat, lng: avgLng });
+        if (id === 'plunkett' || id === 'diaspora') map.setZoom(5);
+        else map.setZoom(15);
+      }
+    }
+  }
+
+  // ── Map init ───────────────────────────────────────────────────────────────
+  let map;
+  const allMarkers = [];
+  const allPolylines = [];
+
+  function initMap() {
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: { lat: 53.7185, lng: -6.352 },
+      zoom: 15,
+      styles: [
+        { elementType: 'geometry', stylers: [{ color: '#ebe5d8' }] },
+        { elementType: 'labels.text.stroke', stylers: [{ color: '#ebe5d8' }] },
+        { elementType: 'labels.text.fill', stylers: [{ color: '#6b5840' }] },
+        { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#8b5e2a' }] },
+        { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#8b6840' }] },
+        { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#d4e6c8' }] },
+        { featureType: 'poi.park', elementType: 'labels.text.fill', stylers: [{ color: '#507040' }] },
+        { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#f5f0e4' }] },
+        { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#d8ceba' }] },
+        { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#9e8060' }] },
+        { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#d4b896' }] },
+        { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#c8a880' }] },
+        { featureType: 'road.highway', elementType: 'labels.text.fill', stylers: [{ color: '#5c3d18' }] },
+        { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#ddd5c0' }] },
+        { featureType: 'transit.station', elementType: 'labels.text.fill', stylers: [{ color: '#8b6840' }] },
+        { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#a8c8d8' }] },
+        { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#4a7090' }] },
+        { featureType: 'water', elementType: 'labels.text.stroke', stylers: [{ color: '#a8c8d8' }] },
+      ],
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: true,
+      zoomControl: true,
+    });
+
+    TRAILS.forEach(trail => {
+      const coords = trail.stops.map(s => ({ lat: s.lat, lng: s.lng }));
+
+      // Polyline for trail route
+      const line = new google.maps.Polyline({
+        path: coords,
+        geodesic: true,
+        strokeColor: trail.color,
+        strokeOpacity: 0.45,
+        strokeWeight: 2,
+        map,
+      });
+      allPolylines.push(line);
+
+      // Markers
+      trail.stops.forEach((stop, i) => {
+        const marker = new google.maps.Marker({
+          position: { lat: stop.lat, lng: stop.lng },
+          map,
+          title: stop.name,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: stop.remote ? 5 : 7,
+            fillColor: trail.color,
+            fillOpacity: stop.remote ? 0.5 : 1,
+            strokeColor: '#f5f0e8',
+            strokeWeight: 2,
+          },
+          zIndex: stop.remote ? 1 : 2,
+        });
+
+        marker.addListener('click', () => focusStop(trail, stop));
+        allMarkers.push(marker);
+      });
+    });
+  }
+
+  function focusStop(trail, stop) {
+    const panel = document.getElementById('infoPanel');
+    document.getElementById('infoTrail').textContent = trail.label;
+    document.getElementById('infoTrail').style.color = trail.color;
+    document.getElementById('infoName').textContent = stop.name;
+    document.getElementById('infoDesc').textContent = stop.desc;
+    document.getElementById('infoLink').href = trail.url;
+    panel.classList.add('visible');
+    map.panTo({ lat: stop.lat, lng: stop.lng });
+  }
+
+  document.getElementById('infoClose').addEventListener('click', () => {
+    document.getElementById('infoPanel').classList.remove('visible');
+  });
+
+  // ── Load Google Maps ───────────────────────────────────────────────────────
+  // NOTE: Replace AIzaSyASmpOeRPerSlZ7WcyEo_ecdFEAd4pIP3E below with a real Google Maps JavaScript API key
+  // Get one at: https://console.cloud.google.com/
+  const script = document.createElement('script');
+  script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyASmpOeRPerSlZ7WcyEo_ecdFEAd4pIP3E&callback=initMap';
+  script.async = true;
+  script.defer = true;
+  document.head.appendChild(script);
+</script>
+</body>
+</html>
