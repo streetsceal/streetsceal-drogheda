@@ -2,17 +2,19 @@
 :root {
   --ink: #2c2416;
   --paper: #f5f0e8;
-  --paper-dark: #6b5840;
+  --paper-soft: #ede8dc;
+  --paper-dark: #5a4a32;
+  --paper-muted: #9e8c72;
   --rust: #8b5e2a;
   --rust-light: #a8703a;
-  --ghost: rgba(44, 36, 22, 0.05);
+  --ghost: rgba(44, 36, 22, 0.04);
   --fog: rgba(245, 240, 232, 0.85);
   --line: #d8ceba;
-  --display: 'Playfair Display', Georgia, serif;
-  --body: 'EB Garamond', 'Garamond', Georgia, serif;
+  --display: 'Fraunces', sans-serif;
+  --body: 'Inter', -apple-system, sans-serif;
   --mono: 'Courier New', monospace;
 }
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,500;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&family=Inter:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
   height: 100%;
@@ -125,6 +127,7 @@ html, body {
 .trail-header {
   width: 100%;
   padding: 1rem 1.5rem 1rem;
+  background: var(--paper-soft);
   border-bottom: 1px solid var(--line);
   display: flex;
   flex-direction: column;
@@ -203,7 +206,7 @@ html, body {
   font-family: var(--body);
   font-style: italic;
   font-size: 0.82rem;
-  color: var(--paper-dark);
+  color: var(--paper-muted);
   line-height: 1.45;
   margin-bottom: 0.5rem;
 }
@@ -217,7 +220,7 @@ html, body {
 .stop-proximity {
   font-family: var(--mono);
   font-size: 0.6rem;
-  color: var(--paper-dark);
+  color: var(--paper-muted);
   text-align: right;
   white-space: nowrap;
   padding-top: 0.2rem;
@@ -242,7 +245,7 @@ html, body {
   bottom: 0;
   left: 0;
   right: 0;
-  background: var(--paper);
+  background: var(--paper-soft);
   border-top: 1px solid var(--line);
   padding: 0.8rem 1.5rem;
   display: flex;
@@ -262,7 +265,7 @@ html, body {
   font-size: 0.6rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--paper-dark);
+  color: var(--paper-muted);
   flex: 1;
 }
 .gps-demo-btn {
@@ -396,7 +399,7 @@ html, body {
 .audio-duration {
   font-family: var(--mono);
   font-size: 0.6rem;
-  color: var(--paper-dark);
+  color: var(--paper-muted);
 }
 /* AR launch (button on stop-detail screen, still styled even though AR view itself is now parchment too) */
 .location-image-block {
