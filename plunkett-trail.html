@@ -280,17 +280,6 @@ html, body {
   color: var(--paper-muted);
   flex: 1;
 }
-.gps-demo-btn {
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--rust-light);
-  background: transparent;
-  border: 1px solid rgba(139,94,42,0.4);
-  padding: 0.3rem 0.7rem;
-  cursor: pointer;
-}
 /* ── Stop Detail Screen ───────────────────────────────────────── */
 #screen-stop {
   background: var(--paper);
@@ -642,7 +631,6 @@ a-scene { position: absolute; inset: 0; }
   <div class="gps-bar">
     <div class="gps-icon" id="gps-icon"></div>
     <span class="gps-text" id="gps-text">Requesting location…</span>
-    <button class="gps-demo-btn" onclick="simulateNearby()">Demo mode</button>
   </div>
 </div>
 
@@ -864,7 +852,6 @@ let visitedStops = new Set();
 let audioPlaying = false;
 let audioTick = null;
 let audioSeconds = 0;
-let demoIndex = 0;
 
 // ── Audio unlock for mobile ──────────────────────────────────────────
 function unlockAudio() {
@@ -932,8 +919,7 @@ function updateTrailCount() {
 // ── GPS ──────────────────────────────────────────────────────────────
 function startGPS() {
   if (!navigator.geolocation) {
-    setGPSStatus(false, 'Geolocation not available');
-    unlockAllForDemo();
+    setGPSStatus(false, 'Geolocation not available on this device');
     return;
   }
   setGPSStatus(false, 'Finding your location…');
@@ -945,8 +931,7 @@ function startGPS() {
       updateProximity();
     },
     err => {
-      setGPSStatus(false, 'Location unavailable — use Demo mode');
-      unlockAllForDemo();
+      setGPSStatus(false, 'Location unavailable — enable GPS to unlock stops');
     },
     { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
   );
@@ -986,31 +971,6 @@ function updateProximity() {
       if (d > 200) card.classList.add('locked');
     }
   });
-}
-
-// Demo mode — cycle through stops one by one
-function simulateNearby() {
-  unlockAllForDemo();
-  const stop = STOPS[demoIndex % STOPS.length];
-  showToast(`Demo: ${stop.name}`);
-  const card = document.getElementById('card-' + stop.id);
-  card.classList.add('active');
-  document.getElementById('prox-' + stop.id).innerHTML =
-    '<span class="proximity-dot near"></span>Demo mode';
-  demoIndex++;
-}
-
-function unlockAllForDemo() {
-  STOPS.forEach(stop => {
-    const card = document.getElementById('card-' + stop.id);
-    if (card) {
-      card.classList.remove('locked');
-      card.classList.add('active');
-      const prox = document.getElementById('prox-' + stop.id);
-      if (prox) prox.innerHTML = '<span class="proximity-dot near"></span>Demo mode';
-    }
-  });
-  setGPSStatus(false, 'Demo mode — all stops unlocked');
 }
 
 // ── Stop detail ──────────────────────────────────────────────────────
