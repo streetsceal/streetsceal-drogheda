@@ -196,8 +196,8 @@ html, body {
   background: rgba(139, 94, 42, 0.08);
   border-left: 2px solid var(--rust);
 }
-.stop-card.locked { opacity: 0.42; cursor: default; }
-.stop-card.locked:hover { background: transparent; }
+.stop-card.locked { opacity: 0.75; }
+.stop-card.locked:hover { background: var(--ghost); }
 .stop-number {
   font-family: var(--mono);
   font-size: 0.6rem;
@@ -855,7 +855,7 @@ function buildTrailList() {
   list.innerHTML = '';
   STOPS.forEach(stop => {
     const card = document.createElement('div');
-    card.className = 'stop-card locked';
+    card.className = 'stop-card';
     card.id = 'card-' + stop.id;
     card.innerHTML = `
       <span class="stop-number">${stop.number}</span>
@@ -867,9 +867,7 @@ function buildTrailList() {
       <div class="stop-proximity" id="prox-${stop.id}">
         <span class="proximity-dot"></span>—
       </div>`;
-    card.onclick = () => {
-      if (!card.classList.contains('locked')) openStop(stop.id);
-    };
+    card.onclick = () => openStop(stop.id);
     list.appendChild(card);
   });
 }
