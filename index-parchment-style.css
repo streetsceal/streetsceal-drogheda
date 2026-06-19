@@ -1,0 +1,278 @@
+:root {
+  --ink: #2c2416;
+  --paper: #f5f0e8;
+  --paper-dark: #6b5840;
+  --rust: #8b5e2a;
+  --rust-light: #a8703a;
+  --rust-dim: rgba(139,94,42,0.08);
+  --ghost: rgba(44,36,22,0.03);
+  --display: 'Playfair Display', Georgia, serif;
+  --body: 'EB Garamond', Georgia, serif;
+  --mono: 'Courier New', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+/* ── Grain overlay ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 256px;
+  pointer-events: none;
+  opacity: 0.4;
+  z-index: 0;
+}
+/* ── Layout ── */
+.page { position: relative; z-index: 1; }
+/* ── Header ── */
+.site-header {
+  padding: 3rem 2rem 0;
+  text-align: center;
+}
+.header-rule {
+  width: 1px;
+  height: 48px;
+  background: var(--rust);
+  margin: 0 auto 2rem;
+}
+.header-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--rust-light);
+  margin-bottom: 1.2rem;
+}
+.site-title {
+  font-family: var(--display);
+  font-size: clamp(3rem, 12vw, 6rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1;
+  color: var(--ink);
+  margin-bottom: 0.3rem;
+  letter-spacing: -0.02em;
+}
+.site-title span { color: var(--rust); }
+.site-location {
+  font-family: var(--display);
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  font-weight: 400;
+  color: var(--paper-dark);
+  margin-bottom: 2rem;
+  letter-spacing: 0.05em;
+}
+.header-coords {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  color: var(--rust);
+  margin-bottom: 3rem;
+}
+/* ── Intro ── */
+.intro {
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 0 2rem 3rem;
+  text-align: center;
+}
+.intro p {
+  font-family: var(--body);
+  font-style: italic;
+  font-size: clamp(1rem, 2.5vw, 1.15rem);
+  line-height: 1.75;
+  color: var(--paper-dark);
+}
+/* ── Divider ── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 2rem;
+  margin-bottom: 3rem;
+}
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(139,94,42,0.3);
+}
+.divider-mark {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--rust);
+}
+/* ── Trails ── */
+.trails {
+  padding: 0 1.5rem 4rem;
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.trail-card {
+  display: block;
+  text-decoration: none;
+  position: relative;
+  padding: 2rem 1.8rem;
+  background: var(--ghost);
+  border: 1px solid rgba(44,36,22,0.06);
+  border-left: 3px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+  cursor: pointer;
+  overflow: hidden;
+}
+.trail-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--rust-dim);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.trail-card:hover {
+  border-left-color: var(--rust);
+  background: rgba(44,36,22,0.02);
+}
+.trail-card:hover::before { opacity: 1; }
+.trail-card.coming-soon {
+  opacity: 0.5;
+  cursor: default;
+}
+.trail-card.coming-soon:hover {
+  border-left-color: transparent;
+  background: var(--ghost);
+}
+.trail-card.coming-soon:hover::before { opacity: 0; }
+.trail-inner { position: relative; z-index: 1; }
+.trail-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+  gap: 1rem;
+}
+.trail-name {
+  font-family: var(--display);
+  font-size: clamp(1.3rem, 4vw, 1.7rem);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.trail-status {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--rust-light);
+  border: 1px solid rgba(139,94,42,0.4);
+  padding: 0.25rem 0.5rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 0.3rem;
+}
+.trail-status.live { color: #3d6e30; border-color: rgba(61,110,48,0.4); }
+.trail-status.soon { color: var(--rust-light); border-color: rgba(139,94,42,0.3); }
+.trail-tagline {
+  font-family: var(--body);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--paper-dark);
+  margin-bottom: 1.2rem;
+  line-height: 1.5;
+}
+.trail-stops {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.trail-stop-tag {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(44,36,22,0.45);
+  background: rgba(44,36,22,0.04);
+  padding: 0.2rem 0.5rem;
+}
+.trail-arrow {
+  position: absolute;
+  right: 1.8rem;
+  bottom: 2rem;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--rust);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.trail-card:not(.coming-soon):hover .trail-arrow { opacity: 1; }
+/* ── Map hint ── */
+.map-hint {
+  text-align: center;
+  padding: 0 2rem 5rem;
+}
+.map-hint p {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(44,36,22,0.35);
+  line-height: 2;
+}
+/* ── Footer ── */
+.site-footer {
+  border-top: 1px solid rgba(44,36,22,0.08);
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.footer-brand {
+  font-family: var(--display);
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--paper-dark);
+}
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+}
+.footer-links a {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--rust-light);
+  text-decoration: none;
+}
+.footer-links a:hover { color: var(--ink); }
+/* ── Compass decoration ── */
+.compass-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0 0;
+  opacity: 0.3;
+}
+.compass-wrap svg { width: 48px; height: 48px; }
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .site-header { padding: 2rem 1.5rem 0; }
+  .trails { padding: 0 1rem 4rem; }
+  .trail-card { padding: 1.6rem 1.4rem; }
+  .site-footer { flex-direction: column; align-items: flex-start; }
+}
