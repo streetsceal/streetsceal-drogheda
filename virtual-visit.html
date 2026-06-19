@@ -238,10 +238,74 @@
     desc: "The last gate of the walled town",
     lat: 53.715903,
     lng: -6.346927,
-    audioSrc: null // no audio assigned to this stop yet in trails.json
+    audioSrc: null, // no audio assigned to this stop yet in trails.json
+    archiveImage: {
+      src: "laurence-gate-archive.jpg",
+      // Position the overlay slightly offset from the marker itself —
+      // tune these by eye once the real photo is in, so it sits where
+      // the historic structure actually stood relative to today's view.
+      lat: 53.715903,
+      lng: -6.346927,
+      width: 140,   // px width of the overlay at panorama zoom level 1
+      caption: "Archive photo (placeholder) — replace src above with the real scan"
+    }
   };
 
   let map, panorama, streetViewService;
+
+  // ── Archive image overlay ───────────────────────────────────────────────
+  // Anchors a real-world archive photo to a LatLng inside the Street View
+  // panorama, so it appears to hang in place as the user looks around.
+  class ArchiveOverlay extends google.maps.OverlayView {
+    constructor(position, imageSrc, widthPx, caption) {
+      super();
+      this.position = position;
+      this.imageSrc = imageSrc;
+      this.widthPx = widthPx;
+      this.caption = caption;
+      this.div = null;
+    }
+    onAdd() {
+      this.div = document.createElement('div');
+      this.div.style.position = 'absolute';
+      this.div.style.cursor = 'pointer';
+      this.div.innerHTML = `
+        <img src="${this.imageSrc}" style="
+          width: ${this.widthPx}px;
+          display: block;
+          border: 3px solid #f5f0e8;
+          box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+          opacity: 0.92;
+        ">
+        <div style="
+          font-family: 'Courier New', monospace;
+          font-size: 0.55rem;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #f5f0e8;
+          background: rgba(44,36,22,0.75);
+          padding: 0.25rem 0.4rem;
+          text-align: center;
+        ">${this.caption}</div>
+      `;
+      this.getPanes().overlayLayer.appendChild(this.div);
+    }
+    draw() {
+      const projection = this.getProjection();
+      if (!projection || !this.div) return;
+      const point = projection.fromLatLngToDivPixel(this.position);
+      if (point) {
+        this.div.style.left = (point.x - this.widthPx / 2) + 'px';
+        this.div.style.top = (point.y - 180) + 'px'; // lift above ground anchor
+      }
+    }
+    onRemove() {
+      if (this.div) {
+        this.div.parentNode.removeChild(this.div);
+        this.div = null;
+      }
+    }
+  }
 
   function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
@@ -306,6 +370,18 @@
           title: STOP.name
         });
         svMarker.addListener('click', () => infoWindow.open(panorama, svMarker));
+
+        // Archive photo, anchored in place inside the panorama
+        if (STOP.archiveImage) {
+          const overlayPosition = new google.maps.LatLng(STOP.archiveImage.lat, STOP.archiveImage.lng);
+          const archiveOverlay = new ArchiveOverlay(
+            overlayPosition,
+            STOP.archiveImage.src,
+            STOP.archiveImage.width,
+            STOP.archiveImage.caption
+          );
+          archiveOverlay.setMap(panorama);
+        }
       } else {
         svPano.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-family:monospace;font-size:0.75rem;color:#73604a;text-align:center;padding:2rem;">No Street View imagery available within 80m of this stop.</div>';
       }
