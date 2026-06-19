@@ -622,7 +622,7 @@ a-scene { position: absolute; inset: 0; }
     <a class="all-trails-link" href="./index.html">&larr; All trails</a>
     <div class="trail-header-row">
       <span class="trail-header-title">The Megalithic Trail</span>
-      <span class="trail-header-count" id="trail-count">0 of 4 visited</span>
+      <span class="trail-header-count" id="trail-count"></span>
     </div>
   </div>
 
@@ -908,6 +908,7 @@ function buildTrailList() {
     card.onclick = () => openStop(stop.id);
     list.appendChild(card);
   });
+  updateTrailCount();
 }
 
 function updateTrailCount() {
