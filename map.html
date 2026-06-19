@@ -321,7 +321,7 @@
     </div>
 
     <div class="legend" id="mapLegend">
-      <div class="legend-title">Trails</div>
+      <div class="legend-title">Jump to trail start</div>
     </div>
   </div>
 </div>
@@ -387,12 +387,12 @@
       group.appendChild(stopsList);
       trailList.appendChild(group);
 
-      // Legend entry — clicking it does the same thing as the sidebar button
+      // Legend entry — jumps map to this trail's starting stop
       const li = document.createElement('div');
       li.className = 'legend-item';
       li.style.cursor = 'pointer';
       li.innerHTML = `<span class="legend-dot" style="background:${trail.color}"></span><span>${trail.label}</span>`;
-      li.addEventListener('click', () => toggleTrail(trail.id, btn, stopsList));
+      li.addEventListener('click', () => jumpToTrailStart(trail));
       legend.appendChild(li);
     });
   }
@@ -413,6 +413,15 @@
         map.setZoom(id === 'plunkett' || id === 'diaspora' ? 5 : 15);
       }
     }
+  }
+
+  // Jump map straight to a trail's first stop — used by the legend shortcut
+  function jumpToTrailStart(trail) {
+    if (!map || !trail.stops.length) return;
+    const start = trail.stops[0];
+    map.panTo({ lat: start.lat, lng: start.lng });
+    map.setZoom(17);
+    focusStop(trail, start);
   }
 
   // ── Map init (called by Google Maps callback) ──────────────────────────────
