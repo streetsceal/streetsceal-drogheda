@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreetScéal — Virtual Visit Prototype</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #f5f0e8;
+    color: #2c2416;
+    min-height: 100vh;
+  }
+
+  header {
+    padding: 1.5rem 2rem 1rem;
+    border-bottom: 1px solid #d8ceba;
+    background: #f5f0e8;
+  }
+
+  header a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  header h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+  }
+
+  header h1 em {
+    font-style: italic;
+    color: #8b5e2a;
+  }
+
+  header p {
+    font-size: 0.78rem;
+    color: #73604a;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-family: 'Courier New', monospace;
+    margin-top: 0.3rem;
+  }
+
+  .proto-banner {
+    background: #ede8dc;
+    border-bottom: 1px solid #d8ceba;
+    padding: 0.7rem 2rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #875a2b;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    min-height: calc(100vh - 130px);
+  }
+
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  .map-pane, .street-pane {
+    position: relative;
+    min-height: 360px;
+  }
+
+  .map-pane { border-right: 1px solid #d8ceba; }
+
+  #map, #street-view {
+    width: 100%;
+    height: 100%;
+    min-height: 360px;
+  }
+
+  .pane-label {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    background: rgba(245,240,232,0.92);
+    border: 1px solid #d8ceba;
+    padding: 0.35rem 0.7rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #5a4a32;
+    z-index: 10;
+  }
+
+  .info-card {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #d8ceba;
+    background: #ede8dc;
+  }
+
+  .info-eyebrow {
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #8b5e2a;
+    margin-bottom: 0.4rem;
+  }
+
+  .info-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.4rem;
+    font-style: italic;
+    margin-bottom: 0.3rem;
+  }
+
+  .info-subtitle {
+    font-size: 0.85rem;
+    color: #5a4a32;
+    margin-bottom: 1rem;
+  }
+
+  .audio-block {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #f5f0e8;
+    border: 1px solid #d8ceba;
+    padding: 1rem 1.2rem;
+    max-width: 420px;
+  }
+
+  .audio-play-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #8b5e2a;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .audio-play-btn svg { fill: #f5f0e8; margin-left: 2px; }
+
+  .audio-meta {
+    font-family: 'Courier New', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #73604a;
+  }
+
+  .audio-unavailable {
+    font-style: italic;
+    font-size: 0.82rem;
+    color: #73604a;
+    max-width: 420px;
+  }
+
+  .info-window-content {
+    font-family: 'Inter', sans-serif;
+    padding: 0.3rem;
+    max-width: 220px;
+  }
+
+  .info-window-content h3 {
+    font-family: 'Poppins', sans-serif;
+    font-style: italic;
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+    color: #2c2416;
+  }
+
+  .info-window-content p {
+    font-size: 0.8rem;
+    color: #5a4a32;
+    margin-bottom: 0.6rem;
+    line-height: 1.4;
+  }
+
+  .info-window-content button {
+    font-family: 'Courier New', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #f5f0e8;
+    background: #8b5e2a;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="https://streetsceal.ie">
+    <h1>Street<em>Scéal</em> — Virtual Visit</h1>
+  </a>
+  <p>Prototype · St Laurence's Gate</p>
+</header>
+
+<div class="proto-banner">
+  Prototype only — not yet linked from the live site
+</div>
+
+<div class="layout">
+  <div class="map-pane">
+    <div class="pane-label">Map</div>
+    <div id="map"></div>
+  </div>
+  <div class="street-pane">
+    <div class="pane-label">Street View</div>
+    <div id="street-view"></div>
+  </div>
+</div>
+
+<div class="info-card">
+  <div class="info-eyebrow">13th century · Medieval · Architecture</div>
+  <h2 class="info-title">St Laurence's Gate</h2>
+  <p class="info-subtitle">Laurence Street, Drogheda — the last gate of the walled town</p>
+
+  <div id="audio-area">
+    <!-- Filled in by JS depending on whether audio exists for this stop -->
+  </div>
+</div>
+
+<script>
+  const STOP = {
+    name: "St Laurence's Gate",
+    desc: "The last gate of the walled town",
+    lat: 53.715903,
+    lng: -6.346927,
+    audioSrc: null // no audio assigned to this stop yet in trails.json
+  };
+
+  let map, panorama, streetViewService;
+
+  function initMap() {
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: { lat: STOP.lat, lng: STOP.lng },
+      zoom: 17,
+      styles: [
+        { elementType: 'geometry', stylers: [{ color: '#ebe5d8' }] },
+        { elementType: 'labels.text.fill', stylers: [{ color: '#6b5840' }] },
+        { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#f5f0e4' }] },
+        { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#a8c8d8' }] }
+      ],
+      streetViewControl: false
+    });
+
+    const marker = new google.maps.Marker({
+      position: { lat: STOP.lat, lng: STOP.lng },
+      map,
+      title: STOP.name,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 8,
+        fillColor: '#8b5e2a',
+        fillOpacity: 1,
+        strokeColor: '#f5f0e8',
+        strokeWeight: 2
+      }
+    });
+
+    const infoWindow = new google.maps.InfoWindow({
+      content: `
+        <div class="info-window-content">
+          <h3>${STOP.name}</h3>
+          <p>${STOP.desc}</p>
+          <button onclick="document.getElementById('audio-area').scrollIntoView({behavior:'smooth'})">
+            Hear the story
+          </button>
+        </div>
+      `
+    });
+
+    marker.addListener('click', () => infoWindow.open(map, marker));
+
+    streetViewService = new google.maps.StreetViewService();
+    const svPano = document.getElementById('street-view');
+
+    panorama = new google.maps.StreetViewPanorama(svPano, {
+      position: { lat: STOP.lat, lng: STOP.lng },
+      pov: { heading: 0, pitch: 0 },
+      zoom: 1
+    });
+
+    // Find the nearest actual Street View imagery to this point
+    streetViewService.getPanorama({ location: { lat: STOP.lat, lng: STOP.lng }, radius: 80 }, (data, status) => {
+      if (status === 'OK') {
+        panorama.setPano(data.location.pano);
+        panorama.setPov({ heading: 270, pitch: 0 });
+
+        // Same marker, now inside the Street View panorama
+        const svMarker = new google.maps.Marker({
+          position: { lat: STOP.lat, lng: STOP.lng },
+          map: panorama,
+          title: STOP.name
+        });
+        svMarker.addListener('click', () => infoWindow.open(panorama, svMarker));
+      } else {
+        svPano.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-family:monospace;font-size:0.75rem;color:#73604a;text-align:center;padding:2rem;">No Street View imagery available within 80m of this stop.</div>';
+      }
+    });
+
+    renderAudioArea();
+  }
+
+  function renderAudioArea() {
+    const area = document.getElementById('audio-area');
+    if (STOP.audioSrc) {
+      area.innerHTML = `
+        <div class="audio-block">
+          <button class="audio-play-btn" onclick="document.getElementById('stop-audio').play()">
+            <svg width="14" height="14" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </button>
+          <div>
+            <div class="audio-meta">Archive audio</div>
+            <audio id="stop-audio" src="${STOP.audioSrc}"></audio>
+          </div>
+        </div>
+      `;
+    } else {
+      area.innerHTML = `<p class="audio-unavailable">No audio has been assigned to this stop yet — when one is added to trails.json, it will play here automatically.</p>`;
+    }
+  }
+
+  function loadGoogleMaps() {
+    const script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyASmpOeRPerSlZ7WcyEo_ecdFEAd4pIP3E&callback=initMap';
+    script.async = true;
+    document.head.appendChild(script);
+  }
+
+  loadGoogleMaps();
+</script>
+
+</body>
+</html>
