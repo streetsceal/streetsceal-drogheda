@@ -49,7 +49,7 @@ html, body {
   transition: opacity 0.8s ease;
   z-index: 10;
 }
-.screen.hidden { opacity: 0; pointer-events: none; }
+.screen.hidden { opacity: 0; pointer-events: none; visibility: hidden; }
 /* ── Entry Screen ─────────────────────────────────────────────── */
 #screen-entry {
   background: var(--paper);
@@ -726,8 +726,8 @@ const STOPS = [
     text: `In July 1825 the Drogheda Steam Packet Company was formed, and within a year the paddle steamer Town of Drogheda was making the crossing to Liverpool — fourteen hours that changed how the town connected to the world. By 1849 the route ran daily, and continued for the better part of eighty years, carrying cattle, linen yarn, and passengers leaving for work or necessity. Not every crossing ended safely: in April 1847, a ship carrying grain for a starving country caught fire on the approach, and lives were lost in the rescue. This is the departure point. This stop connects the Diaspora Trail to the Town Trail — the same quay, the same fourteen hours to Liverpool.`,
     audioLabel: 'Quayside — the Steampacket years',
     audioDuration: '0:00',
-    lat: 53.7173,
-    lng: -6.3530,
+    lat: 53.713810,
+    lng: -6.348835,
     tags: ['town trail', 'linking stop', 'steampacket'],
     audioSrc: null,
     imageSrc: null
@@ -743,8 +743,8 @@ const STOPS = [
     text: `St Peter's Church holds the shrine of Oliver Plunkett, whose own life traced a path across Europe and back centuries before economic emigration sent so many more from this town in the same directions. This stop connects the Diaspora Trail to the Plunkett Trail — two different kinds of leaving, the same departure point.`,
     audioLabel: `St Peter's Church — Drogheda and Europe`,
     audioDuration: '0:00',
-    lat: 53.7185,
-    lng: -6.3558,
+    lat: 53.715034,
+    lng: -6.352422,
     tags: ['plunkett trail', 'linking stop', 'europe'],
     audioSrc: './audio/GoodLuckYoungSage.wav',
     imageSrc: './targets/st-peters.mind'
