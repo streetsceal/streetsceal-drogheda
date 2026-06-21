@@ -197,8 +197,6 @@ html, body {
   background: rgba(139, 94, 42, 0.08);
   border-left: 2px solid var(--rust);
 }
-.stop-card.locked { opacity: 0.75; }
-.stop-card.locked:hover { background: var(--ghost); }
 .stop-number {
   font-family: var(--mono);
   font-size: 0.6rem;
@@ -981,14 +979,12 @@ function updateProximity() {
     const near = d < 80; // within 80m
     const dot = near ? '<span class="proximity-dot near"></span>' : '<span class="proximity-dot"></span>';
     if (near) {
-      card.classList.remove('locked');
       card.classList.add('active');
       prox.innerHTML = dot + 'You are here';
       if (!visitedStops.has(stop.id)) showToast(`${stop.name} — tap to explore`);
     } else {
       const label = d < 1000 ? Math.round(d) + 'm' : (d/1000).toFixed(1) + 'km';
       prox.innerHTML = dot + label;
-      if (d > 200) card.classList.add('locked');
     }
   });
 }
