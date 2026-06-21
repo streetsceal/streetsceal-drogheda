@@ -364,8 +364,8 @@
     // coordinate, so the viewpoint isn't standing right underneath it.
     // This offset point is an estimate of the street's direction —
     // adjust viewpointLat/Lng below if Street View still snaps too close.
-    const viewpointLat = 53.715801;
-    const viewpointLng = -6.347323;
+    const viewpointLat = 53.715778;
+    const viewpointLng = -6.347269;
     streetViewService.getPanorama({ location: { lat: viewpointLat, lng: viewpointLng }, radius: STOP.viewpointSearchRadius }, (data, status) => {
       if (status === 'OK') {
         panorama.setPano(data.location.pano);
