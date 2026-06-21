@@ -252,62 +252,63 @@
   };
 
   let map, panorama, streetViewService;
-
-  // ── Archive image overlay ───────────────────────────────────────────────
-  // Anchors a real-world archive photo to a LatLng inside the Street View
-  // panorama, so it appears to hang in place as the user looks around.
-  class ArchiveOverlay extends google.maps.OverlayView {
-    constructor(position, imageSrc, widthPx, caption) {
-      super();
-      this.position = position;
-      this.imageSrc = imageSrc;
-      this.widthPx = widthPx;
-      this.caption = caption;
-      this.div = null;
-    }
-    onAdd() {
-      this.div = document.createElement('div');
-      this.div.style.position = 'absolute';
-      this.div.style.cursor = 'pointer';
-      this.div.innerHTML = `
-        <img src="${this.imageSrc}" style="
-          width: ${this.widthPx}px;
-          display: block;
-          border: 3px solid #f5f0e8;
-          box-shadow: 0 4px 18px rgba(0,0,0,0.45);
-          opacity: 0.92;
-        ">
-        <div style="
-          font-family: 'Courier New', monospace;
-          font-size: 0.55rem;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          color: #f5f0e8;
-          background: rgba(44,36,22,0.75);
-          padding: 0.25rem 0.4rem;
-          text-align: center;
-        ">${this.caption}</div>
-      `;
-      this.getPanes().overlayLayer.appendChild(this.div);
-    }
-    draw() {
-      const projection = this.getProjection();
-      if (!projection || !this.div) return;
-      const point = projection.fromLatLngToDivPixel(this.position);
-      if (point) {
-        this.div.style.left = (point.x - this.widthPx / 2) + 'px';
-        this.div.style.top = (point.y - 180) + 'px'; // lift above ground anchor
-      }
-    }
-    onRemove() {
-      if (this.div) {
-        this.div.parentNode.removeChild(this.div);
-        this.div = null;
-      }
-    }
-  }
+  let ArchiveOverlay; // defined inside initMap, once google.maps actually exists
 
   function initMap() {
+    // ── Archive image overlay ─────────────────────────────────────────────
+    // Defined here, not at the top of the script, because google.maps
+    // doesn't exist until this point — defining it earlier crashes the
+    // whole script before initMap is even called.
+    ArchiveOverlay = class extends google.maps.OverlayView {
+      constructor(position, imageSrc, widthPx, caption) {
+        super();
+        this.position = position;
+        this.imageSrc = imageSrc;
+        this.widthPx = widthPx;
+        this.caption = caption;
+        this.div = null;
+      }
+      onAdd() {
+        this.div = document.createElement('div');
+        this.div.style.position = 'absolute';
+        this.div.style.cursor = 'pointer';
+        this.div.innerHTML = `
+          <img src="${this.imageSrc}" style="
+            width: ${this.widthPx}px;
+            display: block;
+            border: 3px solid #f5f0e8;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+            opacity: 0.92;
+          ">
+          <div style="
+            font-family: 'Courier New', monospace;
+            font-size: 0.55rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #f5f0e8;
+            background: rgba(44,36,22,0.75);
+            padding: 0.25rem 0.4rem;
+            text-align: center;
+          ">${this.caption}</div>
+        `;
+        this.getPanes().overlayLayer.appendChild(this.div);
+      }
+      draw() {
+        const projection = this.getProjection();
+        if (!projection || !this.div) return;
+        const point = projection.fromLatLngToDivPixel(this.position);
+        if (point) {
+          this.div.style.left = (point.x - this.widthPx / 2) + 'px';
+          this.div.style.top = (point.y - 180) + 'px'; // lift above ground anchor
+        }
+      }
+      onRemove() {
+        if (this.div) {
+          this.div.parentNode.removeChild(this.div);
+          this.div = null;
+        }
+      }
+    };
     map = new google.maps.Map(document.getElementById('map'), {
       center: { lat: STOP.lat, lng: STOP.lng },
       zoom: 17,

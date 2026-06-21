@@ -10,594 +10,670 @@
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
-  /* ── Tokens ───────────────────────────────────────────────────── */
-:root {
-  --ink: #2c2416;
-  --paper: #f5f0e8;
-  --paper-soft: #ede8dc;
-  --paper-dark: #5a4a32;
-  --paper-muted: #73604a;
-  --rust: #8b5e2a;
-  --rust-light: #875a2b;
-  --ghost: rgba(44, 36, 22, 0.04);
-  --fog: rgba(245, 240, 232, 0.85);
-  --line: #d8ceba;
-  --display: 'Poppins', sans-serif;
-  --body: 'Inter', -apple-system, sans-serif;
-  --mono: 'Courier New', monospace;
-}
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;1,400&family=Inter:ital,wght@0,400;0,500;0,600;1,400&display=swap');
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-  height: 100%;
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--body);
-  font-size: 16px;
-  line-height: 1.6;
-  overflow: hidden;
-}
-/* ── Screens ──────────────────────────────────────────────────── */
-.screen {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 1.5rem;
-  transition: opacity 0.8s ease;
-  z-index: 10;
-}
-.screen.hidden { opacity: 0; pointer-events: none; }
-/* ── Entry Screen ─────────────────────────────────────────────── */
-#screen-entry {
-  background: var(--paper);
-  text-align: center;
-  gap: 0;
-}
-.entry-rule {
-  width: 1px;
-  height: 60px;
-  background: var(--rust);
-  margin: 0 auto 2rem;
-}
-.entry-eyebrow {
-  font-family: var(--mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--rust-light);
-  margin-bottom: 1.5rem;
-}
-.entry-title {
-  font-family: var(--display);
-  font-size: clamp(2.4rem, 8vw, 3.8rem);
-  font-weight: 400;
-  line-height: 1.1;
-  color: var(--ink);
-  margin-bottom: 0.4rem;
-}
-.entry-title em {
-  font-style: italic;
-  color: var(--rust);
-}
-.entry-subtitle {
-  font-family: var(--body);
-  font-style: italic;
-  font-size: 1rem;
-  color: var(--paper-dark);
-  margin-bottom: 3rem;
-  max-width: 280px;
-  line-height: 1.5;
-}
-.entry-location {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  color: var(--rust);
-  margin-bottom: 3rem;
-  text-transform: uppercase;
-}
-/* Signature element: the grain texture overlay */
-#screen-entry::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
-  background-size: 256px;
-  pointer-events: none;
-  opacity: 0.5;
-  z-index: 0;
-}
-#screen-entry > * { position: relative; z-index: 1; }
-/* ── Button ───────────────────────────────────────────────────── */
-.btn-primary {
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--ink);
-  background: transparent;
-  border: 1px solid var(--rust);
-  padding: 0.9rem 2.2rem;
-  cursor: pointer;
-  transition: background 0.3s, color 0.3s;
-}
-.btn-primary:hover, .btn-primary:focus {
-  background: var(--rust);
-  color: var(--paper);
-  outline: none;
-}
-/* ── Trail Screen ─────────────────────────────────────────────── */
-#screen-trail {
-  background: var(--paper);
-  justify-content: flex-start;
-  padding: 0;
-  overflow-y: auto;
-}
-.trail-header {
-  width: 100%;
-  padding: 1rem 1.5rem 1rem;
-  background: var(--paper-soft);
-  border-bottom: 1px solid var(--line);
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-.all-trails-link {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--rust-light);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  width: fit-content;
-}
-.all-trails-link:hover { color: var(--ink); }
-.trail-header-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  width: 100%;
-}
-.trail-header-title {
-  font-family: var(--display);
-  font-size: 1.1rem;
-  font-style: italic;
-  color: var(--rust);
-}
-.trail-header-count {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.15em;
-  color: var(--rust);
-  text-transform: uppercase;
-}
-.trail-list {
-  width: 100%;
-  padding: 1rem 0 6rem;
-}
-.stop-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.2rem;
-  padding: 1.4rem 1.5rem;
-  border-bottom: 1px solid var(--line);
-  cursor: pointer;
-  transition: background 0.2s;
-  position: relative;
-}
-.stop-card:hover { background: var(--ghost); }
-.stop-card.active {
-  background: rgba(139, 94, 42, 0.08);
-  border-left: 2px solid var(--rust);
-}
-.stop-card.locked { opacity: 0.75; }
-.stop-card.locked:hover { background: var(--ghost); }
-.stop-number {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  color: var(--rust);
-  letter-spacing: 0.1em;
-  padding-top: 0.2rem;
-  min-width: 2rem;
-}
-.stop-info { flex: 1; }
-.stop-name {
-  font-family: var(--display);
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--ink);
-  margin-bottom: 0.2rem;
-}
-.stop-description {
-  font-family: var(--body);
-  font-style: italic;
-  font-size: 0.82rem;
-  color: var(--paper-muted);
-  line-height: 1.45;
-  margin-bottom: 0.5rem;
-}
-.stop-meta {
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--rust-light);
-}
-.stop-proximity {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  color: var(--paper-muted);
-  text-align: right;
-  white-space: nowrap;
-  padding-top: 0.2rem;
-}
-.proximity-dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--rust);
-  margin-right: 0.3rem;
-  vertical-align: middle;
-}
-.proximity-dot.near { background: #4a7a3a; animation: pulse 1.8s infinite; }
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.4); }
-}
-/* ── GPS Status bar ───────────────────────────────────────────── */
-.gps-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--paper-soft);
-  border-top: 1px solid var(--line);
-  padding: 0.8rem 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  z-index: 20;
-}
-.gps-icon {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--rust);
-  flex-shrink: 0;
-}
-.gps-icon.active { background: #4a7a3a; animation: pulse 2s infinite; }
-.gps-text {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--paper-muted);
-  flex: 1;
-}
-/* ── Stop Detail Screen ───────────────────────────────────────── */
-#screen-stop {
-  background: var(--paper);
-  justify-content: flex-start;
-  padding: 0.8rem 1rem;
-  overflow-y: auto;
-  z-index: 30;
-}
-.stop-header {
-  width: 100%;
-  padding: 2rem 1.5rem 1.5rem;
-  background: linear-gradient(180deg, rgba(139,94,42,0.10) 0%, transparent 100%);
-}
-.back-btn {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--rust-light);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.stop-detail-eyebrow {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--rust);
-  margin-bottom: 0.6rem;
-}
-.stop-detail-title {
-  font-family: var(--display);
-  font-size: clamp(1.6rem, 6vw, 2.4rem);
-  font-weight: 700;
-  color: var(--ink);
-  line-height: 1.15;
-  margin-bottom: 0.5rem;
-}
-.stop-detail-subtitle {
-  font-family: var(--body);
-  font-style: italic;
-  color: var(--paper-dark);
-  font-size: 0.9rem;
-}
-.stop-body {
-  padding: 1.5rem 1.5rem 8rem;
-}
-.stop-lore {
-  font-family: var(--body);
-  font-size: 0.95rem;
-  line-height: 1.75;
-  color: var(--paper-dark);
-  margin-bottom: 2rem;
-  border-left: 2px solid var(--rust);
-  padding-left: 1rem;
-  font-style: italic;
-}
-.stop-text {
-  font-family: var(--body);
-  font-size: 0.95rem;
-  line-height: 1.75;
-  color: var(--ink);
-  margin-bottom: 2rem;
-}
-/* Audio player */
-.audio-block {
-  background: rgba(139,94,42,0.04);
-  border: 1px solid var(--line);
-  padding: 1.2rem;
-  margin-bottom: 2rem;
-}
-.audio-label {
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--rust);
-  margin-bottom: 0.8rem;
-}
-.audio-player {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-.audio-play-btn {
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  background: var(--rust);
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: background 0.2s;
-}
-.audio-play-btn:hover { background: var(--rust-light); }
-.audio-play-btn svg { margin-left: 2px; }
-.audio-waveform {
-  flex: 1;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-.wave-bar {
-  flex: 1;
-  background: rgba(139,94,42,0.2);
-  border-radius: 1px;
-  transition: background 0.3s;
-}
-.audio-duration {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  color: var(--paper-muted);
-}
-/* AR launch (button on stop-detail screen, still styled even though AR view itself is now parchment too) */
-.location-image-block {
-  margin-bottom: 1.5rem;
-}
-.location-image-frame {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: rgba(139,94,42,0.03);
-}
-.location-image-frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  filter: grayscale(8%) contrast(1.02) brightness(1.02);
-}
-.location-image-caption {
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--rust-light);
-  padding: 0.6rem 0.2rem 0;
-}
-.location-image-frame::before,
-.location-image-frame::after {
-  content: '';
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  border-color: var(--rust);
-  pointer-events: none;
-}
-.location-image-frame::before {
-  top: 8px; left: 8px;
-  border-width: 1.5px 0 0 1.5px;
-}
-.location-image-frame::after {
-  bottom: 8px; right: 8px;
-  border-width: 0 1.5px 1.5px 0;
-}
-.location-image-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(107,88,64,0.35);
-  text-align: center;
-  padding: 1rem;
-}
-.ar-launch-btn {
-  width: 100%;
-  padding: 1.1rem;
-  background: transparent;
-  border: 1px solid var(--rust);
-  color: var(--ink);
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.8rem;
-  transition: background 0.3s, color 0.3s;
-  margin-bottom: 1rem;
-}
-.ar-launch-btn:hover { background: rgba(139,94,42,0.12); }
-.ar-icon {
-  width: 18px; height: 18px;
-  opacity: 0.85;
-}
-.ar-note {
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.08em;
-  color: rgba(107,88,64,0.55);
-  text-align: center;
-  line-height: 1.5;
-}
-/* ── AR Screen — now parchment per request ──────────────────────
-   Camera feed still shows through; overlay chrome reads as warm
-   paper-toned UI rather than the previous black/dark scheme. */
-#screen-ar {
-  background: var(--paper);
-  z-index: 100;
-  padding: 0;
-  justify-content: flex-start;
-  pointer-events: none;
-}
-#ar-scene-container {
-  position: absolute;
-  inset: 0;
-}
-.ar-ui-overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 200;
-}
-.ar-top-bar {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  padding: 1.2rem 1.5rem;
-  background: linear-gradient(180deg, rgba(245,240,232,0.92) 0%, rgba(245,240,232,0) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  pointer-events: none;
-}
-.ar-stop-name {
-  font-family: var(--display);
-  font-size: 1rem;
-  font-style: italic;
-  color: var(--ink);
-}
-.ar-close-btn {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--paper-dark);
-  background: var(--paper);
-  border: 1px solid rgba(139,94,42,0.4);
-  padding: 0.4rem 0.8rem;
-  cursor: pointer;
-  pointer-events: auto;
-}
-.ar-hint {
-  position: absolute;
-  bottom: 2.5rem; left: 0; right: 0;
-  text-align: center;
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--ink);
-  background: rgba(245,240,232,0.55);
-  padding: 0.5rem 0;
-  animation: fadeInOut 3s ease 1s forwards;
-}
-@keyframes fadeInOut {
-  0% { opacity: 0; }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { opacity: 0; }
-}
-/* Corner frame — the signature AR element */
-.ar-frame-corner {
-  position: absolute;
-  width: 28px; height: 28px;
-  border-color: var(--rust);
-  border-style: solid;
-  opacity: 0.8;
-}
-.ar-frame-corner.tl { top: 80px; left: 24px; border-width: 2px 0 0 2px; }
-.ar-frame-corner.tr { top: 80px; right: 24px; border-width: 2px 2px 0 0; }
-.ar-frame-corner.bl { bottom: 80px; left: 24px; border-width: 0 0 2px 2px; }
-.ar-frame-corner.br { bottom: 80px; right: 24px; border-width: 0 2px 2px 0; }
-/* ── AR Scene styles (A-Frame overrides) ──────────────────────── */
-a-scene { position: absolute; inset: 0; }
-/* ── Notification toast ───────────────────────────────────────── */
-#toast {
-  position: fixed;
-  bottom: 5rem;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--rust);
-  color: var(--paper);
-  font-family: var(--mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 0.7rem 1.2rem;
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.3s, transform 0.3s;
-  z-index: 1000;
-  pointer-events: none;
-}
-#toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-/* scrollbar */
-::-webkit-scrollbar { width: 2px; }
-::-webkit-scrollbar-thumb { background: var(--rust); }
+    /* ── Tokens ───────────────────────────────────────────────────── */
+    :root {
+      --ink:        #1a1612;
+      --paper:      #e8e0d0;
+      --paper-dark: #cfc5b0;
+      --rust:       #8b3a2a;
+      --rust-light: #a8503e;
+      --ghost:      rgba(232, 224, 208, 0.08);
+      --fog:        rgba(26, 22, 18, 0.72);
+
+      --display: 'Playfair Display', Georgia, serif;
+      --body:    'EB Garamond', 'Garamond', Georgia, serif;
+      --mono:    'Courier New', monospace;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--body);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow: hidden;
+    }
+
+    /* ── Screens ──────────────────────────────────────────────────── */
+    .screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      transition: opacity 0.8s ease;
+      z-index: 10;
+    }
+    .screen.hidden { opacity: 0; pointer-events: none; }
+
+    /* ── Entry Screen ─────────────────────────────────────────────── */
+    #screen-entry {
+      background: var(--ink);
+      text-align: center;
+      gap: 0;
+    }
+
+    .entry-rule {
+      width: 1px;
+      height: 60px;
+      background: var(--rust);
+      margin: 0 auto 2rem;
+    }
+
+    .entry-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--rust-light);
+      margin-bottom: 1.5rem;
+    }
+
+    .entry-title {
+      font-family: var(--display);
+      font-size: clamp(2.4rem, 8vw, 3.8rem);
+      font-weight: 400;
+      line-height: 1.1;
+      color: var(--paper);
+      margin-bottom: 0.4rem;
+    }
+
+    .entry-title em {
+      font-style: italic;
+      color: var(--paper-dark);
+    }
+
+    .entry-subtitle {
+      font-family: var(--body);
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--paper-dark);
+      margin-bottom: 3rem;
+      max-width: 280px;
+      line-height: 1.5;
+    }
+
+    .entry-location {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--rust);
+      margin-bottom: 3rem;
+      text-transform: uppercase;
+    }
+
+    /* Signature element: the grain texture overlay */
+    #screen-entry::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+      background-size: 256px;
+      pointer-events: none;
+      opacity: 0.4;
+      z-index: 0;
+    }
+    #screen-entry > * { position: relative; z-index: 1; }
+
+    /* ── Button ───────────────────────────────────────────────────── */
+    .btn-primary {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--paper);
+      background: transparent;
+      border: 1px solid var(--rust);
+      padding: 0.9rem 2.2rem;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+    .btn-primary:hover, .btn-primary:focus {
+      background: var(--rust);
+      color: var(--paper);
+      outline: none;
+    }
+
+    /* ── Trail Screen ─────────────────────────────────────────────── */
+    #screen-trail {
+      background: var(--ink);
+      justify-content: flex-start;
+      padding: 0;
+      overflow-y: auto;
+    }
+
+    .trail-header {
+      width: 100%;
+      padding: 1rem 1.5rem 1rem;
+      border-bottom: 1px solid rgba(232,224,208,0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .all-trails-link {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--rust-light);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      width: fit-content;
+    }
+    .all-trails-link:hover { color: var(--paper); }
+
+    .trail-header-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .trail-header-title {
+      font-family: var(--display);
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--paper-dark);
+    }
+
+    .trail-header-count {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: var(--rust);
+      text-transform: uppercase;
+    }
+
+    .trail-list {
+      width: 100%;
+      padding: 1rem 0 6rem;
+    }
+
+    .stop-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.2rem;
+      padding: 1.4rem 1.5rem;
+      border-bottom: 1px solid rgba(232,224,208,0.08);
+      cursor: pointer;
+      transition: background 0.2s;
+      position: relative;
+    }
+    .stop-card:hover { background: var(--ghost); }
+
+    .stop-card.active {
+      background: rgba(139, 58, 42, 0.12);
+      border-left: 2px solid var(--rust);
+    }
+
+    .stop-card.locked { opacity: 0.38; cursor: default; }
+    .stop-card.locked:hover { background: transparent; }
+
+    .stop-number {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--rust);
+      letter-spacing: 0.1em;
+      padding-top: 0.2rem;
+      min-width: 2rem;
+    }
+
+    .stop-info { flex: 1; }
+
+    .stop-name {
+      font-family: var(--display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--paper);
+      margin-bottom: 0.2rem;
+    }
+
+    .stop-description {
+      font-family: var(--body);
+      font-style: italic;
+      font-size: 0.82rem;
+      color: var(--paper-dark);
+      line-height: 1.45;
+      margin-bottom: 0.5rem;
+    }
+
+    .stop-meta {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--rust-light);
+    }
+
+    .stop-proximity {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--paper-dark);
+      text-align: right;
+      white-space: nowrap;
+      padding-top: 0.2rem;
+    }
+
+    .proximity-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--rust);
+      margin-right: 0.3rem;
+      vertical-align: middle;
+    }
+    .proximity-dot.near { background: #5a9a6a; animation: pulse 1.8s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(1.4); }
+    }
+
+    /* ── GPS Status bar ───────────────────────────────────────────── */
+    .gps-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--ink);
+      border-top: 1px solid rgba(232,224,208,0.12);
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      z-index: 20;
+    }
+
+    .gps-icon {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--rust);
+      flex-shrink: 0;
+    }
+    .gps-icon.active { background: #5a9a6a; animation: pulse 2s infinite; }
+
+    .gps-text {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--paper-dark);
+      flex: 1;
+    }
+
+    .gps-demo-btn {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--rust-light);
+      background: transparent;
+      border: 1px solid rgba(139,58,42,0.4);
+      padding: 0.3rem 0.7rem;
+      cursor: pointer;
+    }
+
+    /* ── Stop Detail Screen ───────────────────────────────────────── */
+    #screen-stop {
+      background: var(--ink);
+      justify-content: flex-start;
+      padding: 0.8rem 1rem;
+      overflow-y: auto;
+      z-index: 30;
+    }
+
+    .stop-header {
+      width: 100%;
+      padding: 2rem 1.5rem 1.5rem;
+      background: linear-gradient(180deg, rgba(139,58,42,0.15) 0%, transparent 100%);
+    }
+
+    .back-btn {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--rust-light);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .stop-detail-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 0.6rem;
+    }
+
+    .stop-detail-title {
+      font-family: var(--display);
+      font-size: clamp(1.6rem, 6vw, 2.4rem);
+      font-weight: 700;
+      color: var(--paper);
+      line-height: 1.15;
+      margin-bottom: 0.5rem;
+    }
+
+    .stop-detail-subtitle {
+      font-family: var(--body);
+      font-style: italic;
+      color: var(--paper-dark);
+      font-size: 0.9rem;
+    }
+
+    .stop-body {
+      padding: 1.5rem 1.5rem 8rem;
+    }
+
+    .stop-lore {
+      font-family: var(--body);
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: var(--paper-dark);
+      margin-bottom: 2rem;
+      border-left: 2px solid var(--rust);
+      padding-left: 1rem;
+      font-style: italic;
+    }
+
+    .stop-text {
+      font-family: var(--body);
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: var(--paper);
+      margin-bottom: 2rem;
+    }
+
+    /* Audio player */
+    .audio-block {
+      background: rgba(232,224,208,0.05);
+      border: 1px solid rgba(232,224,208,0.12);
+      padding: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .audio-label {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 0.8rem;
+    }
+
+    .audio-player {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .audio-play-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--rust);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    .audio-play-btn:hover { background: var(--rust-light); }
+    .audio-play-btn svg { margin-left: 2px; }
+
+    .audio-waveform {
+      flex: 1;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .wave-bar {
+      flex: 1;
+      background: rgba(232,224,208,0.2);
+      border-radius: 1px;
+      transition: background 0.3s;
+    }
+
+    .audio-duration {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--paper-dark);
+    }
+
+    /* AR launch */
+    .location-image-block {
+      margin-bottom: 1.5rem;
+    }
+
+    .location-image-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      border: 1px solid rgba(232,224,208,0.15);
+      background: rgba(232,224,208,0.04);
+    }
+
+    .location-image-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(15%) contrast(1.05);
+    }
+
+    .location-image-caption {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--rust-light);
+      padding: 0.6rem 0.2rem 0;
+    }
+
+    .location-image-frame::before,
+    .location-image-frame::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-color: var(--rust);
+      pointer-events: none;
+    }
+    .location-image-frame::before {
+      top: 8px; left: 8px;
+      border-width: 1.5px 0 0 1.5px;
+    }
+    .location-image-frame::after {
+      bottom: 8px; right: 8px;
+      border-width: 0 1.5px 1.5px 0;
+    }
+
+    .location-image-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(232,224,208,0.25);
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .ar-launch-btn {
+      width: 100%;
+      padding: 1.1rem;
+      background: transparent;
+      border: 1px solid var(--rust);
+      color: var(--paper);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      transition: background 0.3s;
+      margin-bottom: 1rem;
+    }
+    .ar-launch-btn:hover { background: rgba(139,58,42,0.2); }
+
+    .ar-icon {
+      width: 18px; height: 18px;
+      opacity: 0.8;
+    }
+
+    .ar-note {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.08em;
+      color: rgba(232,224,208,0.35);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* ── AR Screen ────────────────────────────────────────────────── */
+    #screen-ar {
+      background: #000;
+      z-index: 100;
+      padding: 0;
+      justify-content: flex-start;
+      pointer-events: none;
+    }
+
+    #ar-scene-container {
+      position: absolute;
+      inset: 0;
+    }
+
+    .ar-ui-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 200;
+    }
+
+    .ar-top-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      padding: 1.2rem 1.5rem;
+      background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .ar-stop-name {
+      font-family: var(--display);
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--paper);
+    }
+
+    .ar-close-btn {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--paper-dark);
+      background: none;
+      border: 1px solid rgba(232,224,208,0.3);
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+       pointer-events: auto;
+    }
+
+    .ar-hint {
+      position: absolute;
+      bottom: 2.5rem; left: 0; right: 0;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(232,224,208,0.5);
+      animation: fadeInOut 3s ease 1s forwards;
+    }
+
+    @keyframes fadeInOut {
+      0%   { opacity: 0; }
+      20%  { opacity: 1; }
+      80%  { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* Corner frame — the signature AR element */
+    .ar-frame-corner {
+      position: absolute;
+      width: 28px; height: 28px;
+      border-color: var(--rust);
+      border-style: solid;
+      opacity: 0.7;
+    }
+    .ar-frame-corner.tl { top: 80px; left: 24px; border-width: 2px 0 0 2px; }
+    .ar-frame-corner.tr { top: 80px; right: 24px; border-width: 2px 2px 0 0; }
+    .ar-frame-corner.bl { bottom: 80px; left: 24px; border-width: 0 0 2px 2px; }
+    .ar-frame-corner.br { bottom: 80px; right: 24px; border-width: 0 2px 2px 0; }
+
+    /* ── AR Scene styles (A-Frame overrides) ──────────────────────── */
+    a-scene { position: absolute; inset: 0; }
+
+    /* ── Notification toast ───────────────────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--rust);
+      color: var(--paper);
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.7rem 1.2rem;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 2px; }
+    ::-webkit-scrollbar-thumb { background: var(--rust); }
   </style>
 </head>
 <body>
@@ -622,7 +698,7 @@ a-scene { position: absolute; inset: 0; }
     <a class="all-trails-link" href="./index.html">&larr; All trails</a>
     <div class="trail-header-row">
       <span class="trail-header-title">StreetScéal</span>
-      <span class="trail-header-count" id="trail-count"></span>
+      <span class="trail-header-count" id="trail-count">0 of 4 visited</span>
     </div>
   </div>
 
@@ -631,6 +707,7 @@ a-scene { position: absolute; inset: 0; }
   <div class="gps-bar">
     <div class="gps-icon" id="gps-icon"></div>
     <span class="gps-text" id="gps-text">Requesting location…</span>
+    <button class="gps-demo-btn" onclick="simulateNearby()">Demo mode</button>
   </div>
 </div>
 
@@ -750,8 +827,7 @@ const STOPS = [
     lng: -6.3545,
     tags: ['oral history', 'archive', 'commerce'],
     audioSrc: './audio/connollys-shop.mp3',
-    imageSrc: './targets/connollys-shop.mind',
-    locationImage: './assets/images/wogans.jpg'
+    imageSrc: './targets/connollys-shop.mind'
   },
   {
     id: 'millmount',
@@ -782,16 +858,58 @@ const STOPS = [
     text: "The barbican of St Laurence's Gate is the finest surviving example of a medieval town gate in Ireland. Generations have passed through this arch — merchants, pilgrims, soldiers, townspeople. To walk beneath it is to pass through every century at once.",
     audioLabel: 'Archival soundscape — medieval Drogheda',
     audioDuration: '2:55',
-    lat: 53.7200,
-    lng: -6.3475,
+    lat: 53.715960,
+    lng: -6.347152,
     tags: ['medieval', 'architecture', 'landscape'],
     audioSrc: null,
     imageSrc: './targets/laurences-gate.mind',
     locationImage: './assets/images/laurence-gate.jpg'
   },
   {
-    id: 'st-peters',
+    id: 'st-peters-church-of-ireland',
     number: '05',
+    name: `St Peter's Church of Ireland`,
+    subtitle: "Peter's Hill, Drogheda",
+    era: '1649–present',
+    description: 'Burned in the siege, rebuilt, full of strange and remarkable graves',
+    lore: `During the Siege of Drogheda in 1649, a group of defenders barricaded themselves in the steeple of the medieval church that stood here. Cromwell's forces set it alight. None survived.`,
+    text: `This is not the church most visitors come to Drogheda looking for — that is the Catholic St Peter's on West Street, with its shrine to Oliver Plunkett. This St Peter's, on Peter's Hill, is older and carries its own scars. During Cromwell's siege of the town in September 1649, defenders who barricaded themselves in the steeple were burned alive when Parliamentary forces set the church on fire. Around two thousand people died across the town in the storming that followed — soldiers and civilians alike, in a massacre that has never been forgotten.
+
+Oliver Plunkett was twenty-four years old in 1649, already two years into his training for the priesthood in Rome, having left Ireland specifically because Cromwell's regime was closing in on Catholic education and worship at home. The two stories — the burning steeple here, and the martyrdom that waited for Plunkett thirty-two years later at Tyburn — are not directly connected, but they rise from the same current: a century of conquest and persecution that shaped, and eventually claimed, a generation of Irish Catholic lives.
+
+The present church, rebuilt in Georgian style and consecrated in 1753, holds its own quieter histories. In the churchyard stands a sixteenth-century cadaver stone from the tomb of Sir Edmond Goldyng and his wife Elizabeth Fleming, carved with two shrouded skeletal figures — a rare survival of a memento mori tradition more common on the European continent than in Ireland. Buried here too is John Duggan, a Drogheda man who survived the Charge of the Light Brigade at Balaklava during the Crimean War, and who later served as sexton of this very church until his death in 1881.`,
+    audioLabel: "St Peter's Church of Ireland — fire, faith, and forgotten graves",
+    audioDuration: '0:00',
+    lat: 53.716747,
+    lng: -6.350144,
+    tags: ['cromwell', 'siege', 'graves'],
+    audioSrc: null,
+    imageSrc: null,
+    locationImage: null
+  },
+  {
+    id: 'siena-convent',
+    number: '06',
+    name: 'Siena Convent',
+    subtitle: 'Chord Road, Drogheda',
+    era: 'c.1725–1921',
+    description: 'Two centuries of secret keeping — a link to the Plunkett Trail',
+    lore: `The head of Oliver Plunkett was kept here by his own grand-niece, Sister Catherine Plunkett, prioress of the Dominican nuns at Siena. During the War of Independence, armed volunteers stood guard for fear the relic would be seized.`,
+    text: `After Rome, the relic of Plunkett's head was entrusted to the Dominican nuns of Siena Convent on Chord Road, around 1725. The community's prioress, Sister Catherine Plunkett, was his own grand-niece. For two centuries the sisters lived quietly, often disguising their convent as a boarding house for women to avoid the attention of the authorities during the Penal years — keeping faith with a relic that could not be openly displayed.
+
+That secrecy did not end with the eighteenth century. During the War of Independence, with the Black and Tans active in the town, armed republican volunteers were positioned around the Siena community to defend the relic against seizure or desecration. [PLACEHOLDER — confirm and insert exact detail from the Bureau of Military History witness statement naming a Murray family relative among those who stood guard, once located and verified in the BMH archive.] Within months, in June 1921, the relic was formally translated to its present shrine in St Peter's Church, just ahead. This stop connects the Town Trail to the Plunkett Trail.`,
+    audioLabel: 'Siena Convent — the long secret',
+    audioDuration: '0:00',
+    lat: 53.7178,
+    lng: -6.3502,
+    tags: ['plunkett trail', 'linking stop', 'war of independence'],
+    audioSrc: null,
+    imageSrc: null,
+    locationImage: null
+  },
+  {
+    id: 'st-peters',
+    number: '07',
     name: `St Peter's Church`,
     subtitle: 'West Street, Drogheda',
     era: '1921–present',
@@ -809,7 +927,7 @@ const STOPS = [
   },
   {
     id: 'quayside',
-    number: '06',
+    number: '08',
     name: 'The Quayside',
     subtitle: 'West Gate, River Boyne, Drogheda',
     era: '1826–1902',
@@ -837,6 +955,7 @@ let visitedStops = new Set();
 let audioPlaying = false;
 let audioTick = null;
 let audioSeconds = 0;
+let demoIndex = 0;
 
 // ── Audio unlock for mobile ──────────────────────────────────────────
 function unlockAudio() {
@@ -877,7 +996,7 @@ function buildTrailList() {
   list.innerHTML = '';
   STOPS.forEach(stop => {
     const card = document.createElement('div');
-    card.className = 'stop-card';
+    card.className = 'stop-card locked';
     card.id = 'card-' + stop.id;
     card.innerHTML = `
       <span class="stop-number">${stop.number}</span>
@@ -889,10 +1008,11 @@ function buildTrailList() {
       <div class="stop-proximity" id="prox-${stop.id}">
         <span class="proximity-dot"></span>—
       </div>`;
-    card.onclick = () => openStop(stop.id);
+    card.onclick = () => {
+      if (!card.classList.contains('locked')) openStop(stop.id);
+    };
     list.appendChild(card);
   });
-  updateTrailCount();
 }
 
 function updateTrailCount() {
@@ -903,7 +1023,8 @@ function updateTrailCount() {
 // ── GPS ──────────────────────────────────────────────────────────────
 function startGPS() {
   if (!navigator.geolocation) {
-    setGPSStatus(false, 'Geolocation not available on this device');
+    setGPSStatus(false, 'Geolocation not available');
+    unlockAllForDemo();
     return;
   }
   setGPSStatus(false, 'Finding your location…');
@@ -915,7 +1036,8 @@ function startGPS() {
       updateProximity();
     },
     err => {
-      setGPSStatus(false, 'Location unavailable — enable GPS to unlock stops');
+      setGPSStatus(false, 'Location unavailable — use Demo mode');
+      unlockAllForDemo();
     },
     { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
   );
@@ -955,6 +1077,31 @@ function updateProximity() {
       if (d > 200) card.classList.add('locked');
     }
   });
+}
+
+// Demo mode — cycle through stops one by one
+function simulateNearby() {
+  unlockAllForDemo();
+  const stop = STOPS[demoIndex % STOPS.length];
+  showToast(`Demo: ${stop.name}`);
+  const card = document.getElementById('card-' + stop.id);
+  card.classList.add('active');
+  document.getElementById('prox-' + stop.id).innerHTML =
+    '<span class="proximity-dot near"></span>Demo mode';
+  demoIndex++;
+}
+
+function unlockAllForDemo() {
+  STOPS.forEach(stop => {
+    const card = document.getElementById('card-' + stop.id);
+    if (card) {
+      card.classList.remove('locked');
+      card.classList.add('active');
+      const prox = document.getElementById('prox-' + stop.id);
+      if (prox) prox.innerHTML = '<span class="proximity-dot near"></span>Demo mode';
+    }
+  });
+  setGPSStatus(false, 'Demo mode — all stops unlocked');
 }
 
 // ── Stop detail ──────────────────────────────────────────────────────
