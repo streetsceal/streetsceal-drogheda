@@ -412,7 +412,7 @@
 
   function loadGoogleMaps() {
     const script = document.createElement('script');
-    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyASmpOeRPerSlZ7WcyEo_ecdFEAd4pIP3E&callback=initMap';
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyASmpOeRPerSlZ7WcyEo_ecdFEAd4pIP3E&loading=async&callback=initMap';
     script.async = true;
     document.head.appendChild(script);
   }
