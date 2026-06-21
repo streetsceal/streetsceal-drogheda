@@ -236,16 +236,16 @@
   const STOP = {
     name: "St Laurence's Gate",
     desc: "The last gate of the walled town",
-    lat: 53.715768,
-    lng: -6.347245,
+    lat: 53.715973,
+    lng: -6.347079,
     audioSrc: null, // no audio assigned to this stop yet in trails.json
     archiveImage: {
       src: "laurence-gate-archive.jpg",
       // Position the overlay slightly offset from the marker itself —
       // tune these by eye once the real photo is in, so it sits where
       // the historic structure actually stood relative to today's view.
-      lat: 53.715863,
-      lng: -6.347528,
+      lat: 53.715973,
+      lng: -6.347079,
       width: 140,   // px width of the overlay at panorama zoom level 1
       caption: "Archive photo (placeholder) — replace src above with the real scan"
     }
@@ -362,7 +362,7 @@
     streetViewService.getPanorama({ location: { lat: STOP.lat, lng: STOP.lng }, radius: 80 }, (data, status) => {
       if (status === 'OK') {
         panorama.setPano(data.location.pano);
-        panorama.setPov({ heading: 270, pitch: 0 });
+        panorama.setPov({ heading: 90, pitch: 0 });
 
         // Same marker, now inside the Street View panorama
         const svMarker = new google.maps.Marker({
