@@ -231,15 +231,14 @@ body::before {
   padding: 0.2rem 0.5rem;
 }
 .trail-arrow {
-  position: absolute;
-  right: 1.8rem;
-  bottom: 2rem;
+  display: block;
+  margin-top: 1.2rem;
   font-family: var(--mono);
   font-size: 0.6rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--rust);
-  opacity: 0;
+  opacity: 0.7;
   transition: opacity 0.3s;
 }
 .trail-card:not(.coming-soon):hover .trail-arrow { opacity: 1; }
@@ -387,6 +386,8 @@ body::before {
           <span class="trail-stop-tag">Connolly's Shop</span>
           <span class="trail-stop-tag">Millmount ↗</span>
           <span class="trail-stop-tag">St Laurence's Gate</span>
+          <span class="trail-stop-tag">St Peter's Church of Ireland</span>
+          <span class="trail-stop-tag">Siena Convent ↗</span>
           <span class="trail-stop-tag">St Peter's Church ↗</span>
           <span class="trail-stop-tag">The Quayside ↗</span>
         </div>
@@ -411,6 +412,7 @@ body::before {
           <span class="trail-stop-tag">Louvain</span>
           <span class="trail-stop-tag">London</span>
           <span class="trail-stop-tag">Lamspringe</span>
+          <span class="trail-stop-tag">Siena Convent ↗</span>
         </div>
         <span class="trail-arrow">Enter trail →</span>
       </div>
