@@ -362,7 +362,15 @@
     streetViewService.getPanorama({ location: { lat: STOP.lat, lng: STOP.lng }, radius: 80 }, (data, status) => {
       if (status === 'OK') {
         panorama.setPano(data.location.pano);
-        panorama.setPov({ heading: 270, pitch: 0 });
+
+        // Compute the real bearing from where the panorama actually is
+        // to the gate's coordinate — this is correct regardless of how
+        // the panorama itself happens to be oriented, unlike a guessed
+        // fixed heading number.
+        const panoLocation = data.location.latLng;
+        const targetLocation = new google.maps.LatLng(STOP.lat, STOP.lng);
+        const computedHeading = google.maps.geometry.spherical.computeHeading(panoLocation, targetLocation);
+        panorama.setPov({ heading: computedHeading, pitch: 0 });
 
         // Same marker, now inside the Street View panorama
         const svMarker = new google.maps.Marker({
@@ -412,7 +420,7 @@
 
   function loadGoogleMaps() {
     const script = document.createElement('script');
-    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyASmpOeRPerSlZ7WcyEo_ecdFEAd4pIP3E&loading=async&callback=initMap';
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyASmpOeRPerSlZ7WcyEo_ecdFEAd4pIP3E&libraries=geometry&loading=async&callback=initMap';
     script.async = true;
     document.head.appendChild(script);
   }
