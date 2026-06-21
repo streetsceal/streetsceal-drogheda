@@ -19,7 +19,11 @@
           "hasAudio": true,
           "hasAR": true,
           "audioSrc": "audio/white-horse.mp3",
-          "tags": ["oral history", "literary", "1963"]
+          "tags": [
+            "oral history",
+            "literary",
+            "1963"
+          ]
         },
         {
           "id": "connollys-shop",
@@ -27,13 +31,17 @@
           "subtitle": "Shop Street, Drogheda · now Wogan Interiors",
           "era": "1940s–60s",
           "desc": "Commerce, community, memory",
-          "lat": 53.713760,
+          "lat": 53.71376,
           "lng": -6.349491,
           "remote": false,
           "hasAudio": true,
           "hasAR": true,
           "audioSrc": "audio/connollys-shop.mp3",
-          "tags": ["oral history", "archive", "commerce"]
+          "tags": [
+            "oral history",
+            "archive",
+            "commerce"
+          ]
         },
         {
           "id": "millmount",
@@ -47,7 +55,11 @@
           "hasAudio": false,
           "hasAR": true,
           "audioSrc": null,
-          "tags": ["landscape", "history", "archaeology"],
+          "tags": [
+            "landscape",
+            "history",
+            "archaeology"
+          ],
           "linking": true
         },
         {
@@ -56,13 +68,54 @@
           "subtitle": "Laurence Street, Drogheda",
           "era": "13th century",
           "desc": "The last gate of the walled town",
-          "lat": 53.715960,
+          "lat": 53.71596,
           "lng": -6.347152,
           "remote": false,
           "hasAudio": false,
           "hasAR": true,
           "audioSrc": null,
-          "tags": ["medieval", "architecture", "landscape"]
+          "tags": [
+            "medieval",
+            "architecture",
+            "landscape"
+          ]
+        },
+        {
+          "id": "st-peters-church-of-ireland",
+          "name": "St Peter's Church of Ireland",
+          "subtitle": "Peter's Hill, Drogheda",
+          "era": "1649–present",
+          "desc": "Burned in the siege, rebuilt, full of strange and remarkable graves",
+          "lat": 53.716747,
+          "lng": -6.350144,
+          "remote": false,
+          "hasAudio": false,
+          "hasAR": false,
+          "audioSrc": null,
+          "tags": [
+            "cromwell",
+            "siege",
+            "graves"
+          ]
+        },
+        {
+          "id": "siena-convent",
+          "name": "Siena Convent",
+          "subtitle": "Cord Road, Drogheda",
+          "era": "c.1725–1921",
+          "desc": "Two centuries of secret keeping — a link to the Plunkett Trail",
+          "lat": 53.7178,
+          "lng": -6.3502,
+          "remote": false,
+          "hasAudio": false,
+          "hasAR": false,
+          "audioSrc": null,
+          "tags": [
+            "plunkett trail",
+            "linking stop",
+            "war of independence"
+          ],
+          "linking": true
         },
         {
           "id": "st-peters",
@@ -76,7 +129,11 @@
           "hasAudio": true,
           "hasAR": true,
           "audioSrc": "audio/GoodLuckYoungSage.wav",
-          "tags": ["plunkett trail", "linking stop", "shrine"],
+          "tags": [
+            "plunkett trail",
+            "linking stop",
+            "shrine"
+          ],
           "linking": true
         },
         {
@@ -85,13 +142,17 @@
           "subtitle": "West Gate, River Boyne, Drogheda",
           "era": "1826–1902",
           "desc": "The Steampacket era — links to the Diaspora Trail",
-          "lat": 53.713810,
+          "lat": 53.71381,
           "lng": -6.348835,
           "remote": false,
           "hasAudio": false,
           "hasAR": true,
           "audioSrc": null,
-          "tags": ["diaspora trail", "linking stop", "steampacket"],
+          "tags": [
+            "diaspora trail",
+            "linking stop",
+            "steampacket"
+          ],
           "linking": true
         }
       ]
@@ -109,7 +170,7 @@
           "subtitle": "West Gate, River Boyne, Drogheda",
           "era": "Linking stop",
           "desc": "The departure point — following Plunkett out of Ireland",
-          "lat": 53.713810,
+          "lat": 53.71381,
           "lng": -6.348835,
           "remote": false,
           "hasAudio": false,
@@ -209,6 +270,24 @@
           "hasAudio": false,
           "hasAR": false,
           "audioSrc": null
+        },
+        {
+          "id": "plunkett-siena-convent",
+          "name": "Siena Convent",
+          "subtitle": "Cord Road, Drogheda",
+          "era": "c.1725–1921",
+          "desc": "Two centuries of secret keeping",
+          "lat": 53.7178,
+          "lng": -6.3502,
+          "remote": false,
+          "hasAudio": false,
+          "hasAR": false,
+          "audioSrc": null,
+          "tags": [
+            "relic",
+            "dominican nuns",
+            "war of independence"
+          ]
         }
       ]
     },
@@ -225,7 +304,7 @@
           "subtitle": "West Gate, River Boyne, Drogheda",
           "era": "18th–20th century",
           "desc": "The point of departure for emigrants leaving by sea",
-          "lat": 53.713810,
+          "lat": 53.71381,
           "lng": -6.348835,
           "remote": false,
           "hasAudio": false,
@@ -279,8 +358,8 @@
           "subtitle": "Bordeaux, France",
           "era": "18th century–present",
           "desc": "The quay where Irish merchant families built their trade",
-          "lat": 44.8470,
-          "lng": -0.5680,
+          "lat": 44.847,
+          "lng": -0.568,
           "remote": true,
           "hasAudio": false,
           "hasAR": false,
@@ -341,7 +420,7 @@
           "subtitle": "Brú na Bóinne, Co. Meath",
           "era": "c. 3200 BC",
           "desc": "The third great mound of the Brú na Bóinne complex",
-          "lat": 53.703880,
+          "lat": 53.70388,
           "lng": -6.450259,
           "remote": true,
           "hasAudio": false,
