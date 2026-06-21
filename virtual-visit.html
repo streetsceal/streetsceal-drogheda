@@ -362,7 +362,7 @@
     streetViewService.getPanorama({ location: { lat: STOP.lat, lng: STOP.lng }, radius: 80 }, (data, status) => {
       if (status === 'OK') {
         panorama.setPano(data.location.pano);
-        panorama.setPov({ heading: 90, pitch: 0 });
+        panorama.setPov({ heading: 270, pitch: 0 });
 
         // Same marker, now inside the Street View panorama
         const svMarker = new google.maps.Marker({
