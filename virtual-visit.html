@@ -238,6 +238,7 @@
     desc: "The last gate of the walled town",
     lat: 53.715973,
     lng: -6.347079,
+    viewpointSearchRadius: 30, // metres — widen this to find a panorama further back along the street
     audioSrc: null, // no audio assigned to this stop yet in trails.json
     archiveImage: {
       src: "laurence-gate-archive.jpg",
@@ -359,7 +360,13 @@
     });
 
     // Find the nearest actual Street View imagery to this point
-    streetViewService.getPanorama({ location: { lat: STOP.lat, lng: STOP.lng }, radius: 80 }, (data, status) => {
+    // Search for the panorama slightly back from the gate's own
+    // coordinate, so the viewpoint isn't standing right underneath it.
+    // This offset point is an estimate of the street's direction —
+    // adjust viewpointLat/Lng below if Street View still snaps too close.
+    const viewpointLat = 53.715801;
+    const viewpointLng = -6.347323;
+    streetViewService.getPanorama({ location: { lat: viewpointLat, lng: viewpointLng }, radius: STOP.viewpointSearchRadius }, (data, status) => {
       if (status === 'OK') {
         panorama.setPano(data.location.pano);
 
