@@ -405,6 +405,25 @@ html, body {
 .location-image-block {
   margin-bottom: 1.5rem;
 }
+.street-view-block {
+  margin-bottom: 1.5rem;
+}
+.street-view-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: rgba(139,94,42,0.03);
+  margin-top: 0.5rem;
+}
+.street-view-caption {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  color: rgba(107,88,64,0.55);
+  padding: 0.6rem 0.2rem 0;
+}
 .location-image-frame {
   position: relative;
   width: 100%;
@@ -655,6 +674,12 @@ a-scene { position: absolute; inset: 0; }
       <p class="location-image-caption" id="location-image-caption"></p>
     </div>
 
+    <div class="street-view-block" id="street-view-block" style="display:none;">
+      <p class="audio-label">Virtual visit — Street View</p>
+      <div class="street-view-frame" id="street-view-frame"></div>
+      <p class="street-view-caption">Drag to look around — this is the real street, today.</p>
+    </div>
+
     <div class="audio-block">
       <p class="audio-label">Archive audio</p>
       <div class="audio-player">
@@ -783,6 +808,15 @@ const STOPS = [
     audioDuration: '2:55',
     lat: 53.715960,
     lng: -6.347152,
+    streetView: {
+      // Confirmed correct position and heading from the virtual-visit
+      // prototype — viewpoint sits south-southwest of the gate so the
+      // camera faces it directly rather than standing underneath it.
+      viewpointLat: 53.715778,
+      viewpointLng: -6.347269,
+      targetLat: 53.715960,
+      targetLng: -6.347152
+    },
     tags: ['medieval', 'architecture', 'landscape'],
     audioSrc: null,
     imageSrc: './targets/laurences-gate.mind',
@@ -1013,6 +1047,7 @@ function openStop(id) {
   buildWaveform();
   resetAudio();
   renderLocationImage(stop);
+  renderStreetView(stop);
 
   showScreen('stop');
   document.getElementById('screen-stop').scrollTop = 0;
@@ -1030,6 +1065,73 @@ function renderLocationImage(stop) {
     frame.innerHTML = `<div class="location-image-placeholder">Photo coming soon</div>`;
     caption.textContent = stop.subtitle;
   }
+}
+
+// ── Street View ──────────────────────────────────────────────────────
+// Only renders for stops with a streetView block in their data. Loads
+// the Google Maps JS API + Geometry library on first use and reuses it
+// for subsequent stops, rather than reloading the script every time.
+let googleMapsLoading = false;
+let googleMapsReady = false;
+const streetViewQueue = [];
+
+function loadGoogleMapsForStreetView(callback) {
+  if (googleMapsReady) { callback(); return; }
+  streetViewQueue.push(callback);
+  if (googleMapsLoading) return;
+  googleMapsLoading = true;
+
+  window.__onGoogleMapsReady = () => {
+    googleMapsReady = true;
+    streetViewQueue.forEach(cb => cb());
+    streetViewQueue.length = 0;
+  };
+
+  const script = document.createElement('script');
+  script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyASmpOeRPerSlZ7WcyEo_ecdFEAd4pIP3E&libraries=geometry&loading=async&callback=__onGoogleMapsReady';
+  script.async = true;
+  document.head.appendChild(script);
+}
+
+function renderStreetView(stop) {
+  const block = document.getElementById('street-view-block');
+  const frame = document.getElementById('street-view-frame');
+
+  if (!stop.streetView) {
+    block.style.display = 'none';
+    return;
+  }
+
+  block.style.display = 'block';
+  frame.innerHTML = ''; // clear any previous panorama before rendering a new one
+
+  loadGoogleMapsForStreetView(() => {
+    const sv = stop.streetView;
+    const streetViewService = new google.maps.StreetViewService();
+    const panorama = new google.maps.StreetViewPanorama(frame, {
+      position: { lat: sv.viewpointLat, lng: sv.viewpointLng },
+      pov: { heading: 0, pitch: 0 },
+      zoom: 1,
+      addressControl: false,
+      fullscreenControl: false,
+      motionTrackingControl: false
+    });
+
+    streetViewService.getPanorama(
+      { location: { lat: sv.viewpointLat, lng: sv.viewpointLng }, radius: 30 },
+      (data, status) => {
+        if (status === 'OK') {
+          panorama.setPano(data.location.pano);
+          const panoLocation = data.location.latLng;
+          const targetLocation = new google.maps.LatLng(sv.targetLat, sv.targetLng);
+          const heading = google.maps.geometry.spherical.computeHeading(panoLocation, targetLocation);
+          panorama.setPov({ heading, pitch: 0 });
+        } else {
+          frame.innerHTML = '<div class="location-image-placeholder">Street View unavailable at this location</div>';
+        }
+      }
+    );
+  });
 }
 
 // ── Waveform (decorative — replace with real Web Audio in production) ─
