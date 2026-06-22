@@ -8,8 +8,21 @@
  *
  * This Worker sits in front of streetsceal.ie (since Cloudflare
  * already manages its DNS), fetches the real page from GitHub
- * Pages exactly as normal, then adds the two required headers
- * before sending the response back to the browser.
+ * Pages, then adds the two required headers before sending the
+ * response back to the browser.
+ *
+ * IMPORTANT FIX: the original version called fetch(request) with
+ * the request object completely unchanged. Because the Worker is
+ * attached to the same domain as the request, Cloudflare could
+ * resolve that fetch() back to its own edge cache for the same
+ * URL — a cached copy from BEFORE this Worker ever added headers
+ * to it — rather than reaching all the way through to GitHub
+ * Pages fresh. That's why headers never appeared even though the
+ * Worker itself ran without errors.
+ *
+ * Fix: explicitly set cache: 'no-store' on the fetch() call, which
+ * forces a genuinely fresh request to the real origin every time,
+ * bypassing any cached edge copy.
  *
  * IMPORTANT: this only touches the specific page(s) listed in
  * TARGET_PATHS below. Every other page on the site passes through
@@ -17,12 +30,8 @@
  * ─────────────────────────────────────────────────────────────────
  */
 
-// Add the path(s) of any page that uses the Wwise web build here.
-// Paths must start with a leading slash and match exactly what's
-// in the URL bar (e.g. "/town-trail.html", not "/town-trail").
 const TARGET_PATHS = [
   '/town-trail.html',
-  // Add more as Wwise rolls out to other trails, e.g.:
   // '/plunkett-trail.html',
 ];
 
@@ -30,12 +39,12 @@ export default {
   async fetch(request) {
     const url = new URL(request.url);
 
-    // Fetch the real page from GitHub Pages, completely unchanged.
-    const response = await fetch(request);
-
-    // Only modify headers for the specific page(s) that need
-    // cross-origin isolation. Everything else passes straight through.
     if (TARGET_PATHS.includes(url.pathname)) {
+      // Force a genuinely fresh fetch, bypassing any cached edge
+      // copy that might not have the headers applied yet.
+      const freshRequest = new Request(request, { cache: 'no-store' });
+      const response = await fetch(freshRequest);
+
       const newHeaders = new Headers(response.headers);
       newHeaders.set('Cross-Origin-Opener-Policy', 'same-origin');
       newHeaders.set('Cross-Origin-Embedder-Policy', 'require-corp');
@@ -47,7 +56,7 @@ export default {
       });
     }
 
-    // Every other path: return the original response as-is.
-    return response;
+    // Every other path: fetch and return completely unchanged.
+    return fetch(request);
   },
 };
