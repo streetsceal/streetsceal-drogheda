@@ -1054,9 +1054,20 @@ function openStop(id) {
 }
 
 // ── Location image ──────────────────────────────────────────────────
+// Skips rendering for stops that have a Street View block instead —
+// while that's being finalised across the trail, only Laurence's Gate
+// currently has streetView data, so only that stop hides its static
+// photo. Every other stop keeps the static image exactly as before.
 function renderLocationImage(stop) {
+  const block = document.getElementById('location-image-block');
   const frame = document.getElementById('location-image-frame');
   const caption = document.getElementById('location-image-caption');
+
+  if (stop.streetView) {
+    block.style.display = 'none';
+    return;
+  }
+  block.style.display = 'block';
 
   if (stop.locationImage) {
     frame.innerHTML = `<img src="${stop.locationImage}" alt="${stop.name}" loading="lazy">`;
