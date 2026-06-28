@@ -364,6 +364,44 @@
           "hasAudio": false,
           "hasAR": false,
           "audioSrc": null
+        },
+        {
+          "id": "rome-diaspora",
+          "name": "The Irish College, Rome",
+          "subtitle": "Via dei Santi Quattro, Rome, Italy",
+          "era": "1628–present",
+          "desc": "The oldest exile of all — a link to the Plunkett Trail",
+          "lat": 41.8896,
+          "lng": 12.4922,
+          "remote": true,
+          "hasAudio": false,
+          "hasAR": false,
+          "audioSrc": null,
+          "tags": [
+            "plunkett trail",
+            "linking stop",
+            "irish colleges"
+          ],
+          "linking": true
+        },
+        {
+          "id": "louvain-diaspora",
+          "name": "The Irish College, Louvain",
+          "subtitle": "Leuven, Belgium",
+          "era": "1607–present",
+          "desc": "Franciscan exile and the printed word — a link to the Plunkett Trail",
+          "lat": 50.8798,
+          "lng": 4.7005,
+          "remote": true,
+          "hasAudio": false,
+          "hasAR": false,
+          "audioSrc": null,
+          "tags": [
+            "plunkett trail",
+            "linking stop",
+            "irish colleges"
+          ],
+          "linking": true
         }
       ]
     },
