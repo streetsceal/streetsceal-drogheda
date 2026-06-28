@@ -746,7 +746,8 @@ const STOPS = [
     lng: -6.352422,
     tags: ['plunkett trail', 'linking stop', 'europe'],
     audioSrc: './audio/GoodLuckYoungSage.wav',
-    imageSrc: './targets/st-peters.mind'
+    imageSrc: './targets/st-peters.mind',
+    locationImage: './assets/images/st-peters.jpg'
   },
   {
     id: 'scotland-road',
@@ -801,6 +802,42 @@ const STOPS = [
     audioSrc: null,
     imageSrc: null,
     locationImage: './assets/images/quai-des-chartrons.jpg'
+  },
+  {
+    id: 'rome-diaspora',
+    number: '06',
+    name: 'The Irish College, Rome',
+    subtitle: 'Via dei Santi Quattro, Rome, Italy',
+    era: '1628–present',
+    description: 'The oldest exile of all — a link to the Plunkett Trail',
+    lore: `Oliver Plunkett himself trained here from 1647, one of thousands of Irish priests educated in exile because their own country would not let them study at home. Bordeaux, Louvain, and Rome were three points of the same network.`,
+    text: `Long before Liverpool or Bordeaux, before the Famine or the Wine Geese, there was Rome. The Irish College was founded in 1628 to train priests who could not be trained in Ireland under the Penal Laws — the first organised Irish exile network in Europe, built not around trade or farmland but around faith and education. Oliver Plunkett arrived here in 1647 at the age of twenty-two and remained for most of two decades, eventually returning to Ireland as Archbishop of Armagh and, in time, a martyr. This stop connects the Diaspora Trail to the Plunkett Trail — the same exile, the same network, the same college walls.`,
+    audioLabel: 'Rome — the oldest Irish exile network',
+    audioDuration: '0:00',
+    lat: 41.8896,
+    lng: 12.4922,
+    tags: ['plunkett trail', 'linking stop', 'irish colleges'],
+    audioSrc: null,
+    imageSrc: null,
+    locationImage: './assets/images/rome.jpg'
+  },
+  {
+    id: 'louvain-diaspora',
+    number: '07',
+    name: 'The Irish College, Louvain',
+    subtitle: 'Leuven, Belgium',
+    era: '1607–present',
+    description: 'Franciscan exile and the printed word — a link to the Plunkett Trail',
+    lore: `Founded by Franciscans in 1607, the Irish College at Louvain produced the first printed books in the Irish language anywhere in the world — exile turned, deliberately, into the preservation of a culture that was being erased at home.`,
+    text: `Louvain's Irish College predates Rome's by two decades and served a different purpose: not just training priests, but actively preserving Irish language and learning that was under direct threat at home. The Annals of the Four Masters, one of the most important surviving texts of Irish history, was compiled by Franciscan scholars with close ties to this college. Oliver Plunkett passed through this same Franciscan network on his journey between Rome and his eventual martyrdom at Tyburn. This stop connects the Diaspora Trail to the Plunkett Trail — exile as cultural survival, not just departure.`,
+    audioLabel: 'Louvain — exile as cultural survival',
+    audioDuration: '0:00',
+    lat: 50.8798,
+    lng: 4.7005,
+    tags: ['plunkett trail', 'linking stop', 'irish colleges'],
+    audioSrc: null,
+    imageSrc: null,
+    locationImage: './assets/images/louvain.jpg'
   }
 ];
 
@@ -928,6 +965,7 @@ function updateProximity() {
     } else {
       const label = d < 1000 ? Math.round(d) + 'm' : (d/1000).toFixed(1) + 'km';
       prox.innerHTML = dot + label;
+      if (d > 200) card.classList.add('locked');
     }
   });
 }
