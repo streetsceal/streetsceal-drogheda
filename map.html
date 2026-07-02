@@ -291,23 +291,56 @@
     @media (max-width: 640px) {
       .sidebar {
         width: 100%;
-        height: 160px;
-        min-height: 160px;
-        max-height: 160px;
+        height: auto;
+        min-height: 0;
         border-right: none;
         border-bottom: 1px solid #d8ceba;
-        overflow-y: auto;
+        overflow-y: visible;
+        overflow-x: auto;
         flex-shrink: 0;
       }
+      /* Switch sidebar from vertical list to a single horizontal scrolling row */
+      .trail-list {
+        display: flex;
+        flex-direction: row;
+        padding: 0.5rem 0.75rem;
+        gap: 0.5rem;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .trail-list::-webkit-scrollbar { display: none; }
+      .trail-group {
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+      /* Each trail becomes a compact pill button */
+      .trail-btn {
+        padding: 0.4rem 0.75rem;
+        border: 1px solid #d8ceba;
+        border-radius: 2px;
+        font-size: 0.7rem;
+        white-space: nowrap;
+        gap: 0.4rem;
+      }
+      .trail-btn.active {
+        background: #8b5e2a;
+        color: #f5f0e8;
+        border-color: #8b5e2a;
+      }
+      /* Hide stop sub-lists entirely on mobile — map tap handles that */
+      .stops-list { display: none !important; }
+      .sidebar-footer { display: none; }
       .layout { flex-direction: column; }
       .map-container { flex: 1; min-height: 0; }
-      .stops-list { display: none !important; }
-      header { padding: 1rem; }
+      header { padding: 0.75rem 1rem; }
+      header h1 { font-size: 1.2rem; }
       .legend {
         bottom: 0.5rem;
         right: 0.5rem;
-        padding: 0.6rem 0.75rem;
-        font-size: 0.68rem;
+        padding: 0.5rem 0.65rem;
+        font-size: 0.65rem;
       }
     }
   </style>
