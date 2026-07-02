@@ -11,9 +11,11 @@
       font-family: 'Inter', -apple-system, sans-serif;
       background: #f5f0e8;
       color: #2c2416;
-      min-height: 100vh;
+      height: 100vh;
+      max-height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
 
     header {
@@ -169,7 +171,7 @@
     #map {
       width: 100%;
       height: 100%;
-      min-height: 500px;
+      min-height: 0;
     }
 
     /* Legend */
@@ -287,10 +289,26 @@
     .info-close:hover { color: #6b5840; }
 
     @media (max-width: 640px) {
-      .sidebar { width: 100%; height: 180px; border-right: none; border-bottom: 1px solid #d8ceba; }
+      .sidebar {
+        width: 100%;
+        height: 160px;
+        min-height: 160px;
+        max-height: 160px;
+        border-right: none;
+        border-bottom: 1px solid #d8ceba;
+        overflow-y: auto;
+        flex-shrink: 0;
+      }
       .layout { flex-direction: column; }
+      .map-container { flex: 1; min-height: 0; }
       .stops-list { display: none !important; }
       header { padding: 1rem; }
+      .legend {
+        bottom: 0.5rem;
+        right: 0.5rem;
+        padding: 0.6rem 0.75rem;
+        font-size: 0.68rem;
+      }
     }
   </style>
 </head>
