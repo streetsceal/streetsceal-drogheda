@@ -995,6 +995,7 @@ function openStop(id) {
   if (!stop) return;
   currentStop = stop;
   visitedStops.add(id);
+  logEvent('stop', id);
   updateTrailCount();
 
   document.getElementById('detail-eyebrow').textContent = stop.era + ' · ' + stop.subtitle;
@@ -1044,6 +1045,7 @@ function toggleAudio() {
   document.getElementById('pause-icon').style.display = audioPlaying ? 'block' : 'none';
 
   if (audioPlaying) {
+    logEvent('audio', currentStop.id);
     if (currentStop.audioSrc) {
         if (!window._audio) window._audio = new Audio();
         window._audio.src = currentStop.audioSrc;
@@ -1094,6 +1096,7 @@ function stopWaveformAnimation() {
 // ── AR ───────────────────────────────────────────────────────────────
 function launchAR() {
   if (!currentStop) return;
+  logEvent('ar', currentStop.id);
 
   // St Peter's uses the dedicated lip-sync AR experience instead of
   // the standard image-tracking overlay used by other stops
@@ -1258,6 +1261,25 @@ function stopARAudio() {
     }
   }
 }
+// ── Analytics ────────────────────────────────────────────────────────
+// Silent event logging — never throws, never affects the trail experience.
+const ANALYTICS_ENDPOINT = 'https://streetsceal.ie/analytics/event';
+const TRAIL_ID = 'plunkett-trail';
+
+function logEvent(type, stop) {{
+  const body = {{ type, trail: TRAIL_ID }};
+  if (stop) body.stop = stop;
+  fetch(ANALYTICS_ENDPOINT, {{
+    method: 'POST',
+    headers: {{ 'Content-Type': 'application/json' }},
+    body: JSON.stringify(body),
+    keepalive: true
+  }}).catch(() => {{}});
+}}
+
+// Log page load immediately
+logEvent('page');
+
 </script>
 
 </body>
