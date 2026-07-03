@@ -1275,7 +1275,7 @@ function logEvent(type, stop) {
     body: JSON.stringify(body),
     keepalive: true
   }).catch(() => {});
-}}
+}
 
 // Log page load immediately
 logEvent('page');
