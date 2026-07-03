@@ -1239,15 +1239,15 @@ function stopARAudio() {
 const ANALYTICS_ENDPOINT = 'https://streetsceal.ie/analytics/event';
 const TRAIL_ID = 'megalithic-trail';
 
-function logEvent(type, stop) {{
-  const body = {{ type, trail: TRAIL_ID }};
+function logEvent(type, stop) {
+  const body = { type, trail: TRAIL_ID };
   if (stop) body.stop = stop;
-  fetch(ANALYTICS_ENDPOINT, {{
+  fetch(ANALYTICS_ENDPOINT, {
     method: 'POST',
-    headers: {{ 'Content-Type': 'application/json' }},
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
     keepalive: true
-  }}).catch(() => {{}});
+  }).catch(() => {});
 }}
 
 // Log page load immediately
