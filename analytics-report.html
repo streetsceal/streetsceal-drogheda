@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StreetScéal — Usage Report</title>
+  <style>
+:root {
+  --ink: #2c2416; --paper: #f5f0e8; --paper-soft: #ede8dc;
+  --paper-dark: #5a4a32; --rust: #8b5e2a; --line: #d8ceba;
+  --mono: 'Courier New', monospace; --body: 'Inter', -apple-system, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--paper); color: var(--ink); font-family: var(--body); padding: 2rem 1.5rem; max-width: 900px; margin: 0 auto; }
+h1 { font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rust); margin-bottom: 0.25rem; }
+.subtitle { font-size: 0.8rem; color: var(--paper-dark); margin-bottom: 2rem; }
+.controls { display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--line); }
+label { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--rust); display: block; margin-bottom: 0.3rem; }
+input[type="date"], input[type="password"] { font-family: var(--mono); font-size: 0.8rem; border: 1px solid var(--line); background: var(--paper-soft); color: var(--ink); padding: 0.4rem 0.6rem; }
+button { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; border: 1px solid var(--rust); background: var(--rust); color: var(--paper); padding: 0.5rem 1rem; cursor: pointer; }
+button:hover { background: var(--paper-dark); border-color: var(--paper-dark); }
+
+/* Stat cards */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; margin-bottom: 2rem; background: var(--line); }
+.stat-card { background: var(--paper-soft); padding: 1.2rem 1.4rem; }
+.stat-label { font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--paper-dark); margin-bottom: 0.5rem; }
+.stat-value { font-size: 2.2rem; font-weight: 300; color: var(--ink); line-height: 1; }
+.stat-desc { font-size: 0.72rem; color: var(--paper-dark); margin-top: 0.3rem; font-style: italic; }
+
+/* Trail breakdown */
+.section-title { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--rust); margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--line); }
+table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-bottom: 2rem; }
+th { font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--paper-dark); text-align: left; padding: 0.5rem 0.8rem; background: var(--paper-soft); border-bottom: 1px solid var(--line); }
+td { padding: 0.55rem 0.8rem; border-bottom: 1px solid rgba(216,206,186,0.5); color: var(--ink); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(139,94,42,0.04); }
+
+/* Day chart */
+.chart-wrap { margin-bottom: 2rem; }
+.chart-bars { display: flex; align-items: flex-end; gap: 3px; height: 120px; }
+.chart-bar-group { flex: 1; display: flex; align-items: flex-end; gap: 1px; }
+.bar { flex: 1; background: var(--rust); opacity: 0.7; min-height: 2px; transition: opacity 0.2s; }
+.bar:hover { opacity: 1; }
+.bar.audio { background: #5a8b4a; }
+.bar.stop { background: var(--rust); }
+.bar.page { background: #a08060; }
+.chart-labels { display: flex; gap: 3px; margin-top: 4px; }
+.chart-label { flex: 1; font-family: var(--mono); font-size: 8px; color: var(--paper-dark); text-align: center; overflow: hidden; }
+.chart-legend { display: flex; gap: 1.5rem; margin-top: 0.8rem; }
+.legend-item { display: flex; align-items: center; gap: 0.4rem; font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.1em; color: var(--paper-dark); }
+.legend-dot { width: 10px; height: 10px; }
+
+.empty { font-family: var(--mono); font-size: 0.7rem; color: var(--paper-dark); text-align: center; padding: 3rem; letter-spacing: 0.1em; }
+.error { color: #8b2a2a; font-family: var(--mono); font-size: 0.75rem; padding: 1rem; border: 1px solid rgba(139,42,42,0.3); background: rgba(139,42,42,0.05); }
+  </style>
+</head>
+<body>
+
+<h1>StreetScéal · Usage Report</h1>
+<p class="subtitle">Trail engagement data for reporting purposes</p>
+
+<div class="controls">
+  <div>
+    <label>From</label>
+    <input type="date" id="from" />
+  </div>
+  <div>
+    <label>To</label>
+    <input type="date" id="to" />
+  </div>
+  <div>
+    <label>Access key</label>
+    <input type="password" id="secret" placeholder="enter key" />
+  </div>
+  <button onclick="loadReport()">Load report</button>
+</div>
+
+<div id="output"></div>
+
+<script>
+const ENDPOINT = 'https://streetsceal.ie/analytics/report';
+
+const TRAIL_NAMES = {
+  'town-trail': 'Town Trail',
+  'plunkett-trail': 'Plunkett Trail',
+  'diaspora-trail': 'Diaspora Trail',
+  'megalithic-trail': 'Megalithic Trail'
+};
+
+function today() { return new Date().toISOString().slice(0, 10); }
+function firstOfMonth() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;
+}
+
+document.getElementById('from').value = firstOfMonth();
+document.getElementById('to').value = today();
+
+// Persist the secret in sessionStorage so you don't have to retype it
+const saved = sessionStorage.getItem('ss_report_key');
+if (saved) document.getElementById('secret').value = saved;
+
+async function loadReport() {
+  const from = document.getElementById('from').value;
+  const to = document.getElementById('to').value;
+  const secret = document.getElementById('secret').value.trim();
+  if (!secret) { alert('Enter the access key first.'); return; }
+  sessionStorage.setItem('ss_report_key', secret);
+
+  document.getElementById('output').innerHTML = '<p class="empty">Loading…</p>';
+
+  try {
+    const res = await fetch(`${ENDPOINT}?from=${from}&to=${to}`, {
+      headers: { 'Authorization': `Bearer ${secret}` }
+    });
+    if (res.status === 401) { document.getElementById('output').innerHTML = '<p class="error">Incorrect access key.</p>'; return; }
+    if (!res.ok) throw new Error(`Server error ${res.status}`);
+
+    const data = await res.json();
+    render(data);
+
+  } catch (e) {
+    document.getElementById('output').innerHTML = `<p class="error">Failed to load: ${e.message}</p>`;
+  }
+}
+
+function render(data) {
+  const { totals, byTrail, byDay, byStop, from, to } = data;
+  const days = Object.keys(byDay).sort();
+  const maxPage = Math.max(...days.map(d => byDay[d].page), 1);
+
+  let html = '';
+
+  // ── Summary cards ─────────────────────────────────────────────────
+  html += `<div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Trail page loads</div>
+      <div class="stat-value">${totals.page.toLocaleString()}</div>
+      <div class="stat-desc">Visitors who opened a trail</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Stops reached</div>
+      <div class="stat-value">${totals.stop.toLocaleString()}</div>
+      <div class="stat-desc">GPS proximity triggers fired</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Audio plays</div>
+      <div class="stat-value">${totals.audio.toLocaleString()}</div>
+      <div class="stat-desc">Archive audio sessions started</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">AR launches</div>
+      <div class="stat-value">${totals.ar.toLocaleString()}</div>
+      <div class="stat-desc">Augmented reality sessions</div>
+    </div>
+  </div>`;
+
+  // ── Daily chart ───────────────────────────────────────────────────
+  if (days.length > 0) {
+    html += `<div class="section-title">Daily activity (${from} – ${to})</div>`;
+    html += `<div class="chart-wrap">
+      <div class="chart-bars">`;
+    days.forEach(d => {
+      const p = byDay[d].page, s = byDay[d].stop, a = byDay[d].audio;
+      const ph = Math.round((p / maxPage) * 110) + 2;
+      const sh = Math.round((s / maxPage) * 110) + 2;
+      const ah = Math.round((a / maxPage) * 110) + 2;
+      html += `<div class="chart-bar-group" title="${d}: ${p} loads, ${s} stops, ${a} plays">
+        <div class="bar page" style="height:${ph}px"></div>
+        <div class="bar stop" style="height:${sh}px"></div>
+        <div class="bar audio" style="height:${ah}px"></div>
+      </div>`;
+    });
+    html += `</div><div class="chart-labels">`;
+    days.forEach(d => { html += `<div class="chart-label">${d.slice(5)}</div>`; });
+    html += `</div>
+    <div class="chart-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#a08060"></div>Page loads</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#8b5e2a"></div>Stops reached</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#5a8b4a"></div>Audio plays</div>
+    </div></div>`;
+  }
+
+  // ── By trail ──────────────────────────────────────────────────────
+  html += `<div class="section-title">By trail</div>
+    <table>
+      <thead><tr>
+        <th>Trail</th><th>Page loads</th><th>Stops reached</th><th>Audio plays</th><th>AR launches</th>
+      </tr></thead><tbody>`;
+
+  const trails = Object.keys(byTrail).sort();
+  if (trails.length === 0) {
+    html += `<tr><td colspan="5" style="text-align:center;color:var(--paper-dark);font-style:italic;">No data for this period</td></tr>`;
+  } else {
+    trails.forEach(t => {
+      const row = byTrail[t];
+      html += `<tr>
+        <td style="font-weight:500">${TRAIL_NAMES[t] || t}</td>
+        <td>${row.page.toLocaleString()}</td>
+        <td>${row.stop.toLocaleString()}</td>
+        <td>${row.audio.toLocaleString()}</td>
+        <td>${row.ar.toLocaleString()}</td>
+      </tr>`;
+    });
+  }
+  html += `</tbody></table>`;
+
+  // ── By stop ───────────────────────────────────────────────────────
+  const stopKeys = Object.keys(byStop).sort();
+  if (stopKeys.length > 0) {
+    html += `<div class="section-title">By stop (on-location GPS triggers)</div>
+      <table>
+        <thead><tr>
+          <th>Trail</th><th>Stop</th><th>Reached</th><th>Audio plays</th><th>AR launches</th>
+        </tr></thead><tbody>`;
+    stopKeys.forEach(k => {
+      const [trail, ...stopParts] = k.split(':');
+      const stop = stopParts.join(':');
+      const row = byStop[k];
+      html += `<tr>
+        <td style="color:var(--paper-dark)">${TRAIL_NAMES[trail] || trail}</td>
+        <td style="font-weight:500">${stop.replace(/-/g, ' ')}</td>
+        <td>${row.stop.toLocaleString()}</td>
+        <td>${row.audio.toLocaleString()}</td>
+        <td>${row.ar.toLocaleString()}</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+
+  // ── Print note ────────────────────────────────────────────────────
+  html += `<p style="font-family:var(--mono);font-size:0.58rem;color:var(--paper-dark);border-top:1px solid var(--line);padding-top:1rem;margin-top:1rem;">
+    Report generated ${new Date().toLocaleString()} · StreetScéal analytics · streetsceal.ie
+  </p>`;
+
+  document.getElementById('output').innerHTML = html;
+}
+</script>
+</body>
+</html>
