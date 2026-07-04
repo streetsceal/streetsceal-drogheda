@@ -219,74 +219,6 @@
       flex-shrink: 0;
     }
 
-    /* Info panel */
-    .info-panel {
-      position: absolute;
-      top: 1rem;
-      left: 1rem;
-      background: rgba(245, 240, 232, 0.97);
-      border: 1px solid #d8ceba;
-      padding: 1rem 1.2rem;
-      max-width: 260px;
-      z-index: 10;
-      display: none;
-    }
-
-    .info-panel.visible {
-      display: block;
-    }
-
-    .info-trail-tag {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      font-family: 'Courier New', monospace;
-      margin-bottom: 0.4rem;
-    }
-
-    .info-stop-name {
-      font-size: 1.15rem;
-      color: #2c2416;
-      margin-bottom: 0.5rem;
-    }
-
-    .info-stop-desc {
-      font-size: 0.95rem;
-      color: #6b5840;
-      line-height: 1.5;
-      margin-bottom: 0.8rem;
-    }
-
-    .info-enter-btn {
-      display: inline-block;
-      padding: 0.4rem 0.9rem;
-      border: 1px solid #8b5e2a;
-      color: #8b5e2a;
-      text-decoration: none;
-      font-size: 0.95rem;
-      font-family: 'Courier New', monospace;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      transition: all 0.15s;
-    }
-
-    .info-enter-btn:hover {
-      background: #8b5e2a;
-      color: #f5f0e8;
-    }
-
-    .info-close {
-      position: absolute;
-      top: 0.6rem;
-      right: 0.8rem;
-      background: none;
-      border: none;
-      color: #b8a890;
-      cursor: pointer;
-      font-size: 1.15rem;
-    }
-
-    .info-close:hover { color: #6b5840; }
 
     @media (max-width: 640px) {
       .sidebar {
@@ -360,14 +292,6 @@
   <div class="map-container">
     <div id="map"></div>
 
-    <div class="info-panel" id="infoPanel">
-      <button class="info-close" id="infoClose">✕</button>
-      <div class="info-trail-tag" id="infoTrail"></div>
-      <div class="info-stop-name" id="infoName"></div>
-      <div class="info-stop-desc" id="infoDesc"></div>
-      <a class="info-enter-btn" id="infoLink" href="#" target="_blank">Enter trail →</a>
-    </div>
-
     <div class="legend" id="mapLegend">
       <div class="legend-title">Jump to trail start</div>
     </div>
@@ -426,7 +350,9 @@
         if (stop.hasAR) badges.push('AR');
         const badgeHtml = badges.length ? `<span style="float:right;font-size:0.85rem;color:${trail.color};opacity:0.7">${badges.join(' ')}</span>` : '';
         item.innerHTML = stop.name + badgeHtml;
-        item.addEventListener('click', () => focusStop(trail, stop));
+        // Direct selection of a specific stop is a clear "I want this trail" signal —
+        // skip the preview panel and go straight there, same tab.
+        item.addEventListener('click', () => { window.location.href = trail.url; });
         stopsList.appendChild(item);
       });
 
@@ -463,13 +389,11 @@
     }
   }
 
-  // Jump map straight to a trail's first stop — used by the legend shortcut
+  // Legend shortcut — now consistent with pins/sidebar stops: a deliberate
+  // choice of trail should go straight there, no preview panel detour.
   function jumpToTrailStart(trail) {
-    if (!map || !trail.stops.length) return;
-    const start = trail.stops[0];
-    map.panTo({ lat: start.lat, lng: start.lng });
-    map.setZoom(17);
-    focusStop(trail, start);
+    if (!trail.stops.length) return;
+    window.location.href = trail.url;
   }
 
   // ── Map init (called by Google Maps callback) ──────────────────────────────
@@ -536,31 +460,13 @@
           },
           zIndex: stop.remote ? 1 : 2,
         });
-        marker.addListener('click', () => focusStop(trail, stop));
+        // Same reasoning as the sidebar stop click above — a marker tap is a
+        // specific, deliberate choice, so skip straight to the trail.
+        marker.addListener('click', () => { window.location.href = trail.url; });
         allMarkers.push(marker);
       });
     });
   }
-
-  function focusStop(trail, stop) {
-    const panel = document.getElementById('infoPanel');
-    document.getElementById('infoTrail').textContent = trail.label;
-    document.getElementById('infoTrail').style.color = trail.color;
-    document.getElementById('infoName').textContent = stop.name;
-    // Show subtitle/era and audio+AR status
-    const meta = [stop.subtitle, stop.era].filter(Boolean).join(' · ');
-    const flags = [stop.hasAudio ? '♪ Audio' : '', stop.hasAR ? 'AR' : ''].filter(Boolean).join(' · ');
-    document.getElementById('infoDesc').innerHTML =
-      `${stop.desc}<br><span style="font-size:0.95rem;color:#9e8c72;font-family:monospace">${meta}</span>` +
-      (flags ? `<br><span style="font-size:0.95rem;color:${trail.color};font-family:monospace">${flags}</span>` : '');
-    document.getElementById('infoLink').href = trail.url;
-    panel.classList.add('visible');
-    map.panTo({ lat: stop.lat, lng: stop.lng });
-  }
-
-  document.getElementById('infoClose').addEventListener('click', () => {
-    document.getElementById('infoPanel').classList.remove('visible');
-  });
 
   // ── Load Google Maps ───────────────────────────────────────────────────────
   function loadGoogleMaps() {
