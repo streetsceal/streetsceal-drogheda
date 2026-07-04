@@ -91,6 +91,19 @@ html, body {
   max-width: 280px;
   line-height: 1.5;
 }
+.entry-copyright {
+  position: fixed;
+  bottom: 1rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--paper-muted);
+  opacity: 0.6;
+  z-index: 11;
+}
 .entry-location {
   font-family: var(--mono);
   font-size: 0.85rem;
@@ -613,12 +626,14 @@ a-scene { position: absolute; inset: 0; }
   <button class="btn-primary" id="btn-enter" onclick="enterTrail()">Begin the trail</button>
 </div>
 
+<p class="entry-copyright">© 2026 StreetScéal. All rights reserved.</p>
+
 <!-- ══════════════════════════════════════════════
      SCREEN 2 — TRAIL MAP / STOP LIST
 ══════════════════════════════════════════════ -->
 <div class="screen hidden" id="screen-trail" style="justify-content:flex-start; overflow-y:auto;">
   <div class="trail-header">
-    <a class="all-trails-link" href="./map.html">&larr; All trails</a>
+    <a class="all-trails-link" href="./index.html">&larr; All trails</a>
     <div class="trail-header-row">
       <span class="trail-header-title">The Plunkett Trail</span>
       <span class="trail-header-count" id="trail-count"></span>

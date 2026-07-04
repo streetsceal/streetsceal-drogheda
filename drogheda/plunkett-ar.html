@@ -72,6 +72,15 @@
       color: rgba(232,224,208,0.45);
     }
 
+    #ar-copyright {
+      position: absolute;
+      bottom: 0.6rem;
+      right: 0.8rem;
+      font-size: 0.62rem;
+      letter-spacing: 0.05em;
+      color: rgba(232,224,208,0.35);
+    }
+
     #mouth-debug {
       position: absolute;
       bottom: 4rem;
@@ -168,6 +177,7 @@
   <div class="corner br"></div>
   <div id="mouth-debug">Mouth: X (silence)</div>
   <div id="status-bar">Point camera at the image</div>
+  <div id="ar-copyright">© 2026 StreetScéal</div>
 </div>
 
 <!-- ── JavaScript ─────────────────────────────────────────────────── -->
@@ -337,7 +347,7 @@ function closeAR() {
   if (window.history.length > 1) {
     window.history.back();
   } else {
-    window.location.href = './map.html';
+    window.location.href = './index.html';
   }
 }
 </script>
