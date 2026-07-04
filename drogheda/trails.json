@@ -4,7 +4,7 @@
       "id": "town",
       "label": "Town Trail",
       "color": "#c8a96e",
-      "url": "https://streetsceal.ie/town-trail.html",
+      "url": "https://drogheda.streetsceal.ie/town-trail.html",
       "desc": "Voices, memories, everyday life — the Drogheda that people remember.",
       "stops": [
         {
@@ -161,7 +161,7 @@
       "id": "plunkett",
       "label": "Plunkett Trail",
       "color": "#6ea8c8",
-      "url": "https://streetsceal.ie/plunkett-trail.html",
+      "url": "https://drogheda.streetsceal.ie/plunkett-trail.html",
       "desc": "A martyr's journey across Europe — from Drogheda to Ghent, Rome, London and beyond.",
       "stops": [
         {
@@ -295,7 +295,7 @@
       "id": "diaspora",
       "label": "Diaspora Trail",
       "color": "#8ec89a",
-      "url": "https://streetsceal.ie/diaspora-trail.html",
+      "url": "https://drogheda.streetsceal.ie/diaspora-trail.html",
       "desc": "Drogheda to Liverpool, Bordeaux and beyond — following the routes of those who left.",
       "stops": [
         {
@@ -409,7 +409,7 @@
       "id": "megalithic",
       "label": "Megalithic Trail",
       "color": "#c87d6e",
-      "url": "https://streetsceal.ie/megalithic-trail.html",
+      "url": "https://drogheda.streetsceal.ie/megalithic-trail.html",
       "desc": "Five thousand years of continuous presence — Newgrange, Knowth, Dowth, Tara and Loughcrew.",
       "stops": [
         {
