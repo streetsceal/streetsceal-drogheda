@@ -8,9 +8,9 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: #f5f0e8;
-      color: #2c2416;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f3ecd9;
+      color: #2b2620;
       height: 100vh;
       max-height: 100vh;
       display: flex;
@@ -20,8 +20,8 @@
 
     header {
       padding: 1.5rem 2rem 1rem;
-      border-bottom: 1px solid #d8ceba;
-      background: #f5f0e8;
+      border-bottom: 1px solid #e8dcbd;
+      background: #f3ecd9;
       display: flex;
       align-items: baseline;
       gap: 1rem;
@@ -32,20 +32,20 @@
       font-size: 1.75rem;
       font-weight: normal;
       letter-spacing: 0.02em;
-      color: #2c2416;
+      color: #2b2620;
     }
 
     header h1 em {
       font-style: italic;
-      color: #8b5e2a;
+      color: #b5583a;
     }
 
     header p {
       font-size: 0.95rem;
-      color: #9e8c72;
+      color: #7d7462;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      font-family: 'Courier New', monospace;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     .layout {
@@ -58,8 +58,8 @@
     .sidebar {
       width: 280px;
       flex-shrink: 0;
-      background: #ede8dc;
-      border-right: 1px solid #d8ceba;
+      background: #e8dcbd;
+      border-right: 1px solid #e8dcbd;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -84,16 +84,16 @@
       gap: 0.75rem;
       text-align: left;
       transition: background 0.15s;
-      color: #6b5840;
+      color: #4a4238;
     }
 
     .trail-btn:hover {
-      background: #e4ddd0;
+      background: #e8dcbd;
     }
 
     .trail-btn.active {
-      background: #e4ddd0;
-      color: #2c2416;
+      background: #e8dcbd;
+      color: #2b2620;
     }
 
     .trail-dot {
@@ -107,7 +107,7 @@
       font-size: 1rem;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      font-family: 'Courier New', monospace;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     .stops-list {
@@ -122,21 +122,21 @@
     .stop-item {
       padding: 0.45rem 1.2rem 0.45rem 2.8rem;
       font-size: 1rem;
-      color: #9e8c72;
+      color: #7d7462;
       cursor: pointer;
       border-left: 2px solid transparent;
       transition: all 0.15s;
-      font-family: 'Inter', -apple-system, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     .stop-item:hover {
-      color: #8b5e2a;
-      border-left-color: #8b5e2a;
+      color: #b5583a;
+      border-left-color: #b5583a;
     }
 
     .stop-item.remote {
       font-style: italic;
-      color: #b8a890;
+      color: #9c8f74;
     }
 
     .stop-item.remote::before {
@@ -146,16 +146,16 @@
 
     .sidebar-footer {
       padding: 1rem 1.2rem;
-      border-top: 1px solid #d8ceba;
+      border-top: 1px solid #e8dcbd;
       margin-top: auto;
     }
 
     .sidebar-footer a {
-      color: #8b5e2a;
+      color: #b5583a;
       text-decoration: none;
       font-size: 0.95rem;
       letter-spacing: 0.06em;
-      font-family: 'Courier New', monospace;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     .sidebar-footer a:hover {
@@ -165,7 +165,7 @@
     .sidebar-copyright {
       margin-top: 0.6rem;
       font-size: 0.78rem;
-      color: #9e8c72;
+      color: #7d7462;
       letter-spacing: 0.03em;
     }
 
@@ -187,16 +187,16 @@
       bottom: 2rem;
       right: 1rem;
       background: rgba(245, 240, 232, 0.95);
-      border: 1px solid #d8ceba;
+      border: 1px solid #e8dcbd;
       padding: 0.85rem 1rem;
       font-size: 0.92rem;
-      font-family: 'Courier New', monospace;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       letter-spacing: 0.06em;
       z-index: 10;
     }
 
     .legend-title {
-      color: #9e8c72;
+      color: #7d7462;
       text-transform: uppercase;
       margin-bottom: 0.6rem;
       font-size: 0.88rem;
@@ -207,7 +207,7 @@
       align-items: center;
       gap: 0.6rem;
       margin-bottom: 0.35rem;
-      color: #6b5840;
+      color: #4a4238;
       padding: 0.15rem 0.3rem;
       margin-left: -0.3rem;
       border-radius: 2px;
@@ -216,7 +216,7 @@
 
     .legend-item:hover {
       background: rgba(139,94,42,0.08);
-      color: #2c2416;
+      color: #2b2620;
     }
 
     .legend-dot {
@@ -233,7 +233,7 @@
         height: auto;
         min-height: 0;
         border-right: none;
-        border-bottom: 1px solid #d8ceba;
+        border-bottom: 1px solid #e8dcbd;
         overflow-y: visible;
         overflow-x: auto;
         flex-shrink: 0;
@@ -257,16 +257,16 @@
       /* Each trail becomes a compact pill button */
       .trail-btn {
         padding: 0.4rem 0.75rem;
-        border: 1px solid #d8ceba;
+        border: 1px solid #e8dcbd;
         border-radius: 2px;
         font-size: 0.95rem;
         white-space: nowrap;
         gap: 0.4rem;
       }
       .trail-btn.active {
-        background: #8b5e2a;
-        color: #f5f0e8;
-        border-color: #8b5e2a;
+        background: #b5583a;
+        color: #f3ecd9;
+        border-color: #b5583a;
       }
       /* Hide stop sub-lists entirely on mobile — map tap handles that */
       .stops-list { display: none !important; }
@@ -324,7 +324,7 @@
     .catch(err => {
       console.error('Could not load trails.json:', err);
       document.getElementById('trailList').innerHTML =
-        '<p style="padding:1rem;color:#8b5e2a;font-size:1rem;">Could not load trail data.</p>';
+        '<p style="padding:1rem;color:#b5583a;font-size:1rem;">Could not load trail data.</p>';
     });
 
   // ── Sidebar ────────────────────────────────────────────────────────────────
@@ -410,24 +410,24 @@
       center: { lat: 53.714192, lng: -6.350085 },
       zoom: 15,
       styles: [
-        { elementType: 'geometry', stylers: [{ color: '#ebe5d8' }] },
-        { elementType: 'labels.text.stroke', stylers: [{ color: '#ebe5d8' }] },
-        { elementType: 'labels.text.fill', stylers: [{ color: '#6b5840' }] },
-        { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#8b5e2a' }] },
-        { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#8b6840' }] },
-        { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#d4e6c8' }] },
-        { featureType: 'poi.park', elementType: 'labels.text.fill', stylers: [{ color: '#507040' }] },
-        { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#f5f0e4' }] },
-        { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#d8ceba' }] },
-        { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#9e8060' }] },
-        { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#d4b896' }] },
-        { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#c8a880' }] },
-        { featureType: 'road.highway', elementType: 'labels.text.fill', stylers: [{ color: '#5c3d18' }] },
-        { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#ddd5c0' }] },
-        { featureType: 'transit.station', elementType: 'labels.text.fill', stylers: [{ color: '#8b6840' }] },
-        { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#a8c8d8' }] },
-        { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#4a7090' }] },
-        { featureType: 'water', elementType: 'labels.text.stroke', stylers: [{ color: '#a8c8d8' }] },
+        { elementType: 'geometry', stylers: [{ color: '#efe7d3' }] },
+        { elementType: 'labels.text.stroke', stylers: [{ color: '#efe7d3' }] },
+        { elementType: 'labels.text.fill', stylers: [{ color: '#4a4238' }] },
+        { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#b5583a' }] },
+        { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#6b6255' }] },
+        { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#d6e2c7' }] },
+        { featureType: 'poi.park', elementType: 'labels.text.fill', stylers: [{ color: '#4d6b42' }] },
+        { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#f6efd9' }] },
+        { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#e8dcbd' }] },
+        { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#8a7457' }] },
+        { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#d9bf95' }] },
+        { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#c7a672' }] },
+        { featureType: 'road.highway', elementType: 'labels.text.fill', stylers: [{ color: '#4a3520' }] },
+        { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#e0d6b8' }] },
+        { featureType: 'transit.station', elementType: 'labels.text.fill', stylers: [{ color: '#6b6255' }] },
+        { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#9dc2bd' }] },
+        { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#2f5f5a' }] },
+        { featureType: 'water', elementType: 'labels.text.stroke', stylers: [{ color: '#9dc2bd' }] },
       ],
       mapTypeControl: false,
       streetViewControl: false,
@@ -463,7 +463,7 @@
             scale: stop.remote ? 5 : 7,
             fillColor: trail.color,
             fillOpacity: stop.remote ? 0.5 : 1,
-            strokeColor: '#f5f0e8',
+            strokeColor: '#f3ecd9',
             strokeWeight: 2,
           },
           zIndex: stop.remote ? 1 : 2,

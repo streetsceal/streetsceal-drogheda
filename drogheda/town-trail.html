@@ -23,21 +23,20 @@
   <style>
 /* ── Tokens ───────────────────────────────────────────────────── */
 :root {
-  --ink: #2c2416;
-  --paper: #f5f0e8;
-  --paper-soft: #ede8dc;
-  --paper-dark: #5a4a32;
-  --paper-muted: #73604a;
-  --rust: #8b5e2a;
-  --rust-light: #875a2b;
-  --ghost: rgba(44, 36, 22, 0.04);
-  --fog: rgba(245, 240, 232, 0.85);
-  --line: #d8ceba;
-  --display: 'Poppins', sans-serif;
-  --body: 'Inter', -apple-system, sans-serif;
-  --mono: 'Courier New', monospace;
+  --ink: #2b2620;
+  --paper: #f3ecd9;
+  --paper-soft: #e8dcbd;
+  --paper-dark: #163936;
+  --paper-muted: rgba(43, 38, 32, 0.68);
+  --rust: #b5583a;
+  --rust-light: #d5713f;
+  --ghost: rgba(43, 38, 32, 0.04);
+  --fog: rgba(243, 236, 217, 0.85);
+  --line: rgba(43, 38, 32, 0.16);
+  --display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;1,400&family=Inter:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
   height: 100%;
@@ -216,7 +215,7 @@ html, body {
   transition: background 0.2s;
   position: relative;
 }
-.stop-card:hover { background: #e4ddd0; }
+.stop-card:hover { background: #e8dcbd; }
 .stop-card.active {
   background: rgba(139, 94, 42, 0.08);
   border-left: 2px solid var(--rust);
@@ -711,11 +710,11 @@ a-scene { position: absolute; inset: 0; }
       <div class="audio-player">
         <button class="audio-play-btn" onclick="toggleAudio()" id="audio-btn" aria-label="Play">
           <svg id="play-icon" width="14" height="16" viewBox="0 0 14 16" fill="none">
-            <path d="M2 1l11 7-11 7V1z" fill="#e8e0d0"/>
+            <path d="M2 1l11 7-11 7V1z" fill="#f3ecd9"/>
           </svg>
           <svg id="pause-icon" width="14" height="16" viewBox="0 0 14 16" fill="none" style="display:none">
-            <rect x="1" y="1" width="4" height="14" fill="#e8e0d0"/>
-            <rect x="9" y="1" width="4" height="14" fill="#e8e0d0"/>
+            <rect x="1" y="1" width="4" height="14" fill="#f3ecd9"/>
+            <rect x="9" y="1" width="4" height="14" fill="#f3ecd9"/>
           </svg>
         </button>
         <div class="audio-waveform" id="waveform"></div>
@@ -724,7 +723,7 @@ a-scene { position: absolute; inset: 0; }
     </div>
 
     <button class="ar-launch-btn" onclick="launchAR()">
-      <svg class="ar-icon" viewBox="0 0 24 24" fill="none" stroke="#e8e0d0" stroke-width="1.5">
+      <svg class="ar-icon" viewBox="0 0 24 24" fill="none" stroke="#f3ecd9" stroke-width="1.5">
         <path d="M2 8V4h4M18 4h4v4M2 16v4h4M18 20h4v-4"/>
         <circle cx="12" cy="12" r="3"/>
         <path d="M12 5v2M12 17v2M5 12H3M21 12h-2"/>
@@ -1276,7 +1275,7 @@ function animateWaveform() {
 
 function stopWaveformAnimation() {
   document.querySelectorAll('.wave-bar').forEach(b => {
-    b.style.background = 'rgba(232,224,208,0.2)';
+    b.style.background = 'rgba(243,236,217,0.2)';
   });
 }
 
@@ -1313,14 +1312,14 @@ function launchAR() {
           <a-text
             value="${currentStop.name}"
             font="https://cdn.aframe.io/fonts/Exo2Bold.fnt"
-            color="#1a1612"
+            color="#163936"
             align="center"
             width="1.2"
             position="0 0.35 0"
             animation="property: opacity; from: 0; to: 1; dur: 1200; easing: easeInQuad">
           </a-text>
           <a-plane
-            color="#e8e0d0"
+            color="#f3ecd9"
             opacity="0.85"
             width="1" height="0.6"
             position="0 0 -0.001"
@@ -1329,7 +1328,7 @@ function launchAR() {
           <a-text
             value="${currentStop.era}"
             font="https://cdn.aframe.io/fonts/mozillavr.fnt"
-            color="#8b3a2a"
+            color="#b5583a"
             align="center"
             width="0.5"
             position="0 -0.35 0"
@@ -1390,7 +1389,7 @@ function launchAR() {
         }
       })
       .catch(() => {
-        container.style.background = 'linear-gradient(135deg, #1a1612 0%, #2a1f18 100%)';
+        container.style.background = 'linear-gradient(135deg, #163936 0%, #0d2422 100%)';
         addARDemoOverlay(container);
         if (audioTargets[0]) {
           window._audio.src = audioTargets[0];
@@ -1411,16 +1410,16 @@ function addARDemoOverlay(container) {
     pointer-events: none;`;
   overlay.innerHTML = `
     <div style="
-      border: 1px solid rgba(139,58,42,0.6);
+      border: 1px solid rgba(181,88,58,0.6);
       padding: 2rem 2.5rem;
       text-align: center;
-      background: rgba(26,22,18,0.55);
+      background: rgba(22,57,54,0.55);
       backdrop-filter: blur(4px);
       animation: fadeIn 1.2s ease forwards;
       opacity: 0;">
-      <p style="font-family:'Courier New',monospace;font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;color:#8b3a2a;margin-bottom:0.8rem;">${currentStop ? currentStop.era : ''}</p>
-      <p style="font-family:Georgia,serif;font-size:1.5rem;font-style:italic;color:#e8e0d0;margin-bottom:0.5rem;">${currentStop ? currentStop.name : ''}</p>
-      <p style="font-family:Georgia,serif;font-size:1rem;color:rgba(232,224,208,0.6);font-style:italic;">${currentStop ? currentStop.description : ''}</p>
+      <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;color:#b5583a;margin-bottom:0.8rem;">${currentStop ? currentStop.era : ''}</p>
+      <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:1.5rem;font-style:normal;color:#f3ecd9;margin-bottom:0.5rem;">${currentStop ? currentStop.name : ''}</p>
+      <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:1rem;color:rgba(243,236,217,0.6);font-style:normal;">${currentStop ? currentStop.description : ''}</p>
     </div>
     <style>@keyframes fadeIn{to{opacity:1}}</style>`;
   container.appendChild(overlay);
