@@ -4,7 +4,7 @@
 
 **Artist:** Claire Fitch
 **Live:** [streetsceal.ie](https://streetsceal.ie) · **Drogheda trails:** [drogheda.streetsceal.ie](https://drogheda.streetsceal.ie)
-**Medium:** Web AR, oral history, archival audio, GPS-triggered sound
+**Medium:** Web AR, oral history, archival audio, GPS-triggered sound, sonic art, storytelling.
 
 ---
 
