@@ -83,13 +83,14 @@ html, body {
 .entry-title {
   font-family: var(--display);
   font-size: clamp(2.4rem, 8vw, 3.8rem);
-  font-weight: 400;
+  font-weight: 800;
+  letter-spacing: -0.01em;
   line-height: 1.1;
   color: var(--ink);
   margin-bottom: 0.4rem;
 }
 .entry-title em {
-  font-style: italic;
+  font-style: normal;
   color: var(--rust);
 }
 .entry-subtitle {
@@ -663,7 +664,7 @@ a-scene { position: absolute; inset: 0; }
 ══════════════════════════════════════════════ -->
 <div class="screen hidden" id="screen-trail" style="justify-content:flex-start; overflow-y:auto;">
   <div class="trail-header">
-    <a class="all-trails-link" href="./index.html">&larr; All trails</a>
+    <a class="all-trails-link" href="./map.html">&larr; All trails</a>
     <div class="trail-header-row">
       <span class="trail-header-title">StreetScéal</span>
       <span class="trail-header-count" id="trail-count"></span>
