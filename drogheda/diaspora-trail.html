@@ -180,7 +180,12 @@ html, body {
 .trail-header-title {
   font-family: var(--display);
   font-size: 1.25rem;
-  font-style: italic;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.trail-header-title em {
+  font-style: normal;
   color: var(--rust);
 }
 .trail-header-count {
@@ -635,7 +640,7 @@ a-scene { position: absolute; inset: 0; }
   <div class="trail-header">
     <a class="all-trails-link" href="./map.html">&larr; All trails</a>
     <div class="trail-header-row">
-      <span class="trail-header-title">The Diaspora Trail</span>
+      <span class="trail-header-title">Diaspora <em>Trail</em></span>
       <span class="trail-header-count" id="trail-count"></span>
     </div>
   </div>
