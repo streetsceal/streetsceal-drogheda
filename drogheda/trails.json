@@ -204,8 +204,8 @@
           "remote": true,
           "hasAudio": false,
           "hasAR": false,
-          "audioSrc": null,
-          "linking": true
+          "audioSrc": null
+          
         },
         {
           "id": "rome",
