@@ -322,7 +322,11 @@
   fetch('trails.json')
     .then(r => r.json())
     .then(data => {
-      TRAILS = data.trails;
+      // Trails can be flagged "hidden": true in trails.json to keep their
+      // content fully intact but pull them out of public view (sidebar +
+      // map markers) — e.g. while focusing a funding pitch on fewer trails.
+      // Flip the flag back off in trails.json to bring one back.
+      TRAILS = data.trails.filter(t => !t.hidden);
       buildSidebar();
       loadGoogleMaps();
     })
