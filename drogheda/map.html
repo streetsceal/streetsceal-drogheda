@@ -369,7 +369,17 @@
         stopsList.appendChild(item);
       });
 
-      btn.addEventListener('click', () => toggleTrail(trail.id, btn, stopsList));
+      btn.addEventListener('click', () => {
+        // On mobile the stop sub-list is hidden entirely (map tap handles
+        // that), so expanding it here would do nothing visible — go
+        // straight to the trail instead, consistent with how pins and
+        // individual stops already behave everywhere.
+        if (window.matchMedia('(max-width: 640px)').matches) {
+          window.location.href = trail.url;
+        } else {
+          toggleTrail(trail.id, btn, stopsList);
+        }
+      });
       group.appendChild(btn);
       group.appendChild(stopsList);
       trailList.appendChild(group);
