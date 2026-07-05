@@ -89,7 +89,7 @@
           "lat": 53.716747,
           "lng": -6.350144,
           "remote": false,
-          "hasAudio": false,
+          "hasAudio": true,
           "hasAR": false,
           "audioSrc": null,
           "tags": [
