@@ -228,21 +228,29 @@
 
 
     @media (max-width: 640px) {
-      /* Keep the side-by-side layout — sidebar just gets narrower and
-         its text smaller, rather than switching to a horizontal scroll
-         strip (which hid half the trails off-screen with no visual cue
-         that there was more to scroll to). */
+      /* Map takes the full width; the trail picker becomes a small
+         floating box in the top-left corner instead of a full-height
+         panel, so it no longer covers map labels like the town name. */
+      .layout { position: relative; }
       .sidebar {
-        width: 132px;
-        border-right: 1px solid #e8dcbd;
-        border-bottom: none;
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        width: auto;
+        max-width: 150px;
+        max-height: 60vh;
+        border-right: none;
+        border: 1px solid #e8dcbd;
+        border-radius: 6px;
         overflow-y: auto;
         overflow-x: hidden;
+        box-shadow: 0 4px 14px rgba(43,38,32,0.18);
+        z-index: 5;
       }
       .trail-list {
         display: flex;
         flex-direction: column;
-        padding: 0.6rem 0;
+        padding: 0.4rem 0;
         gap: 0;
       }
       .trail-group {
@@ -251,11 +259,11 @@
       /* Same vertical pill shape as desktop, just tighter */
       .trail-btn {
         width: 100%;
-        padding: 0.6rem 0.7rem;
+        padding: 0.55rem 0.65rem;
         gap: 0.5rem;
       }
       .trail-label {
-        font-size: 0.82rem;
+        font-size: 0.78rem;
         letter-spacing: 0.03em;
       }
       .trail-dot {
