@@ -161,8 +161,8 @@ Each new town is a self-contained folder in this same repository, sharing the la
 | Year | Development |
 |------|-------------|
 | 2020 | *Populated Solitude* commissioned for Culture Night 2020. First work: *On A Summer Morning In 1963*, an audio response to Paul Murphy's account of meeting Brendan Behan at the White Horse Hotel |
-| 2021 | Seed funding awarded by Droichead Arts, Drogheda, resulting in Connolly's Shop|
-| 2022 | Expanded to a four-stop audio walk deployed via the ECHOES GPS-triggered sound walk app. New work developed from Louth County Archives oral history recordings |
+| 2021 | Seed funding awarded by Droichead Arts, Drogheda|
+| 2022 | Expanded to a four-stop audio walk deployed via the ECHOES GPS-triggered sound walk app. New work *Connolly's Shop* developed from Louth County Archives oral history recordings |
 | 2026 | *StreetScéal* — Web AR iteration. GPS + image tracking, self-hosted on GitHub Pages, no app required. Multi-town platform launched with Drogheda as the first live town; Town Trail, Diaspora Trail, and Megalithic Trail public, with the Plunkett Trail complete and held for a future release |
 
 ---
