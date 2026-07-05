@@ -159,6 +159,7 @@
     },
     {
       "id": "plunkett",
+      "hidden": true,
       "label": "Plunkett Trail",
       "color": "#6ea8c8",
       "url": "https://drogheda.streetsceal.ie/plunkett-trail.html",
