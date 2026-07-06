@@ -632,7 +632,11 @@ a-scene { position: absolute; inset: 0; }
   opacity: 0;
   transition: opacity 0.3s, transform 0.3s;
   z-index: 1000;
-  pointer-events: none;
+  cursor: pointer;
+  pointer-events: auto;
+}
+#toast:active {
+  background: var(--paper-dark);
 }
 #toast.show {
   opacity: 1;
@@ -777,8 +781,8 @@ const STOPS = [
     text: 'In the summer of 1963, a young journalist walked into the White Horse Hotel on West Street to interview a man who had already become a legend. Paul Murphy, then working for the Drogheda Independent, found Brendan Behan at the bar. What followed was a conversation that stayed with him for sixty years.',
     audioLabel: 'Paul Murphy, 2020',
     audioDuration: '4:12',
-    lat: 53.714978,
-    lng: -6.353384,
+    lat: 53.715028,
+    lng: -6.353767,
     tags: ['oral history', 'literary', '1963'],
     // In a real build: audioSrc points to your actual .mp3 file
     // imageSrc points to your .mind target file for AR tracking
@@ -881,7 +885,7 @@ The present church, rebuilt in Georgian style and consecrated in 1753, holds its
     lore: `The head of Oliver Plunkett was kept by the Dominican nuns of Siena, founded by his own grand-niece Sister Catherine Plunkett. During the War of Independence, armed volunteers stood guard for fear the relic would be seized.`,
     text: `The Dominican community at Siena was founded in 1722 by Sister Catherine Plunkett, grand-niece of Oliver Plunkett, beginning life in a mud cabin on the south side of the Boyne before moving to a more substantial house on Dyer Street. It was here, around 1725, that the nuns received the relic of Plunkett's head, brought back from Rome forty years after his martyrdom — and for decades the sisters lived quietly, often disguising their community as a boarding house for women to avoid the attention of the authorities during the Penal years.
 
-In 1796, the growing community moved to a permanent convent on Cord Road, where they would remain for nearly two centuries. That secrecy did not end with the eighteenth century. During the War of Independence, with the Black and Tans active in the town, armed republican volunteers were positioned around the Siena community to defend the relic against seizure or desecration. [PLACEHOLDER — confirm and insert exact detail from the Bureau of Military History witness statement naming a Stafford family relative among those who stood guard, once located and verified in the BMH archive.] Within months, in June 1921, the relic was formally translated to its present shrine in St Peter's Church, just ahead. The Cord Road convent itself continued until a fire in 1994 forced the community to relocate to The Twenties, where they remain today.`,
+In 1796, the growing community moved to a permanent convent on Cord Road, where they would remain for nearly two centuries. That secrecy did not end with the eighteenth century. During the War of Independence, with the Black and Tans active in the town, armed republican volunteers were positioned around the Siena community to defend the relic against seizure or desecration. [PLACEHOLDER — confirm and insert exact detail from the Bureau of Military History witness statement naming a Murray family relative among those who stood guard, once located and verified in the BMH archive.] Within months, in June 1921, the relic was formally translated to its present shrine in St Peter's Church, just ahead. The Cord Road convent itself continued until a fire in 1994 forced the community to relocate to The Twenties, where they remain today.`,
     audioLabel: 'Siena Convent — the long watch',
     audioDuration: '0:00',
     lat: 53.717150,
@@ -958,12 +962,19 @@ function showScreen(name) {
   currentScreen = name;
 }
 
-function showToast(msg, duration = 2800) {
+let _toastStopId = null;
+
+function showToast(msg, stopId, duration = 4000) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
+  _toastStopId = stopId || null;
   setTimeout(() => t.classList.remove('show'), duration);
 }
+
+document.getElementById('toast').addEventListener('click', () => {
+  if (_toastStopId) openStop(_toastStopId);
+});
 
 // ── Entry ────────────────────────────────────────────────────────────
 function enterTrail() {
@@ -1049,7 +1060,7 @@ function updateProximity() {
     if (near) {
       card.classList.add('active');
       prox.innerHTML = dot + 'You are here';
-      if (!visitedStops.has(stop.id)) showToast(`${stop.name} — tap to explore`);
+      if (!visitedStops.has(stop.id)) showToast(`${stop.name} — tap to explore`, stop.id);
     } else {
       const label = d < 1000 ? Math.round(d) + 'm' : (d/1000).toFixed(1) + 'km';
       prox.innerHTML = dot + label;
@@ -1284,6 +1295,17 @@ function stopWaveformAnimation() {
 function launchAR() {
   if (!currentStop) return;
   logEvent('ar', currentStop.id);
+
+  // For Wwise stops, auto-start audio on AR launch — the button tap
+  // counts as a user gesture, satisfying browser autoplay policy.
+  // Image-tracking stops handle audio via their own target-detection trigger.
+  if (currentStop.wwiseEvent && !audioPlaying) {
+    audioPlaying = true;
+    document.getElementById('play-icon').style.display = 'none';
+    document.getElementById('pause-icon').style.display = 'block';
+    playWwiseAudio(currentStop.wwiseEvent);
+    animateWaveform();
+  }
 
   // St Peter's uses the dedicated lip-sync AR experience instead of
   // the standard image-tracking overlay used by other stops

@@ -602,7 +602,11 @@ a-scene { position: absolute; inset: 0; }
   opacity: 0;
   transition: opacity 0.3s, transform 0.3s;
   z-index: 1000;
-  pointer-events: none;
+  cursor: pointer;
+  pointer-events: auto;
+}
+#toast:active {
+  background: var(--paper-dark);
 }
 #toast.show {
   opacity: 1;
@@ -886,12 +890,19 @@ function showScreen(name) {
   currentScreen = name;
 }
 
-function showToast(msg, duration = 2800) {
+let _toastStopId = null;
+
+function showToast(msg, stopId, duration = 4000) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
+  _toastStopId = stopId || null;
   setTimeout(() => t.classList.remove('show'), duration);
 }
+
+document.getElementById('toast').addEventListener('click', () => {
+  if (_toastStopId) openStop(_toastStopId);
+});
 
 // ── Entry ────────────────────────────────────────────────────────────
 function enterTrail() {
@@ -977,7 +988,7 @@ function updateProximity() {
     if (near) {
       card.classList.add('active');
       prox.innerHTML = dot + 'You are here';
-      if (!visitedStops.has(stop.id)) showToast(`${stop.name} — tap to explore`);
+      if (!visitedStops.has(stop.id)) showToast(`${stop.name} — tap to explore`, stop.id);
     } else {
       const label = d < 1000 ? Math.round(d) + 'm' : (d/1000).toFixed(1) + 'km';
       prox.innerHTML = dot + label;
