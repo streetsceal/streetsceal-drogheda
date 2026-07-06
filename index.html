@@ -1,491 +1,473 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>StreetScéal — Drogheda</title>
-  <style>
-:root {
-  --ink: #2c2416;
-  --paper: #f5f0e8;
-  --paper-soft: #ede8dc;
-  --paper-dark: #5a4a32;
-  --paper-muted: #73604a;
-  --rust: #8b5e2a;
-  --rust-light: #875a2b;
-  --rust-dim: rgba(139,94,42,0.08);
-  --ghost: rgba(44,36,22,0.03);
-  --line: #d8ceba;
-  --display: 'Poppins', sans-serif;
-  --body: 'Inter', -apple-system, sans-serif;
-  --mono: 'Courier New', monospace;
-}
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;1,400&family=Inter:ital,wght@0,400;0,500;0,600;1,400&display=swap');
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--body);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-/* ── Grain overlay ── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  background-size: 256px;
-  pointer-events: none;
-  opacity: 0.4;
-  z-index: 0;
-}
-/* ── Layout ── */
-.page { position: relative; z-index: 1; }
-/* ── Header ── */
-.site-header {
-  padding: 3rem 2rem 0;
-  text-align: center;
-}
-.header-rule {
-  width: 1px;
-  height: 48px;
-  background: var(--rust);
-  margin: 0 auto 2rem;
-}
-.header-eyebrow {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--rust-light);
-  margin-bottom: 1.2rem;
-}
-.site-title {
-  font-family: var(--display);
-  font-size: clamp(3rem, 12vw, 6rem);
-  font-weight: 400;
-  font-style: italic;
-  line-height: 1;
-  color: var(--ink);
-  margin-bottom: 0.3rem;
-  letter-spacing: -0.02em;
-}
-.site-title span { color: var(--rust); }
-.site-location {
-  font-family: var(--display);
-  font-size: clamp(1rem, 3vw, 1.4rem);
-  font-weight: 400;
-  color: var(--paper-dark);
-  margin-bottom: 2rem;
-  letter-spacing: 0.05em;
-}
-.header-coords {
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.2em;
-  color: var(--rust);
-  margin-bottom: 3rem;
-}
-/* ── Intro ── */
-.intro {
-  max-width: 540px;
-  margin: 0 auto;
-  padding: 0 2rem 3rem;
-  text-align: center;
-}
-.intro p {
-  font-family: var(--body);
-  font-style: italic;
-  font-size: clamp(1rem, 2.5vw, 1.15rem);
-  line-height: 1.75;
-  color: var(--paper-dark);
-}
-/* ── Map hint ── */
-.map-hint {
-  text-align: center;
-  padding: 0 2rem 2.5rem;
-}
-.map-hint p {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--paper-muted);
-  line-height: 2;
-}
-/* ── Divider ── */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0 2rem;
-  margin-bottom: 3rem;
-}
-.divider-line {
-  flex: 1;
-  height: 1px;
-  background: rgba(139,94,42,0.3);
-}
-.divider-mark {
-  font-family: var(--mono);
-  font-size: 0.55rem;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--rust);
-}
-/* ── Trails ── */
-.trails {
-  padding: 0 1.5rem 4rem;
-  max-width: 680px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-.trail-card {
-  display: block;
-  text-decoration: none;
-  position: relative;
-  padding: 2rem 1.8rem;
-  background: var(--paper-soft);
-  border: 1px solid var(--line);
-  border-left: 3px solid transparent;
-  transition: border-color 0.3s, background 0.3s;
-  cursor: pointer;
-  overflow: hidden;
-}
-.trail-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: var(--rust-dim);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.trail-card:hover {
-  border-left-color: var(--rust);
-  background: #e4ddd0;
-}
-.trail-card:hover::before { opacity: 1; }
-.trail-card.coming-soon {
-  opacity: 0.5;
-  cursor: default;
-}
-.trail-card.coming-soon:hover {
-  border-left-color: transparent;
-  background: var(--paper-soft);
-}
-.trail-card.coming-soon:hover::before { opacity: 0; }
-.trail-inner { position: relative; z-index: 1; }
-.trail-header-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 0.6rem;
-  gap: 1rem;
-}
-.trail-name {
-  font-family: var(--display);
-  font-size: clamp(1.3rem, 4vw, 1.7rem);
-  font-weight: 400;
-  font-style: italic;
-  color: var(--ink);
-  line-height: 1.2;
-}
-.trail-status {
-  font-family: var(--mono);
-  font-size: 0.55rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--rust-light);
-  border: 1px solid rgba(139,94,42,0.4);
-  padding: 0.25rem 0.5rem;
-  white-space: nowrap;
-  flex-shrink: 0;
-  margin-top: 0.3rem;
-}
-.trail-status.live { color: #3d6e30; border-color: rgba(61,110,48,0.4); }
-.trail-status.soon { color: var(--rust-light); border-color: rgba(139,94,42,0.3); }
-.trail-tagline {
-  font-family: var(--body);
-  font-style: italic;
-  font-size: 0.9rem;
-  color: var(--paper-dark);
-  margin-bottom: 1.2rem;
-  line-height: 1.5;
-}
-.trail-stops {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-.trail-stop-tag {
-  font-family: var(--mono);
-  font-size: 0.55rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--paper-dark);
-  background: rgba(44,36,22,0.06);
-  padding: 0.2rem 0.5rem;
-}
-.trail-arrow {
-  display: block;
-  margin-top: 1.2rem;
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--rust);
-  opacity: 0.7;
-  transition: opacity 0.3s;
-}
-.trail-card:not(.coming-soon):hover .trail-arrow { opacity: 1; }
-/* ── Footer ── */
-.site-footer {
-  border-top: 1px solid rgba(44,36,22,0.08);
-  padding: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-.footer-brand {
-  font-family: var(--display);
-  font-size: 0.9rem;
-  font-style: italic;
-  color: var(--paper-dark);
-}
-.footer-links {
-  display: flex;
-  gap: 1.5rem;
-}
-.footer-links a {
-  font-family: var(--mono);
-  font-size: 0.55rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--rust-light);
-  text-decoration: none;
-}
-.footer-links a:hover { color: var(--ink); }
-/* ── Compass decoration ── */
-.compass-wrap {
-  display: flex;
-  justify-content: center;
-  padding: 2rem 0 0;
-  opacity: 0.45;
-}
-.compass-wrap svg { width: 48px; height: 48px; }
-/* ── Collaborators ── */
-.collaborators {
-  border-top: 1px solid var(--line);
-  padding: 1.5rem 2rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  position: relative;
-  z-index: 1;
-}
-.collaborators .collab-role {
-  font-family: var(--mono);
-  font-size: 0.55rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--rust);
-  margin-bottom: 0.4rem;
-}
-.collaborators .collab-name {
-  font-family: var(--display);
-  font-style: italic;
-  font-size: 0.9rem;
-  color: var(--paper-dark);
-}
-/* ── Responsive ── */
-@media (max-width: 480px) {
-  .site-header { padding: 2rem 2rem 0; }
-  .trails { padding: 0 1rem 4rem; }
-  .trail-card { padding: 1.6rem 1.4rem; }
-  .site-footer { flex-direction: column; align-items: flex-start; }
-}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreetScéal — Walk into the story</title>
+<style>
+  :root {
+    --parchment: #f3ecd9;
+    --parchment-deep: #e8dcbd;
+    --ink: #2b2620;
+    --teal: #1f4d4a;
+    --teal-deep: #163936;
+    --rust: #b5583a;
+    --rust-bright: #d5713f;
+    --gold: #a9822f;
+    --line: rgba(43,38,32,0.16);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 112.5%; } /* 18px base for accessibility */
+
+  body {
+    margin: 0;
+    background: var(--parchment);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+
+  /* ---------- HERO ---------- */
+
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(31,77,74,0.10), transparent 60%),
+      repeating-linear-gradient(0deg, rgba(43,38,32,0.025) 0px, rgba(43,38,32,0.025) 1px, transparent 1px, transparent 3px),
+      var(--parchment);
+  }
+
+  .hero__vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    box-shadow: inset 0 0 18vw rgba(43,38,32,0.18);
+  }
+
+  .hero__header {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    padding: clamp(2.5rem, 6vw, 4.5rem) 1.5rem 0.5rem;
+  }
+
+  .hero__eyebrow {
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--teal);
+    margin: 0 0 1rem;
+  }
+
+  .hero__title {
+    font-weight: 800;
+    font-size: clamp(2.8rem, 8vw, 5.2rem);
+    margin: 0;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .hero__title em {
+    font-style: normal;
+    color: var(--rust);
+  }
+
+  .hero__tagline {
+    max-width: 38rem;
+    margin: 1.1rem auto 0;
+    font-size: clamp(1.15rem, 2.4vw, 1.4rem);
+    color: rgba(43,38,32,0.78);
+    line-height: 1.55;
+    font-weight: 500;
+  }
+
+  /* ---------- MAP ---------- */
+
+  .mapstage {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem 1rem;
+  }
+
+  .mapstage__inner {
+    position: relative;
+    width: min(88vw, 58vh * 0.7612, 640px);
+    aspect-ratio: 761.19 / 1000.00;
+  }
+
+  svg.irelandmap {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(0 14px 26px rgba(43,38,32,0.20));
+  }
+
+  .irelandmap .landmass {
+    fill: #d9c9a0;
+    stroke: var(--teal-deep);
+    stroke-width: 2.5;
+    stroke-linejoin: round;
+  }
+
+  .graticule {
+    stroke: rgba(43,38,32,0.14);
+    stroke-width: 1;
+    fill: none;
+  }
+
+  /* Live pin */
+  .pin--live { cursor: pointer; }
+  .pin__pulse {
+    fill: none;
+    stroke: var(--rust-bright);
+    stroke-width: 3;
+    opacity: 0.65;
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: pulse 2.6s ease-out infinite;
+  }
+  @keyframes pulse {
+    0%   { transform: scale(0.6); opacity: 0.7; }
+    70%  { transform: scale(2.4); opacity: 0; }
+    100% { transform: scale(2.4); opacity: 0; }
+  }
+  .pin__dot {
+    fill: var(--rust);
+    stroke: var(--parchment);
+    stroke-width: 3;
+    transition: fill 0.2s ease, r 0.2s ease;
+  }
+  .pin--live:hover .pin__dot, .pin--live:focus .pin__dot {
+    fill: var(--rust-bright);
+  }
+  .pin__label--live {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    fill: var(--ink);
+  }
+  .pin__sub {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    fill: var(--rust);
+  }
+
+  /* Future pins */
+  .pin--future { cursor: pointer; outline: none; }
+  .pin__dot--future {
+    fill: var(--parchment);
+    stroke: var(--teal);
+    stroke-width: 2.5;
+    opacity: 0.85;
+    transition: r 0.15s ease, fill 0.15s ease;
+  }
+  .pin--future:hover .pin__dot--future,
+  .pin--future:focus .pin__dot--future {
+    fill: var(--gold);
+    stroke: var(--gold);
+  }
+  .pin__label--future {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    fill: rgba(43,38,32,0.6);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+  .pin--future:hover .pin__label--future,
+  .pin--future:focus .pin__label--future {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* tooltip for future towns */
+  .comingsoon-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 2rem;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--teal-deep);
+    color: var(--parchment);
+    padding: 0.85rem 1.4rem;
+    border-radius: 999px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 50;
+    white-space: nowrap;
+  }
+  .comingsoon-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .comingsoon-toast strong { color: var(--rust-bright); }
+
+  .hero__scrollcue {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    padding-bottom: clamp(1.2rem, 3vw, 2rem);
+    color: rgba(43,38,32,0.68);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .hero__scrollcue .chevron {
+    display: block;
+    margin: 0.6rem auto 0;
+    width: 16px;
+    height: 16px;
+    border-right: 3px solid var(--teal);
+    border-bottom: 3px solid var(--teal);
+    transform: rotate(45deg);
+    animation: bob 1.8s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: rotate(45deg) translate(0,0); }
+    50% { transform: rotate(45deg) translate(4px,4px); }
+  }
+
+  /* ---------- TRAILS SECTION (placeholder — merge with live cards) ---------- */
+  .trails {
+    background: var(--parchment-deep);
+    border-top: 1px solid var(--line);
+    padding: clamp(3rem, 6vw, 5rem) 1.5rem;
+  }
+  .trails__head {
+    max-width: 42rem;
+    margin: 0 auto 2.5rem;
+    text-align: center;
+  }
+  .trails__head h2 {
+    font-size: clamp(1.9rem, 3.4vw, 2.5rem);
+    font-weight: 800;
+    margin: 0 0 0.7rem;
+  }
+  .trails__head p {
+    color: rgba(43,38,32,0.72);
+    margin: 0;
+    font-size: 1.15rem;
+  }
+  .trails__grid {
+    max-width: 68rem;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+  .trailcard {
+    background: var(--parchment);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 1.8rem 1.5rem;
+    text-align: left;
+  }
+  .trailcard h3 {
+    margin: 0 0 0.6rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--teal-deep);
+  }
+  .trailcard p {
+    margin: 0;
+    font-size: 1.02rem;
+    color: rgba(43,38,32,0.72);
+    line-height: 1.55;
+  }
+
+  .site-footer {
+    background: var(--parchment-deep);
+    border-top: 1px solid var(--line);
+    padding: 1.5rem 1.5rem;
+    text-align: center;
+    font-size: 0.95rem;
+    color: rgba(43,38,32,0.6);
+  }
+
+  @media (max-width: 480px) {
+    .pin__label--live { font-size: 20px; }
+    .pin__sub { font-size: 12px; }
+    .pin__label--future { font-size: 15px; }
+  }
+</style>
 </head>
 <body>
-<div class="page">
 
-  <!-- Header -->
-  <header class="site-header">
-    <div class="header-rule"></div>
-    <p class="header-eyebrow">An audio-visual trail</p>
-    <h1 class="site-title">Street<span>Scéal</span></h1>
-    <p class="site-location">Drogheda, Co. Louth</p>
-    <p class="header-coords">53°43′N · 6°21′W · Ireland</p>
+<section class="hero">
+  <div class="hero__vignette"></div>
 
-    <div class="compass-wrap">
-      <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="40" cy="40" r="26" fill="none" stroke="#8b5e2a" stroke-width="1.5" stroke-dasharray="3 3"/>
-        <polygon points="40,8 44,40 40,34 36,40" fill="#2c2416"/>
-        <polygon points="40,72 44,40 40,46 36,40" fill="#8b5e2a"/>
-        <polygon points="8,40 40,36 34,40 40,44" fill="#2c2416" opacity="0.6"/>
-        <polygon points="72,40 40,36 46,40 40,44" fill="#8b5e2a" opacity="0.6"/>
-        <circle cx="40" cy="40" r="4" fill="#f5f0e8" stroke="#2c2416" stroke-width="1"/>
-        <circle cx="40" cy="40" r="1.5" fill="#8b5e2a"/>
+  <div class="hero__header">
+    <p class="hero__eyebrow">An island of stories, waiting to be discovered</p>
+    <h1 class="hero__title">Street<em>Scéal</em></h1>
+    <p class="hero__tagline">Free GPS &amp; AR audio trails that bring Ireland's streets to life, one town at a time.</p>
+  </div>
+
+  <div class="mapstage">
+    <div class="mapstage__inner">
+      <svg class="irelandmap" viewBox="0 0 761.19 1000.00" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map of the island of Ireland with StreetScéal trail towns">
+        <line x1="0.0" y1="0" x2="0.0" y2="1000" class="graticule"/>
+<line x1="100.0" y1="0" x2="100.0" y2="1000" class="graticule"/>
+<line x1="200.0" y1="0" x2="200.0" y2="1000" class="graticule"/>
+<line x1="300.0" y1="0" x2="300.0" y2="1000" class="graticule"/>
+<line x1="400.0" y1="0" x2="400.0" y2="1000" class="graticule"/>
+<line x1="500.0" y1="0" x2="500.0" y2="1000" class="graticule"/>
+<line x1="600.0" y1="0" x2="600.0" y2="1000" class="graticule"/>
+<line x1="700.0" y1="0" x2="700.0" y2="1000" class="graticule"/>
+<line x1="0" y1="0.0" x2="761.19" y2="0.0" class="graticule"/>
+<line x1="0" y1="100.0" x2="761.19" y2="100.0" class="graticule"/>
+<line x1="0" y1="200.0" x2="761.19" y2="200.0" class="graticule"/>
+<line x1="0" y1="300.0" x2="761.19" y2="300.0" class="graticule"/>
+<line x1="0" y1="400.0" x2="761.19" y2="400.0" class="graticule"/>
+<line x1="0" y1="500.0" x2="761.19" y2="500.0" class="graticule"/>
+<line x1="0" y1="600.0" x2="761.19" y2="600.0" class="graticule"/>
+<line x1="0" y1="700.0" x2="761.19" y2="700.0" class="graticule"/>
+<line x1="0" y1="800.0" x2="761.19" y2="800.0" class="graticule"/>
+<line x1="0" y1="900.0" x2="761.19" y2="900.0" class="graticule"/>
+
+        <path class="landmass" d="M 638.99 481.54 L 637.99 483.53 L 635.98 487.50 L 634.97 489.48 L 633.96 487.10 L 631.45 486.70 L 628.43 487.50 L 626.42 489.48 L 635.47 493.85 L 635.98 496.23 L 636.48 499.01 L 637.48 500.99 L 637.48 501.39 L 636.48 503.37 L 635.98 504.17 L 637.99 505.36 L 644.02 505.75 L 646.53 507.34 L 645.02 511.31 L 643.01 511.71 L 641.00 509.72 L 638.99 508.93 L 638.49 508.14 L 636.98 506.15 L 636.48 505.36 L 634.97 505.75 L 632.46 506.95 L 631.45 507.34 L 623.41 513.69 L 622.90 516.07 L 623.91 518.06 L 627.43 521.63 L 629.94 526.00 L 631.95 527.58 L 635.98 528.38 L 636.98 529.57 L 638.49 529.96 L 640.00 530.76 L 640.00 532.74 L 638.99 534.33 L 638.99 535.52 L 638.49 540.68 L 638.99 543.86 L 639.49 547.43 L 641.00 549.81 L 642.51 551.79 L 643.52 554.57 L 642.51 558.94 L 644.52 561.72 L 649.05 571.64 L 649.05 572.43 L 649.05 572.83 L 648.54 572.83 L 648.54 573.22 L 649.05 577.19 L 648.54 582.75 L 648.04 588.31 L 647.04 591.88 L 646.53 595.45 L 648.04 599.42 L 654.07 606.17 L 654.58 607.75 L 652.57 608.55 L 652.06 609.74 L 650.55 614.10 L 649.55 614.90 L 648.04 616.88 L 643.52 627.99 L 644.52 629.58 L 638.49 635.54 L 636.98 637.52 L 635.47 641.09 L 631.95 652.20 L 632.96 657.36 L 632.46 658.55 L 629.94 664.51 L 623.41 676.41 L 622.90 680.78 L 622.90 684.35 L 624.41 691.10 L 624.92 694.67 L 624.41 704.59 L 622.40 708.56 L 613.86 723.25 L 611.34 726.02 L 609.33 727.61 L 606.82 730.79 L 603.80 736.74 L 602.29 740.31 L 602.29 744.68 L 602.80 748.65 L 602.29 751.82 L 601.29 750.23 L 600.28 749.04 L 599.28 748.65 L 590.73 749.04 L 588.22 748.25 L 588.72 743.88 L 587.71 744.68 L 586.21 745.07 L 585.20 746.27 L 584.20 747.06 L 584.20 748.65 L 586.21 749.44 L 588.22 751.42 L 589.73 753.81 L 590.73 756.98 L 589.73 759.36 L 594.25 760.55 L 595.76 762.54 L 596.26 764.92 L 598.27 762.93 L 601.29 756.98 L 601.29 758.57 L 599.28 763.33 L 601.79 768.89 L 608.83 776.43 L 604.81 786.35 L 603.30 789.13 L 601.79 790.72 L 600.79 791.11 L 599.28 790.72 L 597.77 789.13 L 597.77 787.94 L 599.28 787.14 L 600.28 783.97 L 600.28 783.18 L 598.27 782.78 L 597.77 783.18 L 596.26 785.16 L 594.75 786.75 L 594.25 787.14 L 588.22 787.54 L 588.22 785.95 L 590.73 785.95 L 588.72 783.97 L 587.71 784.37 L 585.20 785.95 L 578.67 787.54 L 572.63 791.11 L 570.12 790.72 L 566.60 786.75 L 564.09 785.16 L 553.53 781.98 L 543.48 783.57 L 540.96 782.78 L 540.96 781.19 L 542.97 780.00 L 544.98 778.02 L 546.49 775.24 L 546.99 771.27 L 544.98 774.05 L 542.97 776.43 L 539.96 777.62 L 537.44 776.43 L 536.44 777.62 L 536.44 779.60 L 536.44 780.40 L 536.94 781.19 L 536.44 782.78 L 537.95 781.59 L 538.45 781.19 L 538.95 781.19 L 538.95 784.37 L 538.45 785.95 L 537.44 787.54 L 538.45 787.54 L 538.95 787.54 L 538.95 789.13 L 537.95 789.13 L 537.44 789.13 L 538.45 790.72 L 528.39 797.07 L 526.89 798.65 L 525.38 801.43 L 523.37 803.42 L 520.85 802.23 L 522.36 799.05 L 523.87 797.46 L 525.88 796.27 L 527.39 794.68 L 527.39 792.30 L 524.88 782.78 L 523.87 781.19 L 522.86 779.21 L 520.85 777.22 L 519.85 776.43 L 517.84 774.84 L 515.83 767.30 L 514.32 764.92 L 514.82 767.70 L 514.82 770.08 L 515.32 771.27 L 515.32 773.65 L 515.83 774.84 L 517.84 778.81 L 518.34 781.19 L 516.33 786.75 L 516.83 789.13 L 520.35 789.13 L 520.35 790.72 L 517.84 792.70 L 513.82 798.26 L 511.30 800.24 L 508.29 801.04 L 502.25 801.43 L 499.24 802.23 L 499.74 799.45 L 503.76 793.89 L 500.74 792.30 L 499.24 792.30 L 497.23 792.30 L 497.23 793.89 L 497.73 794.68 L 498.23 795.48 L 498.73 796.27 L 499.24 797.07 L 497.73 796.67 L 495.72 795.88 L 494.71 795.48 L 493.20 796.27 L 492.20 797.46 L 491.19 799.05 L 490.69 800.24 L 487.67 801.83 L 485.16 801.83 L 479.63 800.24 L 452.99 803.42 L 443.44 808.58 L 438.41 809.77 L 437.40 810.56 L 436.90 811.75 L 436.40 812.94 L 434.89 813.34 L 433.88 812.15 L 433.38 810.56 L 432.88 808.97 L 432.38 808.18 L 429.86 808.97 L 427.35 811.35 L 425.84 814.13 L 426.34 818.10 L 427.85 816.51 L 429.86 816.12 L 432.38 816.91 L 436.40 818.50 L 437.40 818.89 L 437.91 820.09 L 436.90 822.86 L 432.38 826.04 L 431.87 833.18 L 431.37 834.77 L 430.36 835.56 L 428.86 835.56 L 427.85 836.75 L 425.34 838.34 L 417.80 837.55 L 414.78 839.14 L 413.78 842.31 L 413.78 844.69 L 412.77 845.88 L 398.19 843.90 L 397.69 842.71 L 397.19 840.72 L 396.68 838.34 L 395.17 837.55 L 394.67 838.34 L 394.67 838.74 L 394.67 844.30 L 394.17 846.28 L 392.16 849.45 L 390.15 851.84 L 388.14 853.42 L 385.12 853.42 L 389.14 857.39 L 390.65 858.19 L 389.14 860.57 L 386.13 862.15 L 380.60 863.35 L 373.06 866.92 L 371.04 869.70 L 373.56 872.87 L 371.55 874.06 L 360.99 876.44 L 355.46 878.82 L 346.91 879.62 L 342.89 879.22 L 341.38 879.22 L 339.88 879.22 L 339.37 878.43 L 339.37 876.84 L 340.38 875.65 L 341.89 874.86 L 342.89 874.46 L 342.89 873.27 L 341.89 871.28 L 343.90 870.89 L 345.91 870.09 L 347.92 868.51 L 349.93 866.52 L 348.92 865.73 L 347.92 865.33 L 347.42 864.93 L 345.91 864.93 L 346.91 861.76 L 347.42 860.96 L 348.92 860.17 L 347.92 857.79 L 346.91 857.39 L 345.91 858.19 L 344.90 860.17 L 342.89 858.58 L 340.38 858.19 L 334.35 858.19 L 334.35 856.60 L 333.34 855.41 L 330.83 856.20 L 328.31 857.39 L 325.80 858.19 L 319.77 857.79 L 317.25 858.19 L 314.24 860.17 L 318.76 861.76 L 324.79 862.55 L 328.31 865.33 L 325.80 872.87 L 330.83 872.47 L 332.34 872.87 L 332.34 874.46 L 331.83 874.46 L 331.83 876.05 L 332.84 877.24 L 333.34 877.63 L 331.33 878.03 L 330.32 878.43 L 329.82 879.22 L 334.35 879.22 L 331.83 883.19 L 331.83 883.98 L 331.83 885.17 L 332.34 886.36 L 332.84 887.95 L 331.83 889.54 L 327.31 895.10 L 325.80 897.48 L 322.28 899.86 L 316.75 901.05 L 315.24 902.24 L 313.23 905.02 L 312.73 902.64 L 310.72 900.65 L 308.20 899.46 L 306.70 900.26 L 308.71 901.84 L 309.21 904.62 L 308.71 907.00 L 306.70 908.59 L 305.69 903.83 L 302.68 901.84 L 296.14 901.84 L 296.14 903.43 L 297.65 904.22 L 300.66 904.62 L 302.17 905.02 L 303.18 903.43 L 304.18 903.43 L 304.69 905.02 L 304.69 906.61 L 303.68 907.40 L 302.17 908.19 L 301.67 908.59 L 299.16 914.15 L 299.16 915.34 L 299.16 918.12 L 299.66 921.69 L 300.16 924.47 L 298.15 922.48 L 296.14 918.12 L 294.13 916.13 L 292.12 916.13 L 285.08 918.12 L 268.49 916.13 L 270.50 918.51 L 272.51 919.70 L 278.04 919.70 L 278.04 921.29 L 277.04 922.08 L 276.03 922.88 L 279.05 924.47 L 277.54 925.66 L 276.53 927.64 L 276.53 929.62 L 277.04 932.40 L 271.51 931.61 L 270.50 932.40 L 269.50 931.61 L 268.49 930.02 L 267.48 929.23 L 262.46 929.23 L 260.95 928.83 L 259.44 928.04 L 258.94 928.04 L 257.93 929.23 L 254.92 927.64 L 252.91 930.42 L 251.40 934.39 L 250.39 937.17 L 245.37 939.15 L 244.36 939.55 L 243.86 941.93 L 242.85 941.53 L 241.34 939.94 L 241.34 938.75 L 240.34 938.36 L 237.32 935.97 L 235.81 935.58 L 234.31 935.58 L 232.29 937.17 L 224.25 938.75 L 222.74 937.96 L 219.22 935.97 L 217.72 935.58 L 217.72 937.17 L 218.22 937.56 L 219.73 938.75 L 218.22 941.53 L 216.71 943.52 L 214.70 944.71 L 212.19 945.10 L 208.67 944.31 L 207.66 944.71 L 208.16 947.09 L 208.16 948.28 L 206.15 948.68 L 205.15 949.87 L 204.65 951.85 L 203.14 953.44 L 201.63 953.44 L 200.62 953.04 L 199.12 952.64 L 197.61 953.44 L 197.61 951.85 L 197.10 950.66 L 197.10 949.87 L 196.60 948.28 L 192.58 951.06 L 192.58 953.04 L 191.57 953.44 L 190.57 953.44 L 189.56 954.23 L 187.55 955.82 L 186.04 956.61 L 181.52 956.61 L 183.03 955.42 L 184.03 954.23 L 185.04 952.64 L 186.04 950.26 L 184.03 951.45 L 182.53 952.25 L 182.02 951.45 L 183.03 948.28 L 184.54 946.29 L 188.06 943.91 L 190.07 942.33 L 189.56 941.53 L 189.06 941.53 L 189.06 941.13 L 189.06 940.34 L 187.55 941.53 L 183.03 944.31 L 182.53 945.90 L 181.52 947.48 L 178.50 950.26 L 177.00 947.88 L 177.00 945.50 L 178.00 942.72 L 178.50 939.55 L 177.50 937.96 L 174.99 936.77 L 172.47 936.37 L 170.96 937.17 L 171.97 939.94 L 167.95 942.33 L 157.89 944.31 L 157.39 945.50 L 157.39 947.48 L 156.89 948.28 L 154.37 948.28 L 153.37 948.28 L 150.85 951.06 L 149.35 951.85 L 146.83 951.85 L 146.83 949.47 L 144.82 946.69 L 142.81 945.50 L 141.81 947.48 L 134.27 955.03 L 135.27 956.22 L 135.77 956.22 L 136.28 956.61 L 126.72 961.38 L 127.23 958.60 L 125.72 959.39 L 121.70 962.96 L 121.19 961.38 L 120.19 962.96 L 120.19 960.18 L 120.69 958.99 L 121.19 958.20 L 121.19 956.61 L 119.69 956.22 L 119.18 955.42 L 118.18 953.44 L 121.19 952.25 L 123.71 950.26 L 128.74 945.10 L 131.25 943.52 L 136.28 941.93 L 139.29 940.34 L 141.81 938.36 L 147.84 930.82 L 150.35 928.83 L 155.38 926.45 L 158.40 924.47 L 151.86 923.67 L 124.71 937.96 L 116.17 938.75 L 122.20 934.78 L 123.21 933.99 L 124.71 933.20 L 125.72 930.82 L 127.23 928.83 L 132.25 926.85 L 149.85 916.92 L 151.36 913.75 L 155.88 913.35 L 161.41 910.18 L 166.44 908.99 L 170.46 907.00 L 170.96 903.43 L 171.47 902.24 L 171.97 900.65 L 172.47 900.26 L 172.47 898.67 L 170.96 897.48 L 168.45 899.06 L 165.94 899.86 L 162.92 897.48 L 161.91 897.48 L 161.41 897.08 L 160.91 896.29 L 161.41 893.11 L 161.41 892.32 L 160.41 891.13 L 158.90 890.33 L 157.89 889.54 L 156.38 888.75 L 156.89 891.92 L 156.89 893.91 L 156.89 896.29 L 158.40 898.67 L 155.38 899.46 L 153.87 901.05 L 149.85 905.02 L 146.83 907.00 L 144.32 907.80 L 134.77 908.99 L 130.24 910.97 L 112.65 913.75 L 106.62 916.53 L 104.61 918.12 L 104.61 918.91 L 104.61 919.70 L 104.10 920.50 L 103.60 921.29 L 103.10 921.69 L 94.05 924.86 L 91.03 927.64 L 89.52 927.24 L 86.51 926.05 L 85.00 926.05 L 78.46 926.85 L 75.45 928.43 L 72.93 930.82 L 72.43 929.23 L 73.44 928.43 L 73.44 926.85 L 73.44 925.66 L 73.94 924.47 L 74.94 923.67 L 84.50 920.89 L 86.51 919.70 L 86.51 918.51 L 86.51 918.12 L 86.00 918.12 L 85.50 918.12 L 86.00 915.34 L 85.00 913.35 L 82.99 912.96 L 80.98 912.96 L 82.49 910.18 L 85.50 909.38 L 91.53 909.78 L 94.55 908.59 L 101.09 901.84 L 101.09 900.26 L 95.05 900.26 L 97.57 895.89 L 102.09 892.32 L 106.62 889.94 L 110.64 888.75 L 110.13 889.94 L 109.13 892.32 L 108.63 893.51 L 111.14 893.11 L 113.15 891.92 L 115.16 889.54 L 115.16 885.57 L 117.17 887.16 L 119.69 887.56 L 124.71 887.16 L 124.71 885.57 L 123.71 885.57 L 121.19 883.98 L 121.19 882.79 L 122.70 881.21 L 126.22 876.84 L 129.24 875.25 L 130.75 872.08 L 131.75 871.28 L 132.76 870.89 L 136.28 871.28 L 140.80 869.70 L 148.84 864.93 L 153.37 863.35 L 153.37 861.76 L 143.31 862.95 L 128.74 868.90 L 126.22 870.49 L 124.71 872.08 L 124.21 873.66 L 119.18 873.66 L 117.17 874.46 L 118.18 876.05 L 114.16 878.82 L 112.65 879.22 L 112.65 878.03 L 113.15 875.65 L 113.15 874.46 L 111.14 874.46 L 110.13 875.25 L 109.63 876.44 L 108.63 877.63 L 107.12 878.03 L 103.60 878.82 L 102.09 879.22 L 96.06 884.38 L 92.54 885.97 L 89.52 883.98 L 86.51 887.16 L 82.99 890.33 L 79.47 892.71 L 75.95 893.51 L 76.96 890.73 L 63.38 883.98 L 68.91 882.40 L 70.42 876.84 L 67.91 870.49 L 62.38 867.71 L 60.37 869.30 L 56.85 874.86 L 55.34 876.05 L 53.83 876.84 L 49.31 881.21 L 47.30 882.79 L 46.29 879.62 L 48.30 872.87 L 47.30 869.70 L 45.28 869.30 L 42.27 869.30 L 40.76 868.90 L 41.77 866.52 L 41.77 865.33 L 41.26 864.93 L 40.76 864.93 L 40.76 863.74 L 41.26 863.35 L 41.26 862.55 L 41.77 861.76 L 41.26 861.36 L 40.26 861.76 L 39.75 861.76 L 39.75 860.17 L 44.28 859.38 L 55.84 855.01 L 58.36 855.01 L 59.36 854.22 L 59.86 852.63 L 59.86 851.04 L 59.36 850.25 L 57.35 849.06 L 56.34 846.68 L 54.84 844.30 L 52.32 843.90 L 52.32 842.31 L 53.83 841.12 L 57.35 839.93 L 58.86 839.14 L 57.85 835.56 L 60.87 833.98 L 64.39 833.18 L 67.91 830.40 L 76.96 826.04 L 90.53 823.26 L 96.06 819.69 L 99.08 811.75 L 100.08 811.75 L 100.08 816.12 L 101.09 817.70 L 103.10 818.10 L 105.11 818.10 L 104.61 816.12 L 107.62 802.23 L 112.15 804.61 L 116.17 805.00 L 126.72 803.42 L 125.72 802.62 L 124.71 801.04 L 123.71 800.24 L 128.74 797.07 L 101.09 798.65 L 102.59 803.42 L 102.09 806.19 L 101.09 807.39 L 100.58 803.42 L 99.08 801.83 L 97.06 801.04 L 95.05 800.24 L 91.03 799.84 L 72.43 805.00 L 68.91 806.99 L 67.40 805.80 L 65.90 803.42 L 64.39 802.23 L 62.88 802.62 L 62.38 804.21 L 61.37 804.61 L 57.35 801.04 L 55.84 800.64 L 52.32 802.23 L 52.32 803.42 L 53.33 803.42 L 54.84 803.81 L 56.85 805.00 L 56.85 806.59 L 53.33 805.80 L 46.79 803.42 L 43.27 803.42 L 43.78 805.00 L 44.28 805.80 L 45.28 806.59 L 42.27 806.59 L 36.74 809.37 L 33.72 809.77 L 30.71 808.58 L 29.70 805.80 L 29.20 801.83 L 28.19 797.07 L 29.20 796.27 L 31.71 793.89 L 31.71 792.30 L 30.71 790.72 L 32.21 788.33 L 35.23 786.75 L 37.74 785.95 L 36.74 789.13 L 39.75 791.91 L 41.77 792.30 L 42.77 791.51 L 43.27 789.53 L 42.77 787.94 L 42.77 786.35 L 44.28 784.37 L 43.27 783.18 L 42.27 782.78 L 43.78 779.21 L 45.28 778.41 L 47.30 778.41 L 50.31 777.62 L 51.82 776.03 L 54.84 770.87 L 56.34 769.68 L 70.92 765.32 L 72.93 767.30 L 71.43 776.43 L 71.93 777.62 L 80.98 776.43 L 85.00 773.65 L 88.52 769.68 L 90.03 764.52 L 86.51 760.16 L 91.53 760.16 L 93.04 760.95 L 92.54 763.33 L 93.04 766.51 L 93.04 770.48 L 93.55 773.25 L 95.56 774.44 L 98.07 774.84 L 102.09 776.83 L 107.12 778.02 L 112.65 778.02 L 114.66 776.83 L 117.68 773.25 L 119.18 772.06 L 121.19 772.86 L 120.19 773.65 L 119.18 774.44 L 121.70 776.03 L 131.75 774.44 L 129.24 772.06 L 127.23 771.67 L 123.21 771.27 L 118.18 768.89 L 116.17 768.09 L 114.16 769.68 L 113.15 768.49 L 112.15 767.30 L 111.64 765.32 L 111.64 763.33 L 113.15 764.92 L 114.66 766.11 L 116.17 766.11 L 118.18 764.92 L 116.17 763.73 L 115.16 763.33 L 114.16 763.33 L 114.16 761.35 L 115.66 761.35 L 119.18 760.16 L 117.68 756.19 L 118.18 744.68 L 115.66 742.30 L 108.12 740.71 L 104.61 738.72 L 102.09 735.95 L 104.10 733.96 L 106.62 732.77 L 116.17 731.98 L 129.74 725.63 L 131.75 724.04 L 133.76 720.86 L 136.28 719.28 L 139.80 719.28 L 143.82 720.47 L 145.83 721.66 L 145.33 718.48 L 143.82 716.90 L 141.30 716.50 L 139.29 716.50 L 139.80 715.31 L 140.30 714.12 L 139.80 712.93 L 139.29 711.74 L 139.29 710.15 L 140.30 708.56 L 140.80 707.37 L 140.30 704.59 L 140.80 703.01 L 143.82 698.64 L 144.82 699.43 L 145.83 699.04 L 146.83 697.85 L 148.34 697.05 L 153.87 698.64 L 164.93 698.64 L 166.44 699.43 L 167.44 700.23 L 168.95 700.62 L 170.46 699.83 L 171.47 698.24 L 171.97 697.45 L 173.48 697.05 L 184.03 697.45 L 184.54 697.45 L 185.54 697.85 L 187.55 697.05 L 196.60 697.05 L 201.63 696.26 L 203.64 695.07 L 205.65 693.08 L 207.66 691.89 L 224.75 686.34 L 227.27 684.35 L 228.27 687.13 L 230.79 687.53 L 233.80 687.13 L 235.81 685.94 L 236.82 684.75 L 237.32 682.37 L 238.83 680.38 L 240.34 679.59 L 264.47 676.41 L 269.50 674.83 L 266.98 674.83 L 257.93 670.86 L 252.91 670.06 L 243.86 671.25 L 241.34 670.86 L 239.84 669.67 L 239.84 668.48 L 241.85 666.89 L 241.85 664.90 L 240.84 662.92 L 241.34 660.14 L 240.84 657.76 L 238.83 656.97 L 239.84 654.98 L 241.34 651.81 L 242.35 650.62 L 238.83 651.81 L 234.31 654.19 L 231.29 657.36 L 230.79 660.14 L 226.26 669.27 L 214.20 686.34 L 211.18 687.53 L 199.12 689.11 L 198.11 689.91 L 196.10 693.08 L 194.59 693.88 L 193.08 694.27 L 191.07 693.88 L 189.56 693.48 L 188.06 692.29 L 190.07 690.30 L 193.59 688.32 L 195.60 685.94 L 195.60 682.76 L 191.07 685.54 L 181.02 688.72 L 173.98 689.11 L 170.96 688.32 L 167.95 687.13 L 166.94 685.15 L 165.94 683.95 L 161.41 683.16 L 159.40 681.18 L 159.90 677.60 L 158.40 676.02 L 153.37 676.41 L 153.37 678.00 L 154.88 678.40 L 155.88 679.19 L 156.89 680.78 L 157.39 682.76 L 146.83 687.53 L 140.80 689.11 L 137.78 690.70 L 136.28 693.08 L 135.77 696.66 L 134.77 697.05 L 133.76 695.86 L 132.76 695.46 L 128.74 698.24 L 103.60 701.81 L 103.60 700.62 L 106.11 699.43 L 112.15 695.07 L 119.69 693.08 L 147.84 664.90 L 147.34 664.11 L 146.83 661.73 L 148.34 660.94 L 150.35 659.35 L 151.86 658.55 L 153.37 658.16 L 157.89 658.55 L 159.40 658.55 L 161.91 657.36 L 163.42 656.97 L 164.93 656.17 L 165.43 653.79 L 165.94 651.01 L 166.94 649.03 L 166.44 647.84 L 166.44 647.44 L 166.94 645.85 L 165.94 644.27 L 167.44 643.08 L 168.95 641.89 L 170.46 639.90 L 171.47 637.52 L 172.47 635.54 L 172.97 633.55 L 173.48 632.36 L 174.48 631.17 L 174.48 629.58 L 174.99 626.41 L 183.53 618.07 L 185.04 613.31 L 182.53 612.52 L 171.47 613.31 L 167.95 611.72 L 171.97 607.75 L 173.48 605.77 L 177.50 598.63 L 179.01 597.04 L 180.52 595.85 L 179.51 594.26 L 187.05 579.57 L 190.07 576.40 L 192.08 572.43 L 194.09 567.27 L 196.60 563.30 L 199.62 562.11 L 202.63 564.10 L 209.17 570.45 L 212.19 571.64 L 215.20 570.84 L 217.72 568.86 L 221.24 568.07 L 224.25 570.05 L 224.75 566.08 L 222.74 564.10 L 216.71 562.11 L 216.71 560.52 L 224.75 558.94 L 227.27 559.73 L 231.29 563.30 L 233.80 563.70 L 233.80 562.11 L 228.27 558.94 L 228.27 556.95 L 231.29 558.54 L 233.30 558.94 L 234.81 556.95 L 236.32 556.16 L 237.32 556.56 L 236.82 558.94 L 238.33 560.52 L 239.84 562.11 L 241.34 562.91 L 243.35 563.70 L 242.35 558.94 L 241.34 556.95 L 240.84 555.37 L 242.35 551.79 L 244.36 549.41 L 249.39 545.84 L 247.88 545.84 L 245.37 547.03 L 243.86 547.43 L 230.28 547.03 L 228.27 545.84 L 230.79 544.25 L 236.82 542.66 L 239.84 542.66 L 239.84 541.08 L 235.81 541.08 L 235.81 539.49 L 237.32 538.30 L 240.84 537.11 L 242.35 536.31 L 242.35 534.73 L 231.29 533.14 L 228.78 533.54 L 223.75 535.92 L 178.50 539.49 L 173.98 541.87 L 171.97 543.46 L 168.95 544.25 L 162.92 544.25 L 159.90 542.66 L 158.40 540.68 L 157.39 538.30 L 155.38 536.31 L 158.40 532.35 L 156.89 529.57 L 154.88 529.57 L 153.37 533.93 L 152.87 539.09 L 151.36 541.87 L 148.84 542.27 L 146.83 539.49 L 146.83 537.90 L 149.35 532.74 L 148.34 522.42 L 151.36 520.04 L 151.36 520.44 L 152.87 521.63 L 153.87 521.63 L 154.37 521.23 L 155.38 518.85 L 155.88 518.46 L 156.38 517.66 L 150.85 512.10 L 152.36 510.12 L 157.39 507.34 L 152.36 506.95 L 149.85 507.34 L 147.84 508.93 L 149.35 511.71 L 149.85 515.68 L 148.84 519.25 L 145.83 520.04 L 143.31 517.66 L 144.32 513.30 L 145.33 508.93 L 145.33 507.34 L 144.82 506.95 L 143.82 505.75 L 143.31 505.36 L 142.81 506.55 L 140.80 508.93 L 138.79 509.72 L 137.78 511.31 L 136.28 515.28 L 132.76 521.23 L 130.75 524.01 L 124.21 526.79 L 121.70 526.79 L 119.69 524.01 L 116.67 521.63 L 110.64 523.22 L 108.63 521.63 L 109.13 520.84 L 110.13 517.66 L 110.13 515.28 L 110.64 513.30 L 111.64 512.50 L 112.65 512.10 L 114.66 512.10 L 117.17 511.31 L 122.70 507.34 L 124.71 505.36 L 124.71 504.17 L 120.19 504.17 L 120.19 502.18 L 123.21 500.99 L 123.21 499.40 L 120.69 499.40 L 119.18 499.80 L 116.17 502.18 L 116.17 503.77 L 114.66 504.96 L 112.15 504.96 L 111.64 502.18 L 112.15 500.20 L 115.16 498.21 L 116.17 495.83 L 114.66 496.23 L 113.15 497.42 L 112.15 498.61 L 111.14 499.40 L 109.63 498.61 L 108.63 497.82 L 107.12 497.82 L 105.61 499.40 L 105.11 501.39 L 105.61 504.17 L 105.61 506.15 L 104.10 507.34 L 102.59 507.34 L 100.08 508.53 L 94.55 508.53 L 93.04 508.14 L 91.53 507.34 L 90.03 505.36 L 89.02 503.37 L 88.02 501.39 L 86.00 500.99 L 80.47 501.79 L 76.96 501.39 L 74.94 499.40 L 73.94 500.20 L 72.93 500.60 L 70.42 500.99 L 71.43 497.02 L 72.93 494.64 L 74.94 493.05 L 77.96 492.66 L 83.49 493.85 L 85.50 493.45 L 87.51 491.07 L 87.51 489.48 L 86.00 489.09 L 84.50 488.29 L 83.49 486.70 L 82.99 484.72 L 86.00 485.12 L 89.02 486.70 L 92.04 487.10 L 93.04 484.72 L 90.53 485.12 L 85.00 483.93 L 79.97 481.54 L 76.96 478.37 L 76.96 476.78 L 75.95 474.00 L 74.94 471.23 L 73.44 470.04 L 69.41 471.23 L 67.91 471.23 L 66.40 470.04 L 69.92 467.26 L 72.93 467.26 L 76.45 468.45 L 79.97 468.45 L 79.47 467.65 L 78.97 464.88 L 78.97 463.69 L 85.00 463.69 L 91.53 465.67 L 92.04 466.46 L 94.05 470.04 L 95.56 469.24 L 97.57 466.46 L 99.08 465.67 L 90.53 459.72 L 88.52 456.94 L 93.55 455.75 L 104.61 456.94 L 108.63 455.75 L 113.15 452.57 L 115.16 452.57 L 116.67 452.97 L 119.69 455.35 L 126.22 456.54 L 137.28 457.34 L 137.28 455.75 L 134.77 454.56 L 125.22 455.35 L 119.18 452.97 L 107.62 445.83 L 105.61 435.51 L 106.62 430.35 L 108.12 426.78 L 109.13 422.81 L 107.62 418.84 L 109.13 417.65 L 114.16 416.85 L 118.18 415.27 L 121.19 414.87 L 122.70 414.47 L 124.21 412.88 L 125.22 412.88 L 128.23 414.47 L 129.74 415.27 L 155.38 410.50 L 155.38 408.92 L 153.37 408.52 L 147.84 405.74 L 148.34 405.34 L 148.84 404.55 L 149.85 404.15 L 150.85 404.15 L 150.85 402.57 L 149.85 400.58 L 151.36 398.60 L 156.38 394.63 L 155.38 394.23 L 152.36 393.04 L 153.87 391.85 L 154.37 390.26 L 155.38 388.67 L 155.38 386.29 L 154.37 386.69 L 153.87 386.69 L 153.37 387.09 L 152.36 387.88 L 148.84 386.69 L 128.74 386.29 L 115.16 394.23 L 107.62 395.82 L 102.59 391.06 L 104.61 389.87 L 105.61 383.12 L 107.62 381.53 L 107.12 379.15 L 107.12 378.36 L 107.62 376.77 L 107.62 375.18 L 106.62 375.18 L 106.62 373.59 L 113.15 372.01 L 114.66 372.40 L 117.68 374.78 L 119.69 375.18 L 121.19 376.37 L 121.70 381.93 L 123.21 383.12 L 124.71 382.32 L 124.71 380.74 L 124.21 377.96 L 124.71 375.18 L 123.71 373.99 L 122.20 372.01 L 121.19 370.81 L 119.18 370.42 L 119.18 372.01 L 120.19 373.59 L 118.68 373.20 L 117.68 371.21 L 115.66 365.66 L 116.17 364.46 L 116.17 363.27 L 115.16 362.08 L 114.16 362.08 L 112.15 362.48 L 111.64 361.69 L 111.14 360.10 L 110.13 358.91 L 109.13 356.92 L 108.63 353.35 L 109.13 349.78 L 110.64 348.59 L 112.65 348.19 L 114.16 346.21 L 112.15 345.02 L 112.15 343.83 L 113.65 342.24 L 115.16 341.45 L 114.16 339.86 L 118.18 336.29 L 116.67 335.10 L 115.16 335.10 L 111.64 336.29 L 111.64 338.27 L 111.64 339.06 L 111.14 339.46 L 109.63 339.86 L 109.63 341.45 L 110.64 341.45 L 106.62 346.21 L 102.59 347.40 L 99.08 344.22 L 96.06 338.27 L 99.08 338.27 L 105.11 336.29 L 107.62 335.10 L 103.60 331.92 L 101.59 329.54 L 101.09 326.76 L 102.09 327.16 L 103.60 327.95 L 104.61 328.35 L 103.10 325.57 L 98.07 320.41 L 100.08 321.60 L 101.59 321.60 L 103.10 320.81 L 103.60 318.82 L 96.56 312.87 L 93.55 311.28 L 91.53 314.06 L 93.55 316.44 L 92.54 318.43 L 90.03 319.22 L 87.51 318.82 L 89.02 321.20 L 89.52 322.00 L 89.52 323.59 L 87.51 323.19 L 85.50 323.59 L 82.99 325.17 L 82.99 326.76 L 84.50 327.55 L 85.50 328.75 L 85.50 333.51 L 84.50 333.51 L 81.48 335.10 L 83.49 336.29 L 85.50 338.27 L 85.50 340.65 L 82.99 341.45 L 80.47 341.05 L 78.46 340.25 L 77.46 337.87 L 76.96 333.51 L 77.96 330.73 L 80.98 323.98 L 81.48 321.20 L 81.98 316.84 L 83.49 314.85 L 85.00 313.66 L 86.51 310.49 L 81.98 310.49 L 80.47 309.70 L 78.97 307.71 L 81.48 307.31 L 82.99 305.33 L 83.49 302.15 L 84.50 299.38 L 86.00 298.19 L 92.54 294.61 L 93.04 293.42 L 93.04 292.23 L 94.05 291.44 L 95.05 291.44 L 96.06 292.23 L 96.56 293.42 L 96.56 295.01 L 97.06 296.20 L 99.08 297.79 L 101.09 298.98 L 103.60 298.98 L 105.61 297.79 L 106.62 299.77 L 108.12 300.57 L 109.13 300.57 L 110.64 299.38 L 110.64 300.17 L 110.64 300.57 L 110.64 300.96 L 111.64 300.96 L 108.63 306.92 L 105.11 309.30 L 101.59 308.90 L 98.07 305.73 L 97.06 310.49 L 99.58 311.68 L 102.59 312.08 L 105.11 313.27 L 107.62 314.85 L 109.63 312.87 L 111.14 310.49 L 113.15 309.30 L 111.64 306.12 L 112.15 302.55 L 114.66 299.38 L 116.67 297.79 L 119.69 298.58 L 124.71 302.15 L 127.73 302.55 L 126.72 300.57 L 125.72 299.38 L 123.21 297.79 L 123.21 296.20 L 124.21 295.41 L 125.72 295.41 L 128.74 296.20 L 126.22 294.61 L 118.68 293.03 L 117.17 290.64 L 116.67 287.07 L 116.67 285.49 L 124.71 283.50 L 127.73 283.90 L 133.26 287.47 L 135.77 288.26 L 159.90 289.85 L 161.41 289.45 L 163.93 288.26 L 165.43 288.26 L 166.94 288.66 L 168.45 290.64 L 169.96 291.44 L 181.02 293.03 L 182.02 292.63 L 184.03 291.44 L 185.54 290.25 L 186.55 289.06 L 188.06 287.87 L 189.56 288.26 L 196.10 291.04 L 197.10 291.44 L 198.11 292.23 L 199.12 296.60 L 200.12 297.79 L 202.63 297.39 L 204.14 296.99 L 204.14 296.20 L 205.15 298.19 L 205.15 299.77 L 205.15 301.76 L 204.14 302.55 L 204.14 304.14 L 207.16 305.73 L 207.16 307.71 L 204.65 309.30 L 205.15 311.68 L 212.19 317.63 L 213.69 320.41 L 214.70 323.98 L 214.70 328.35 L 215.71 328.35 L 215.71 324.38 L 216.21 320.81 L 216.71 317.24 L 215.71 314.06 L 218.72 312.47 L 221.74 309.70 L 224.25 304.93 L 225.26 298.58 L 227.27 294.61 L 232.29 294.22 L 240.84 296.20 L 241.34 295.80 L 242.35 295.01 L 242.85 294.61 L 244.86 295.80 L 246.87 297.39 L 249.39 298.19 L 252.40 300.57 L 254.41 300.96 L 261.45 300.96 L 264.47 300.17 L 267.48 297.79 L 271.00 300.57 L 279.55 298.98 L 283.57 300.96 L 284.58 303.34 L 285.08 305.73 L 285.58 308.11 L 289.60 309.70 L 291.11 311.28 L 294.13 315.65 L 296.14 314.06 L 298.15 313.66 L 302.68 314.06 L 302.68 312.47 L 300.66 311.28 L 298.15 310.49 L 296.14 309.30 L 295.13 306.52 L 294.13 304.93 L 292.12 303.34 L 289.60 302.55 L 287.59 302.55 L 287.59 300.96 L 288.60 299.77 L 290.11 296.99 L 291.11 296.20 L 294.63 297.79 L 296.14 298.19 L 297.15 296.99 L 298.65 295.80 L 308.71 297.79 L 306.19 295.01 L 303.68 293.03 L 301.17 291.84 L 298.65 291.44 L 295.64 291.44 L 294.63 291.04 L 294.13 289.06 L 295.13 286.68 L 296.64 287.07 L 300.16 289.85 L 302.68 288.26 L 301.67 285.88 L 298.65 284.29 L 295.64 283.50 L 282.06 283.50 L 281.06 282.71 L 281.06 279.93 L 281.56 278.34 L 283.07 276.75 L 284.58 275.56 L 288.60 274.37 L 304.69 263.26 L 307.20 262.47 L 308.20 261.67 L 308.20 259.69 L 308.71 255.32 L 309.21 250.96 L 310.22 251.75 L 311.22 254.53 L 311.72 255.72 L 312.23 256.12 L 312.23 257.70 L 316.25 254.93 L 320.77 252.54 L 332.34 250.56 L 333.84 250.16 L 340.38 245.80 L 344.90 244.61 L 344.90 243.02 L 340.38 243.02 L 338.37 241.83 L 336.36 239.84 L 343.90 233.49 L 343.90 228.73 L 349.93 223.17 L 349.93 217.22 L 351.44 218.02 L 352.44 219.21 L 353.45 220.00 L 354.96 220.40 L 356.47 212.86 L 357.47 210.87 L 356.97 210.47 L 356.97 210.08 L 356.47 210.08 L 356.47 209.28 L 353.95 211.67 L 350.94 213.25 L 341.38 214.84 L 336.36 218.81 L 333.34 220.40 L 333.34 218.81 L 334.85 216.82 L 334.85 214.84 L 334.35 213.25 L 331.83 212.46 L 329.82 213.25 L 326.30 218.02 L 322.78 219.60 L 316.25 226.75 L 314.24 228.33 L 312.73 229.52 L 310.22 229.92 L 310.22 228.73 L 313.73 224.76 L 315.75 222.78 L 318.76 222.38 L 320.27 220.40 L 320.27 217.22 L 318.26 214.84 L 316.25 217.22 L 315.24 217.22 L 315.75 212.06 L 313.73 212.06 L 311.72 215.24 L 310.22 219.60 L 309.71 221.19 L 308.20 220.00 L 306.70 218.02 L 306.19 216.43 L 306.70 215.24 L 306.19 214.44 L 305.19 214.05 L 304.18 214.05 L 302.68 215.24 L 302.17 215.63 L 298.65 215.63 L 297.15 216.43 L 295.64 219.60 L 293.63 219.21 L 290.61 217.22 L 280.05 217.22 L 278.04 215.63 L 279.05 213.25 L 277.54 212.06 L 265.98 207.70 L 263.46 207.70 L 263.97 206.90 L 264.47 206.11 L 264.97 205.32 L 265.47 204.52 L 265.47 202.93 L 263.97 201.74 L 262.96 200.16 L 262.96 198.57 L 264.97 197.77 L 266.98 197.77 L 268.99 196.98 L 270.00 195.00 L 270.00 192.22 L 272.01 190.63 L 281.56 183.49 L 285.08 182.30 L 299.16 182.69 L 306.70 185.07 L 310.22 185.07 L 310.22 183.49 L 300.66 181.11 L 298.15 178.72 L 300.16 177.53 L 306.70 177.14 L 308.20 177.93 L 309.71 180.71 L 312.23 183.49 L 314.74 184.68 L 317.25 183.49 L 309.71 176.34 L 304.69 174.36 L 299.66 170.79 L 296.14 170.39 L 296.64 168.41 L 297.65 167.61 L 299.16 167.61 L 300.66 167.21 L 302.17 166.42 L 304.18 163.64 L 305.69 162.45 L 308.20 165.23 L 311.72 165.63 L 318.26 164.44 L 325.80 167.21 L 328.82 167.21 L 328.82 165.63 L 326.30 165.23 L 323.29 164.04 L 320.77 161.66 L 321.28 157.69 L 322.78 155.70 L 328.31 156.50 L 330.32 156.10 L 328.82 154.51 L 327.31 150.55 L 325.30 149.35 L 322.78 149.35 L 321.78 149.35 L 321.28 150.55 L 321.28 152.13 L 321.28 153.72 L 321.28 154.51 L 317.25 154.12 L 313.73 150.94 L 311.22 146.18 L 309.71 141.81 L 311.22 140.23 L 312.73 141.02 L 313.73 142.21 L 315.75 143.00 L 317.76 143.00 L 319.77 142.21 L 322.78 139.83 L 318.76 138.24 L 315.75 135.07 L 310.22 128.72 L 310.22 127.13 L 311.72 125.94 L 313.23 125.54 L 314.74 125.54 L 316.25 127.13 L 317.76 124.75 L 318.26 123.95 L 317.25 123.95 L 317.76 120.38 L 319.26 119.99 L 320.27 119.99 L 321.78 119.19 L 324.79 113.64 L 325.80 112.44 L 326.81 114.03 L 327.31 119.59 L 328.82 120.78 L 329.32 119.59 L 330.32 115.22 L 331.83 114.03 L 329.82 107.29 L 329.32 102.92 L 330.32 101.33 L 331.83 99.74 L 333.84 92.60 L 335.35 89.82 L 337.36 89.82 L 345.41 93.39 L 347.92 92.60 L 352.44 90.62 L 354.45 89.82 L 353.45 92.20 L 352.44 93.79 L 351.94 94.98 L 351.44 97.36 L 352.44 98.55 L 353.95 96.97 L 357.97 91.41 L 366.52 86.25 L 369.54 85.06 L 371.04 83.47 L 372.55 79.50 L 374.06 75.93 L 377.58 75.53 L 381.10 78.31 L 380.09 81.09 L 373.56 85.06 L 373.56 86.65 L 379.59 83.87 L 380.60 84.27 L 381.10 85.46 L 383.61 85.46 L 385.62 84.27 L 387.13 83.47 L 388.64 86.65 L 388.64 88.23 L 388.14 91.01 L 389.64 90.62 L 391.66 89.03 L 393.67 88.23 L 393.16 90.62 L 392.16 92.20 L 390.65 93.00 L 388.64 93.39 L 388.64 94.98 L 391.66 94.58 L 393.16 95.38 L 394.17 94.98 L 395.68 93.39 L 397.19 89.03 L 396.68 86.25 L 393.67 81.88 L 392.66 77.12 L 395.17 74.34 L 398.69 71.57 L 402.21 67.60 L 402.72 68.79 L 403.22 69.18 L 400.20 80.30 L 399.70 81.88 L 400.20 82.28 L 400.70 83.47 L 401.21 84.27 L 402.21 85.06 L 403.72 85.06 L 404.73 83.87 L 406.23 83.47 L 408.25 84.27 L 410.76 86.25 L 413.78 88.63 L 414.78 90.62 L 415.28 91.81 L 416.29 94.58 L 416.79 96.57 L 416.79 98.16 L 415.79 102.13 L 415.79 104.51 L 416.79 102.52 L 419.31 96.17 L 419.81 94.98 L 420.31 93.00 L 419.81 89.43 L 418.30 85.85 L 417.80 84.27 L 417.29 81.88 L 416.79 79.11 L 415.79 76.33 L 413.78 75.53 L 412.77 77.12 L 413.27 80.69 L 413.78 84.27 L 414.78 86.65 L 412.77 86.25 L 411.76 85.06 L 410.26 83.47 L 409.25 81.88 L 405.23 80.69 L 403.22 79.50 L 403.72 76.33 L 407.74 68.79 L 407.74 67.60 L 412.77 68.39 L 414.78 67.60 L 419.81 63.23 L 421.32 62.83 L 423.83 63.63 L 425.34 66.01 L 426.34 68.39 L 427.85 69.18 L 428.35 71.17 L 428.35 74.74 L 427.85 78.31 L 427.35 79.50 L 427.85 81.49 L 429.86 83.08 L 433.88 85.06 L 433.88 87.84 L 434.89 91.01 L 436.90 93.79 L 438.41 94.98 L 439.92 96.57 L 440.42 100.54 L 439.41 104.51 L 438.41 106.09 L 436.40 106.49 L 434.39 108.08 L 431.87 110.86 L 424.33 116.02 L 424.33 117.60 L 432.88 116.02 L 435.39 117.21 L 433.88 122.37 L 432.38 123.95 L 425.34 128.72 L 420.81 135.07 L 418.80 136.65 L 418.80 138.64 L 421.32 137.45 L 423.83 135.86 L 437.40 123.56 L 438.91 123.16 L 439.92 120.38 L 442.93 119.19 L 445.95 118.40 L 448.46 117.60 L 449.97 114.43 L 450.98 110.86 L 450.47 107.29 L 447.96 106.09 L 446.95 104.90 L 447.96 102.92 L 448.97 99.74 L 448.97 94.19 L 448.46 93.79 L 442.43 85.06 L 439.41 82.68 L 438.41 81.09 L 437.91 79.50 L 436.90 77.12 L 436.90 74.74 L 440.42 71.96 L 441.93 67.99 L 441.93 63.23 L 440.42 59.66 L 442.93 59.66 L 444.94 60.85 L 446.95 60.85 L 448.97 59.66 L 448.97 58.87 L 448.97 58.07 L 448.46 57.67 L 448.46 56.48 L 450.98 58.47 L 453.99 60.45 L 457.01 60.45 L 462.54 54.90 L 465.55 53.71 L 468.07 55.29 L 470.08 59.66 L 467.57 59.66 L 466.56 59.66 L 469.07 61.25 L 472.09 62.83 L 475.11 62.83 L 478.12 60.85 L 469.07 54.10 L 465.05 48.94 L 464.55 43.39 L 461.03 41.40 L 459.02 39.82 L 458.01 38.23 L 460.02 37.04 L 462.54 37.43 L 467.57 40.21 L 477.12 43.39 L 479.13 43.78 L 484.66 46.56 L 486.67 48.15 L 493.71 58.87 L 495.72 60.45 L 502.76 63.63 L 507.78 64.42 L 514.32 67.20 L 517.33 69.18 L 520.35 67.99 L 522.36 71.57 L 521.86 76.33 L 517.84 78.71 L 513.82 79.50 L 509.29 81.49 L 504.77 84.27 L 499.74 89.03 L 495.22 91.01 L 491.70 92.20 L 489.69 94.19 L 483.65 102.13 L 481.64 106.09 L 479.63 110.46 L 479.13 111.25 L 478.12 116.02 L 480.13 116.02 L 486.67 114.03 L 489.18 114.43 L 495.22 117.60 L 499.74 118.00 L 504.77 117.60 L 506.27 116.41 L 509.29 112.44 L 511.30 110.86 L 511.30 108.08 L 512.31 103.71 L 514.32 99.74 L 515.83 98.16 L 517.33 95.78 L 518.34 85.46 L 518.84 81.88 L 521.36 81.88 L 527.39 85.85 L 529.90 86.65 L 548.00 85.85 L 564.09 78.71 L 573.64 77.92 L 576.15 76.33 L 578.16 73.55 L 580.68 71.17 L 583.69 69.58 L 587.21 69.18 L 592.24 72.36 L 595.26 73.15 L 600.79 69.98 L 604.30 70.77 L 617.88 78.31 L 619.89 78.71 L 622.90 78.31 L 628.43 75.93 L 630.95 75.53 L 636.48 76.73 L 639.49 77.92 L 640.50 79.50 L 641.51 80.30 L 647.04 85.85 L 648.54 88.23 L 648.04 101.33 L 647.04 105.30 L 645.02 110.46 L 646.03 112.44 L 648.54 112.84 L 651.06 112.44 L 653.07 112.84 L 655.08 113.64 L 657.09 115.22 L 658.09 117.60 L 657.59 121.57 L 655.08 130.30 L 655.58 131.89 L 659.60 132.69 L 663.12 134.67 L 666.64 137.45 L 669.15 141.81 L 670.16 143.40 L 671.17 146.97 L 671.67 148.96 L 672.67 149.75 L 674.68 151.74 L 676.19 152.93 L 677.20 154.91 L 678.71 157.29 L 679.71 160.07 L 679.71 163.25 L 681.22 169.99 L 684.74 171.98 L 689.26 173.56 L 692.28 178.72 L 693.29 178.72 L 690.77 173.56 L 681.72 164.44 L 683.73 160.07 L 688.26 161.26 L 692.28 165.23 L 695.30 168.80 L 696.80 176.34 L 696.30 183.09 L 694.29 188.25 L 691.27 191.42 L 687.25 193.41 L 678.71 195.79 L 675.19 197.77 L 671.67 201.35 L 668.65 204.92 L 665.64 210.87 L 663.62 214.05 L 665.13 215.24 L 666.14 217.22 L 666.14 219.21 L 666.64 220.40 L 668.15 220.79 L 669.15 219.60 L 670.16 218.02 L 671.67 216.43 L 674.68 211.67 L 676.19 210.08 L 680.72 207.70 L 685.74 204.12 L 688.76 202.93 L 690.77 203.73 L 693.29 205.32 L 696.30 205.71 L 712.89 202.93 L 713.90 203.73 L 715.40 206.90 L 716.91 207.70 L 718.42 208.09 L 718.42 209.68 L 718.92 211.67 L 718.92 214.05 L 721.44 222.38 L 722.95 225.56 L 725.46 227.14 L 726.46 228.73 L 726.97 238.26 L 727.47 241.43 L 731.99 248.18 L 733.00 248.58 L 731.99 250.96 L 731.99 252.15 L 732.50 253.34 L 732.50 254.53 L 731.99 255.72 L 728.98 260.08 L 728.48 262.86 L 729.48 266.83 L 728.98 270.80 L 727.47 272.39 L 725.46 273.98 L 724.96 275.96 L 726.97 278.34 L 724.96 279.53 L 722.95 283.10 L 720.93 283.50 L 719.43 281.52 L 717.92 278.34 L 716.91 273.58 L 714.90 272.79 L 713.39 270.80 L 712.39 268.02 L 712.39 265.64 L 713.39 262.86 L 716.41 258.89 L 717.42 255.32 L 716.91 247.78 L 715.40 242.62 L 712.89 238.26 L 702.84 229.52 L 699.32 227.14 L 695.30 227.14 L 695.30 228.73 L 696.30 230.72 L 695.80 233.10 L 694.79 235.08 L 693.29 236.67 L 695.30 236.67 L 696.80 237.86 L 697.81 239.05 L 698.81 239.84 L 704.34 240.24 L 705.85 241.43 L 703.34 242.23 L 700.32 243.02 L 699.32 243.81 L 703.84 246.19 L 703.34 248.97 L 703.34 251.75 L 703.84 253.73 L 705.85 254.53 L 705.85 255.32 L 705.35 256.12 L 704.85 257.70 L 705.85 259.29 L 701.83 271.20 L 700.83 273.58 L 695.80 277.55 L 694.29 279.93 L 699.82 277.94 L 706.36 274.37 L 712.39 272.79 L 716.41 276.75 L 717.42 285.88 L 715.91 292.63 L 712.39 297.79 L 707.36 302.55 L 706.86 302.95 L 705.35 302.55 L 704.85 302.55 L 703.84 307.71 L 702.84 308.11 L 701.33 308.90 L 700.32 308.50 L 699.82 306.52 L 698.31 304.93 L 690.27 304.14 L 684.24 304.93 L 678.20 306.92 L 675.69 307.71 L 672.67 308.50 L 672.17 311.28 L 672.17 319.62 L 672.17 320.41 L 671.67 324.78 L 671.17 329.94 L 669.66 334.30 L 668.15 338.27 L 665.64 341.45 L 660.11 344.22 L 655.58 348.99 L 649.55 353.35 L 648.04 354.15 L 642.51 354.54 L 640.00 354.15 L 637.48 352.56 L 637.48 350.97 L 640.50 349.78 L 641.51 349.38 L 630.95 345.41 L 628.94 345.41 L 627.43 341.05 L 623.91 339.46 L 619.39 339.46 L 616.87 338.27 L 615.87 339.86 L 624.41 348.19 L 626.93 349.38 L 627.93 350.18 L 629.94 353.35 L 630.45 354.15 L 633.46 354.54 L 634.97 354.94 L 635.98 355.73 L 638.49 359.70 L 637.99 362.48 L 633.46 368.04 L 630.95 368.83 L 627.43 367.64 L 624.41 365.66 L 622.40 363.67 L 620.39 364.07 L 610.84 360.10 L 603.30 358.91 L 603.30 360.89 L 604.81 362.08 L 604.30 364.07 L 602.29 367.24 L 601.29 371.21 L 600.79 377.96 L 600.79 382.32 L 601.29 386.29 L 604.30 390.66 L 609.33 393.04 L 619.39 394.63 L 619.39 396.22 L 617.88 400.58 L 617.88 404.55 L 619.39 408.12 L 622.40 410.50 L 619.39 414.08 L 618.88 420.03 L 619.39 426.38 L 619.89 436.70 L 620.39 440.27 L 621.40 443.44 L 622.40 445.83 L 623.91 447.41 L 625.92 448.60 L 627.43 449.79 L 629.94 455.35 L 633.46 458.13 L 637.99 460.11 L 640.50 462.10 L 641.51 464.48 L 642.51 467.26 L 643.01 470.83 L 642.01 474.00 L 639.49 477.97 L 638.99 479.56 L 638.99 481.54 Z M 100.08 373.59 L 101.59 372.80 L 103.10 372.01 L 104.61 372.40 L 105.61 373.59 L 105.61 375.18 L 104.61 377.16 L 103.60 380.74 L 103.10 384.71 L 103.60 387.88 L 100.58 390.66 L 98.07 389.47 L 95.56 385.90 L 92.54 383.12 L 90.53 383.12 L 88.52 383.52 L 87.01 383.12 L 86.51 380.74 L 87.01 377.16 L 87.51 374.78 L 87.01 372.40 L 85.50 370.42 L 82.99 369.62 L 72.43 372.01 L 68.41 371.21 L 61.37 368.83 L 57.85 368.83 L 57.85 367.24 L 61.37 366.85 L 64.39 366.05 L 66.90 363.67 L 68.41 358.91 L 69.41 360.50 L 70.92 360.89 L 71.93 360.50 L 72.93 358.91 L 75.95 362.88 L 79.97 361.69 L 82.99 358.91 L 86.00 357.32 L 98.07 357.72 L 101.09 358.91 L 103.60 365.26 L 101.09 365.26 L 101.09 367.24 L 101.09 369.23 L 100.58 370.81 L 100.08 372.01 L 100.08 373.59 Z M 141.81 533.14 L 145.33 538.70 L 142.81 543.06 L 137.78 544.65 L 135.27 541.87 L 134.77 538.30 L 134.27 536.71 L 134.27 535.12 L 135.27 533.14 L 136.78 531.95 L 138.79 531.55 L 140.80 531.95 L 141.81 533.14 Z M 300.66 125.54 L 303.18 126.34 L 304.69 127.53 L 306.19 129.51 L 306.70 133.48 L 300.66 135.46 L 297.65 135.07 L 295.13 133.48 L 295.13 131.89 L 295.64 131.10 L 295.64 130.70 L 295.13 128.72 L 297.15 127.53 L 298.15 127.13 L 297.65 126.34 L 297.15 125.94 L 297.15 125.54 L 298.15 123.95 L 299.16 123.95 L 300.16 124.35 L 300.66 125.54 Z M 620.39 54.50 L 627.93 55.69 L 628.94 56.48 L 629.44 58.87 L 628.43 61.64 L 627.43 64.42 L 626.42 66.01 L 626.42 64.03 L 626.42 62.83 L 626.93 62.04 L 627.43 60.85 L 623.91 58.47 L 620.39 58.07 L 616.87 58.47 L 613.86 58.07 L 615.36 56.48 L 616.87 55.29 L 618.88 54.90 L 620.39 54.50 Z M 120.69 917.72 L 121.70 917.32 L 122.70 918.12 L 121.70 919.70 L 121.19 920.50 L 110.13 924.07 L 108.63 923.67 L 106.62 922.48 L 106.62 920.10 L 108.63 918.12 L 111.64 917.32 L 114.66 916.92 L 119.69 917.72 L 120.69 917.72 Z M 51.32 850.25 L 52.83 850.65 L 53.33 851.84 L 52.32 853.82 L 49.81 855.41 L 44.28 858.19 L 39.75 858.58 L 38.25 860.17 L 35.23 860.57 L 35.23 858.58 L 37.24 855.41 L 44.28 850.25 L 45.79 849.06 L 48.30 849.06 L 49.31 849.45 L 50.31 850.65 L 51.32 850.25 Z M 143.82 574.02 L 144.32 573.62 L 144.82 574.02 L 144.82 575.61 L 142.31 576.40 L 125.72 568.86 L 121.19 565.29 L 122.70 563.30 L 126.22 563.30 L 129.74 566.08 L 131.25 566.08 L 134.77 565.29 L 137.28 565.68 L 140.80 567.27 L 141.81 568.86 L 140.80 570.45 L 140.80 572.03 L 143.82 574.02 Z "></path>
+
+        
+    <g class="pin pin--future" tabindex="0" role="button" aria-label="Athlone, coming soon" data-name="Athlone">
+      <circle class="pin__dot pin__dot--future" cx="382.49" cy="498.18" r="7"></circle>
+      <text class="pin__label pin__label--future" x="382.49" y="482.18" text-anchor="middle">Athlone</text>
+    </g>
+
+    <g class="pin pin--future" tabindex="0" role="button" aria-label="Dublin, coming soon" data-name="Dublin">
+      <circle class="pin__dot pin__dot--future" cx="617.15" cy="515.6" r="7"></circle>
+      <text class="pin__label pin__label--future" x="617.15" y="499.6" text-anchor="middle">Dublin</text>
+    </g>
+
+    <g class="pin pin--future" tabindex="0" role="button" aria-label="Dundalk, coming soon" data-name="Dundalk">
+      <circle class="pin__dot pin__dot--future" cx="596.48" cy="362.61" r="7"></circle>
+      <text class="pin__label pin__label--future" x="596.48" y="346.61" text-anchor="middle">Dundalk</text>
+    </g>
+
+    <g class="pin pin--future" tabindex="0" role="button" aria-label="Derry, coming soon" data-name="Derry">
+      <circle class="pin__dot pin__dot--future" cx="470.63" cy="128.54" r="7"></circle>
+      <text class="pin__label pin__label--future" x="470.63" y="112.53999999999999" text-anchor="middle">Derry</text>
+    </g>
+
+    <g class="pin pin--future" tabindex="0" role="button" aria-label="Belfast, coming soon" data-name="Belfast">
+      <circle class="pin__dot pin__dot--future" cx="663.26" cy="222.39" r="7"></circle>
+      <text class="pin__label pin__label--future" x="663.26" y="206.39" text-anchor="middle">Belfast</text>
+    </g>
+
+    <g class="pin pin--future" tabindex="0" role="button" aria-label="Sligo, coming soon" data-name="Sligo">
+      <circle class="pin__dot pin__dot--future" cx="307.73" cy="299.39" r="7"></circle>
+      <text class="pin__label pin__label--future" x="307.73" y="283.39" text-anchor="middle">Sligo</text>
+    </g>
+
+    <g class="pin pin--future" tabindex="0" role="button" aria-label="Galway, coming soon" data-name="Galway">
+      <circle class="pin__dot pin__dot--future" cx="226.64" cy="534.19" r="7"></circle>
+      <text class="pin__label pin__label--future" x="226.64" y="518.19" text-anchor="middle">Galway</text>
+    </g>
+
+    <g class="pin pin--future" tabindex="0" role="button" aria-label="Limerick, coming soon" data-name="Limerick">
+      <circle class="pin__dot pin__dot--future" cx="286.7" cy="676.84" r="7"></circle>
+      <text class="pin__label pin__label--future" x="286.7" y="660.84" text-anchor="middle">Limerick</text>
+    </g>
+
+    <g class="pin pin--future" tabindex="0" role="button" aria-label="Kilkenny, coming soon" data-name="Kilkenny">
+      <circle class="pin__dot pin__dot--future" cx="479.67" cy="679.12" r="7"></circle>
+      <text class="pin__label pin__label--future" x="479.67" y="663.12" text-anchor="middle">Kilkenny</text>
+    </g>
+
+    <g class="pin pin--future" tabindex="0" role="button" aria-label="Waterford, coming soon" data-name="Waterford">
+      <circle class="pin__dot pin__dot--future" cx="498.48" cy="771.91" r="7"></circle>
+      <text class="pin__label pin__label--future" x="498.48" y="755.91" text-anchor="middle">Waterford</text>
+    </g>
+
+    <g class="pin pin--future" tabindex="0" role="button" aria-label="Cork, coming soon" data-name="Cork">
+      <circle class="pin__dot pin__dot--future" cx="307.8" cy="856.71" r="7"></circle>
+      <text class="pin__label pin__label--future" x="307.8" y="840.71" text-anchor="middle">Cork</text>
+    </g>
+        
+    <a href="https://drogheda.streetsceal.ie" class="pin pin--live" aria-label="Open Drogheda trails" data-name="Drogheda">
+      <circle class="pin__pulse" cx="604.93" cy="428.85" r="14"></circle>
+      <circle class="pin__dot" cx="604.93" cy="428.85" r="10"></circle>
+      <text class="pin__label pin__label--live" x="604.93" y="404.85" text-anchor="middle">Drogheda</text>
+      <text class="pin__sub" x="604.93" y="432.85" text-anchor="middle" dy="-14">Live now</text>
+    </a>
       </svg>
     </div>
-  </header>
-
-  <!-- Intro -->
-  <div class="intro">
-    <p>The town holds memory that is not visible. Walk its streets and let them speak.</p>
   </div>
 
-  <!-- Map hint (moved above trail selection) -->
-  <div class="map-hint">
-    <p>Open in any browser · No app required<br>
-    GPS unlocks each stop as you arrive</p>
-    <a href="./map.html" style="
-      display: inline-block;
-      margin-top: 1.5rem;
-      font-family: 'Courier New', monospace;
-      font-size: 0.6rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: #8b5e2a;
-      text-decoration: none;
-      border: 1px solid rgba(139,94,42,0.4);
-      padding: 0.55rem 1.2rem;
-      transition: color 0.2s, border-color 0.2s, background 0.2s;
-    " onmouseover="this.style.color='#f5f0e8';this.style.background='#8b5e2a';this.style.borderColor='#8b5e2a'"
-       onmouseout="this.style.color='#8b5e2a';this.style.background='transparent';this.style.borderColor='rgba(139,94,42,0.4)'">
-      View trail map →
-    </a>
+  <div class="hero__scrollcue">
+    Drogheda is live — scroll for trails
+    <span class="chevron"></span>
   </div>
 
-  <!-- Divider -->
-  <div class="divider">
-    <div class="divider-line"></div>
-    <span class="divider-mark">Choose a trail</span>
-    <div class="divider-line"></div>
+  <div id="toast" class="comingsoon-toast"></div>
+</section>
+
+<section class="trails" id="trails">
+  <div class="trails__head">
+    <h2>Four trails, one town — for now</h2>
+    <p>Drogheda is home to StreetScéal's first trails. Every pin on the map above is a town we hope to walk into next — north and south.</p>
   </div>
-
-  <!-- Trails -->
-  <div class="trails">
-
-    <!-- Town Trail -->
-    <a class="trail-card" href="./town-trail.html">
-      <div class="trail-inner">
-        <div class="trail-header-row">
-          <h2 class="trail-name">The Town Trail</h2>
-          <span class="trail-status live">Live</span>
-        </div>
-        <p class="trail-tagline">Voices, memories, everyday life — the Drogheda that people remember.</p>
-        <div class="trail-stops">
-          <span class="trail-stop-tag">The Marcy Hotel</span>
-          <span class="trail-stop-tag">Connolly's Shop</span>
-          <span class="trail-stop-tag">Millmount ↗</span>
-          <span class="trail-stop-tag">St Laurence's Gate</span>
-          <span class="trail-stop-tag">St Peter's Church of Ireland</span>
-          <span class="trail-stop-tag">Siena Convent ↗</span>
-          <span class="trail-stop-tag">St Peter's Church ↗</span>
-          <span class="trail-stop-tag">The Quayside ↗</span>
-        </div>
-        <span class="trail-arrow">Enter trail →</span>
-      </div>
-    </a>
-
-    <!-- Plunkett Trail -->
-    <a class="trail-card" href="./plunkett-trail.html">
-      <div class="trail-inner">
-        <div class="trail-header-row">
-          <h2 class="trail-name">The Plunkett Trail</h2>
-          <span class="trail-status live">Live</span>
-        </div>
-        <p class="trail-tagline">A martyr's journey across Europe — from Drogheda to Ghent, Rome, London and beyond.</p>
-        <div class="trail-stops">
-          <span class="trail-stop-tag">The Quayside ↗</span>
-          <span class="trail-stop-tag">St Peter's Church</span>
-          <span class="trail-stop-tag">Loughcrew ↗</span>
-          <span class="trail-stop-tag">Rome</span>
-          <span class="trail-stop-tag">Ghent</span>
-          <span class="trail-stop-tag">Louvain</span>
-          <span class="trail-stop-tag">London</span>
-          <span class="trail-stop-tag">Lamspringe</span>
-          <span class="trail-stop-tag">Siena Convent ↗</span>
-        </div>
-        <span class="trail-arrow">Enter trail →</span>
-      </div>
-    </a>
-
-    <!-- Diaspora Trail -->
-    <a class="trail-card" href="./diaspora-trail.html">
-      <div class="trail-inner">
-        <div class="trail-header-row">
-          <h2 class="trail-name">The Diaspora Trail</h2>
-          <span class="trail-status live">Live</span>
-        </div>
-        <p class="trail-tagline">Drogheda to Liverpool, Bordeaux and beyond — following the routes of those who left.</p>
-        <div class="trail-stops">
-          <span class="trail-stop-tag">The Quayside ↗</span>
-          <span class="trail-stop-tag">St Peter's Church ↗</span>
-          <span class="trail-stop-tag">Liverpool</span>
-          <span class="trail-stop-tag">Bordeaux</span>
-          <span class="trail-stop-tag">Rome ↗</span>
-          <span class="trail-stop-tag">Louvain ↗</span>
-        </div>
-        <span class="trail-arrow">Enter trail →</span>
-      </div>
-    </a>
-
-    <!-- Megalithic Trail -->
-    <a class="trail-card" href="./megalithic-trail.html">
-      <div class="trail-inner">
-        <div class="trail-header-row">
-          <h2 class="trail-name">The Megalithic Trail</h2>
-          <span class="trail-status live">Live</span>
-        </div>
-        <p class="trail-tagline">Five thousand years of continuous presence — Newgrange, Knowth, Dowth, Tara and Loughcrew.</p>
-        <div class="trail-stops">
-          <span class="trail-stop-tag">Millmount ↗</span>
-          <span class="trail-stop-tag">Newgrange</span>
-          <span class="trail-stop-tag">Knowth</span>
-          <span class="trail-stop-tag">Dowth</span>
-          <span class="trail-stop-tag">Fourknocks</span>
-          <span class="trail-stop-tag">Hill of Tara</span>
-          <span class="trail-stop-tag">Loughcrew ↗</span>
-        </div>
-        <span class="trail-arrow">Enter trail →</span>
-      </div>
-    </a>
-
-  </div>
-
-  <!-- Footer -->
-  <footer class="site-footer">
-    <span class="footer-brand">StreetScéal · Drogheda</span>
-    <div class="footer-links">
-      <a href="https://clairefitch.github.io">Claire Fitch</a>
-      <a href="https://populatedsolitude2020.wordpress.com">Building on Populated Solitude</a>
+  <div class="trails__grid">
+    <div class="trailcard">
+      <h3>Town Trail</h3>
+      <p>Wind through Drogheda's medieval streets, guided by the voices that shaped them.</p>
     </div>
-  </footer>
-
-  <!-- Collaborators -->
-  <div class="collaborators">
-    <div>
-      <p class="collab-role">Artist &amp; Sound Design</p>
-      <p class="collab-name">Claire Fitch</p>
+    <div class="trailcard">
+      <h3>Diaspora Trail</h3>
+      <p>Trace the journeys of those who left Drogheda — and the echoes they left behind.</p>
     </div>
-    <div>
-      <p class="collab-role">Historian &amp; Writer</p>
-      <p class="collab-name">Martina Murray</p>
-    </div>
-    <div>
-      <p class="collab-role">Archive</p>
-      <p class="collab-name">Louth County Archives</p>
+    <div class="trailcard">
+      <h3>Megalithic Trail</h3>
+      <p>Step into the Boyne Valley's ancient past, from passage tombs to standing stones.</p>
     </div>
   </div>
+</section>
 
-</div>
+<footer class="site-footer">
+  © 2026 StreetScéal. All rights reserved.
+</footer>
+
+<script>
+  const toast = document.getElementById('toast');
+  let toastTimer;
+  document.querySelectorAll('.pin--future').forEach(pin => {
+    const name = pin.dataset.name;
+    const activate = () => {
+      toast.innerHTML = '<strong>' + name + '</strong> — coming soon';
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    };
+    pin.addEventListener('mouseenter', activate);
+    pin.addEventListener('focus', activate);
+    pin.addEventListener('click', (e) => { e.preventDefault(); activate(); });
+    pin.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
+    });
+  });
+</script>
+
 </body>
 </html>

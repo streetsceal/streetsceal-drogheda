@@ -3,37 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>StreetScéal — The Megalithic Trail</title>
+  <title>StreetScéal — The Plunkett Trail</title>
 
   <!-- MindAR + A-Frame for image tracking -->
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
-   /* ── Tokens ───────────────────────────────────────────────────── */
+  /* ── Tokens ───────────────────────────────────────────────────── */
 :root {
-  --ink: #2c2416;
-  --paper: #f5f0e8;
-  --paper-soft: #ede8dc;
-  --paper-dark: #5a4a32;
-  --paper-muted: #73604a;
-  --rust: #8b5e2a;
-  --rust-light: #875a2b;
-  --ghost: rgba(44, 36, 22, 0.04);
-  --fog: rgba(245, 240, 232, 0.85);
-  --line: #d8ceba;
-  --display: 'Poppins', sans-serif;
-  --body: 'Inter', -apple-system, sans-serif;
-  --mono: 'Courier New', monospace;
+  --ink: #2b2620;
+  --paper: #f3ecd9;
+  --paper-soft: #e8dcbd;
+  --paper-dark: #163936;
+  --paper-muted: rgba(43, 38, 32, 0.68);
+  --rust: #b5583a;
+  --rust-light: #d5713f;
+  --ghost: rgba(43, 38, 32, 0.04);
+  --fog: rgba(243, 236, 217, 0.85);
+  --line: rgba(43, 38, 32, 0.16);
+  --display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;1,400&family=Inter:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
   height: 100%;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--body);
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.6;
   overflow: hidden;
 }
@@ -64,7 +63,7 @@ html, body {
 }
 .entry-eyebrow {
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: 0.85rem;
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--rust-light);
@@ -73,27 +72,37 @@ html, body {
 .entry-title {
   font-family: var(--display);
   font-size: clamp(2.4rem, 8vw, 3.8rem);
-  font-weight: 400;
+  font-weight: 800;
+  letter-spacing: -0.01em;
   line-height: 1.1;
   color: var(--ink);
   margin-bottom: 0.4rem;
 }
 .entry-title em {
-  font-style: italic;
+  font-style: normal;
   color: var(--rust);
 }
 .entry-subtitle {
   font-family: var(--body);
   font-style: italic;
-  font-size: 1rem;
+  font-size: 1.15rem;
   color: var(--paper-dark);
   margin-bottom: 3rem;
   max-width: 280px;
   line-height: 1.5;
 }
+.entry-copyright {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--paper-muted);
+  opacity: 0.6;
+}
 .entry-location {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.2em;
   color: var(--rust);
   margin-bottom: 3rem;
@@ -114,7 +123,7 @@ html, body {
 /* ── Button ───────────────────────────────────────────────────── */
 .btn-primary {
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.95rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--ink);
@@ -147,7 +156,7 @@ html, body {
 }
 .all-trails-link {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--rust-light);
@@ -166,13 +175,18 @@ html, body {
 }
 .trail-header-title {
   font-family: var(--display);
-  font-size: 1.1rem;
-  font-style: italic;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.trail-header-title em {
+  font-style: normal;
   color: var(--rust);
 }
 .trail-header-count {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.15em;
   color: var(--rust);
   text-transform: uppercase;
@@ -192,14 +206,14 @@ html, body {
   transition: background 0.2s;
   position: relative;
 }
-.stop-card:hover { background: #e4ddd0; }
+.stop-card:hover { background: #e8dcbd; }
 .stop-card.active {
   background: rgba(139, 94, 42, 0.08);
   border-left: 2px solid var(--rust);
 }
 .stop-number {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   color: var(--rust);
   letter-spacing: 0.1em;
   padding-top: 0.2rem;
@@ -208,7 +222,7 @@ html, body {
 .stop-info { flex: 1; }
 .stop-name {
   font-family: var(--display);
-  font-size: 1.05rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--ink);
   margin-bottom: 0.2rem;
@@ -216,21 +230,21 @@ html, body {
 .stop-description {
   font-family: var(--body);
   font-style: italic;
-  font-size: 0.82rem;
+  font-size: 1rem;
   color: var(--paper-muted);
   line-height: 1.45;
   margin-bottom: 0.5rem;
 }
 .stop-meta {
   font-family: var(--mono);
-  font-size: 0.58rem;
+  font-size: 0.82rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--rust-light);
 }
 .stop-proximity {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   color: var(--paper-muted);
   text-align: right;
   white-space: nowrap;
@@ -273,7 +287,7 @@ html, body {
 .gps-icon.active { background: #4a7a3a; animation: pulse 2s infinite; }
 .gps-text {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--paper-muted);
@@ -294,7 +308,7 @@ html, body {
 }
 .back-btn {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--rust-light);
@@ -309,7 +323,7 @@ html, body {
 }
 .stop-detail-eyebrow {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--rust);
@@ -327,14 +341,14 @@ html, body {
   font-family: var(--body);
   font-style: italic;
   color: var(--paper-dark);
-  font-size: 0.9rem;
+  font-size: 1.05rem;
 }
 .stop-body {
   padding: 1.5rem 1.5rem 8rem;
 }
 .stop-lore {
   font-family: var(--body);
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   line-height: 1.75;
   color: var(--paper-dark);
   margin-bottom: 2rem;
@@ -344,7 +358,7 @@ html, body {
 }
 .stop-text {
   font-family: var(--body);
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   line-height: 1.75;
   color: var(--ink);
   margin-bottom: 2rem;
@@ -358,7 +372,7 @@ html, body {
 }
 .audio-label {
   font-family: var(--mono);
-  font-size: 0.58rem;
+  font-size: 0.82rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--rust);
@@ -398,7 +412,7 @@ html, body {
 }
 .audio-duration {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   color: var(--paper-muted);
 }
 /* AR launch (button on stop-detail screen, still styled even though AR view itself is now parchment too) */
@@ -422,7 +436,7 @@ html, body {
 }
 .location-image-caption {
   font-family: var(--mono);
-  font-size: 0.58rem;
+  font-size: 0.82rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--rust-light);
@@ -452,7 +466,7 @@ html, body {
   align-items: center;
   justify-content: center;
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(107,88,64,0.35);
@@ -466,7 +480,7 @@ html, body {
   border: 1px solid var(--rust);
   color: var(--ink);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.95rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   cursor: pointer;
@@ -484,7 +498,7 @@ html, body {
 }
 .ar-note {
   font-family: var(--mono);
-  font-size: 0.58rem;
+  font-size: 0.82rem;
   letter-spacing: 0.08em;
   color: rgba(107,88,64,0.55);
   text-align: center;
@@ -522,13 +536,13 @@ html, body {
 }
 .ar-stop-name {
   font-family: var(--display);
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-style: italic;
   color: var(--ink);
 }
 .ar-close-btn {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--paper-dark);
@@ -543,7 +557,7 @@ html, body {
   bottom: 2.5rem; left: 0; right: 0;
   text-align: center;
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--ink);
@@ -580,7 +594,7 @@ a-scene { position: absolute; inset: 0; }
   background: var(--rust);
   color: var(--paper);
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: 0.85rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   padding: 0.7rem 1.2rem;
@@ -606,11 +620,12 @@ a-scene { position: absolute; inset: 0; }
 ══════════════════════════════════════════════ -->
 <div class="screen" id="screen-entry">
   <div class="entry-rule"></div>
-  <p class="entry-eyebrow">The Megalithic Trail</p>
+  <p class="entry-eyebrow">The Plunkett Trail</p>
   <h1 class="entry-title">Street<br><em>Scéal</em></h1>
-  <p class="entry-subtitle">Five thousand years before the town. Walk the Boyne Valley and let the stones speak.</p>
-  <p class="entry-location">53°41′N · 6°29′W · Brú na Bóinne</p>
+  <p class="entry-subtitle">A martyr's journey across Europe. From Drogheda to Ghent, Rome, London and beyond.</p>
+  <p class="entry-location">53°43′N · 6°21′W · to 51°03′N · 3°43′E</p>
   <button class="btn-primary" id="btn-enter" onclick="enterTrail()">Begin the trail</button>
+  <p class="entry-copyright">© 2026 StreetScéal. All rights reserved.</p>
 </div>
 
 <!-- ══════════════════════════════════════════════
@@ -618,9 +633,9 @@ a-scene { position: absolute; inset: 0; }
 ══════════════════════════════════════════════ -->
 <div class="screen hidden" id="screen-trail" style="justify-content:flex-start; overflow-y:auto;">
   <div class="trail-header">
-    <a class="all-trails-link" href="./index.html">&larr; All trails</a>
+    <a class="all-trails-link" href="./map.html">&larr; All trails</a>
     <div class="trail-header-row">
-      <span class="trail-header-title">The Megalithic Trail</span>
+      <span class="trail-header-title">Plunkett <em>Trail</em></span>
       <span class="trail-header-count" id="trail-count"></span>
     </div>
   </div>
@@ -659,11 +674,11 @@ a-scene { position: absolute; inset: 0; }
       <div class="audio-player">
         <button class="audio-play-btn" onclick="toggleAudio()" id="audio-btn" aria-label="Play">
           <svg id="play-icon" width="14" height="16" viewBox="0 0 14 16" fill="none">
-            <path d="M2 1l11 7-11 7V1z" fill="#e8e0d0"/>
+            <path d="M2 1l11 7-11 7V1z" fill="#f3ecd9"/>
           </svg>
           <svg id="pause-icon" width="14" height="16" viewBox="0 0 14 16" fill="none" style="display:none">
-            <rect x="1" y="1" width="4" height="14" fill="#e8e0d0"/>
-            <rect x="9" y="1" width="4" height="14" fill="#e8e0d0"/>
+            <rect x="1" y="1" width="4" height="14" fill="#f3ecd9"/>
+            <rect x="9" y="1" width="4" height="14" fill="#f3ecd9"/>
           </svg>
         </button>
         <div class="audio-waveform" id="waveform"></div>
@@ -672,7 +687,7 @@ a-scene { position: absolute; inset: 0; }
     </div>
 
     <button class="ar-launch-btn" onclick="launchAR()">
-      <svg class="ar-icon" viewBox="0 0 24 24" fill="none" stroke="#e8e0d0" stroke-width="1.5">
+      <svg class="ar-icon" viewBox="0 0 24 24" fill="none" stroke="#f3ecd9" stroke-width="1.5">
         <path d="M2 8V4h4M18 4h4v4M2 16v4h4M18 20h4v-4"/>
         <circle cx="12" cy="12" r="3"/>
         <path d="M12 5v2M12 17v2M5 12H3M21 12h-2"/>
@@ -715,130 +730,149 @@ a-scene { position: absolute; inset: 0; }
 // Replace lat/lng with real coordinates; audioSrc/imageSrc with real files
 const STOPS = [
   {
-    id: 'millmount',
+    id: 'st-peters',
     number: '01',
-    name: 'Millmount',
-    subtitle: 'Millmount Square, Drogheda',
-    era: 'Ancient–present',
-    description: `The mound that began it all — a link to the Town Trail`,
-    lore: 'Neolithic passage tomb. Viking settlement. Cromwellian siege. 1922 Civil War shelling. Every layer still present beneath the surface.',
-    text: `Millmount has long been suspected to conceal a Neolithic passage tomb beneath its later fortifications, in the same tradition as Newgrange, Knowth, and Dowth a few miles up the river. Stand here and you stand on five thousand years of continuous human presence — the same valley, the same river, the same instinct to build upward toward the sky. This stop connects the Megalithic Trail to the Town Trail.`,
-    audioLabel: 'Millmount — archaeological context',
+    name: `St Peter's Church`,
+    subtitle: 'West Street, Drogheda',
+    era: '1921–present',
+    description: `The National Shrine — a link to the Town Trail`,
+    lore: `A relic of the True Cross, gifted by St Bavo's Cathedral in Ghent in 2009, connects this church directly to Belgium — the same cathedral where Plunkett was ordained Archbishop in 1669.`,
+    text: `The head of Saint Oliver Plunkett, Archbishop of Armagh, has been enshrined at St Peter's Church since 1921. Also on display is the door of the condemned cell from Newgate Prison, London, presented in 1951. This is the beginning and the end of the journey — the place his memory rests after a life that carried him across half of Europe. This stop connects the Plunkett Trail to the Town Trail.`,
+    audioLabel: `St Peter's Church — the shrine`,
     audioDuration: '0:00',
-    lat: 53.711665,
-    lng: -6.349454,
-    tags: ['town trail', 'linking stop', 'archaeology'],
-    audioSrc: null,
-    imageSrc: './targets/millmount.mind',
-    locationImage: './assets/images/millmount.jpg'
-  },
-  {
-    id: 'newgrange',
-    number: '02',
-    name: 'Newgrange',
-    subtitle: 'Donore, Co. Meath',
-    era: 'c. 3200 BC',
-    description: 'Older than the pyramids, aligned to the winter sun',
-    lore: `Once a year, at the winter solstice, the rising sun sends a shaft of light down a 19-metre passage to illuminate the inner chamber. The builders calculated this five thousand years ago, without writing, without metal tools.`,
-    text: `Newgrange is the most famous of the Brú na Bóinne passage tombs, built around 3200 BC — older than Stonehenge and the Pyramids of Giza. Its great mound is ringed with kerbstones carved with spirals and lozenges, the largest concentration of megalithic art in Western Europe. Tours begin at the Brú na Bóinne Visitor Centre near Donore.`,
-    audioLabel: 'Newgrange — the winter solstice alignment',
-    audioDuration: '0:00',
-    lat: 53.694692,
-    lng: -6.475402,
-    tags: ['passage tomb', 'solstice', 'unesco'],
-    audioSrc: null,
-    imageSrc: null,
-    locationImage: './assets/images/newgrange.jpg'
-  },
-  {
-    id: 'knowth',
-    number: '03',
-    name: 'Knowth',
-    subtitle: 'Brú na Bóinne, Co. Meath',
-    era: 'c. 3200 BC',
-    description: 'Two passages, seventeen satellite tombs',
-    lore: `Knowth holds the largest single collection of megalithic art in the whole of Western Europe — over three hundred decorated stones. A sundial stone found here may be the world's oldest map of the moon.`,
-    text: `Knowth is the largest of the Brú na Bóinne mounds, built about 5,000 years ago alongside Newgrange and Dowth. Unlike Newgrange, it has two passages — one facing the equinox sunrise, one the sunset — and is surrounded by seventeen smaller satellite cairns. Tours also begin at the Brú na Bóinne Visitor Centre.`,
-    audioLabel: 'Knowth — megalithic art and lunar markings',
-    audioDuration: '0:00',
-    lat: 53.700958,
-    lng: -6.490358,
-    tags: ['passage tomb', 'megalithic art', 'unesco'],
-    audioSrc: null,
-    imageSrc: null,
-    locationImage: './assets/images/knowth.jpg'
-  },
-  {
-    id: 'dowth',
-    number: '04',
-    name: 'Dowth',
-    subtitle: 'Brú na Bóinne, Co. Meath',
-    era: 'c. 3200 BC',
-    description: 'The quiet one, accessible from the north bank',
-    lore: `Dowth is the least visited of the three great Brú na Bóinne mounds, reachable directly by road rather than through the visitor centre — a quieter encounter with the same five-thousand-year-old engineering.`,
-    text: `Dowth completes the trio of great passage tombs in the Boyne Valley alongside Newgrange and Knowth. It sits on the north bank of the river, a short drive from the N51 Slane to Drogheda road, and unlike its neighbours can be visited without booking through the visitor centre — though access to the chambers themselves is limited.`,
-    audioLabel: 'Dowth — the quietest of the great mounds',
-    audioDuration: '0:00',
-    lat: 53.703880,
-    lng: -6.450259,
-    tags: ['passage tomb', 'unesco', 'boyne valley'],
-    audioSrc: null,
-    imageSrc: null,
-    locationImage: './assets/images/dowth.jpg'
-  },
-  {
-    id: 'fourknocks',
-    number: '05',
-    name: 'Fourknocks',
-    subtitle: 'Stamullen, Co. Meath',
-    era: 'c. 2750 BC',
-    description: `A hidden gem with one of Ireland's earliest carved faces`,
-    lore: `Inside the chamber, just past the entrance, is a three-foot-high carving believed to be one of the earliest depictions of a human face in Irish prehistoric art — locals call it the smiley face. Walk around the mound three times clockwise for luck, or so they say.`,
-    text: `Fourknocks lies about 16km from Newgrange, far less visited than its famous neighbours, which means visitors can take their time inside. Excavated in the early 1950s, its pear-shaped chamber — more than twice the size of Newgrange's — holds rare carved stones and the remains of dozens of burials. The key is held locally and must be collected before 6pm.`,
-    audioLabel: 'Fourknocks — the carved face and the chamber',
-    audioDuration: '0:00',
-    lat: 53.596513,
-    lng: -6.326546,
-    tags: ['passage tomb', 'rock art', 'hidden gem'],
-    audioSrc: null,
-    imageSrc: null,
-    locationImage: './assets/images/fourknocks.jpg'
-  },
-  {
-    id: 'tara',
-    number: '06',
-    name: 'The Hill of Tara',
-    subtitle: 'Co. Meath',
-    era: 'Neolithic–Iron Age',
-    description: 'Seat of the High Kings of Ireland',
-    lore: `Tara was the ceremonial and symbolic capital of ancient Ireland for thousands of years, where the High Kings were said to be crowned at the Stone of Destiny — the Lia Fáil, still standing on the hill today.`,
-    text: `The Hill of Tara predates the historical High Kings by millennia — its earliest monument, the Mound of the Hostages, is a Neolithic passage tomb contemporary with Newgrange. Over time it became the spiritual and political centre of ancient Ireland, layered with ringforts, barrows, and the standing Stone of Destiny. From the summit, much of the Boyne Valley is visible on a clear day.`,
-    audioLabel: 'Tara — the seat of kings',
-    audioDuration: '0:00',
-    lat: 53.5775,
-    lng: -6.6119,
-    tags: ['ceremonial', 'high kings', 'landscape'],
-    audioSrc: null,
-    imageSrc: null,
-    locationImage: './assets/images/hill-of-tara.jpg'
+    lat: 53.715034,
+    lng: -6.352422,
+    tags: ['town trail', 'linking stop', 'shrine'],
+    audioSrc: './audio/GoodLuckYoungSage.wav',
+    imageSrc: './targets/st-peters.mind'
   },
   {
     id: 'loughcrew',
-    number: '07',
+    number: '02',
     name: 'Loughcrew',
     subtitle: 'Oldcastle, Co. Meath',
-    era: 'c. 3300 BC',
-    description: `Cairn T and the equinox light — a link to the Plunkett Trail`,
-    lore: `At the equinox, the rising sun illuminates the passage and chamber of Cairn T on Carnbane East, much as Newgrange catches the solstice. This is also the birthplace of Oliver Plunkett, born here in 1625 — four thousand years after the cairns were raised.`,
-    text: `Loughcrew is a complex of over thirty passage tombs spread across the Loughcrew Hills, among the oldest in the Boyne Valley region, predating even Newgrange by some estimates. Cairn T at the summit catches the spring and autumn equinox sunrise directly down its passage. This same hillside was, four millennia later, the birthplace of Saint Oliver Plunkett — connecting the Megalithic Trail directly to the Plunkett Trail.`,
-    audioLabel: 'Loughcrew — equinox light and the Plunkett birthplace',
+    era: '1625',
+    description: `Birthplace — a link to the Megalithic Trail`,
+    lore: `Plunkett was born here on 1 November 1625, on a hillside already four thousand years old, ringed by passage tombs whose builders no one living could name.`,
+    text: `Oliver Plunkett was born at Loughcrew on 1 November 1625, into a landscape shaped long before by Neolithic hands — the same passage tomb complex that catches the equinox light at Cairn T. He left for Rome as a young man and would not see Ireland again for over twenty years. This stop connects the Plunkett Trail to the Megalithic Trail.`,
+    audioLabel: `Loughcrew — birthplace and beginnings`,
     audioDuration: '0:00',
     lat: 53.744459,
     lng: -7.112099,
-    tags: ['plunkett trail', 'linking stop', 'equinox'],
+    tags: ['megalithic trail', 'linking stop', 'birthplace'],
     audioSrc: null,
     imageSrc: null,
-    locationImage: './assets/images/loughcrew.jpg'
+    locationImage: './assets/images/loughcrew-kerbstones.jpg'
+  },
+  {
+    id: 'rome',
+    number: '03',
+    name: 'The Irish College, Rome',
+    subtitle: 'Via dei Santi Quattro, Rome, Italy',
+    era: '1647–1669',
+    description: 'Twenty-two years of exile and study',
+    lore: `Plunkett arrived at the Irish College in Rome in 1647, a young man fleeing a country where his faith could not be practised openly. He would not set foot in Ireland again until he was Archbishop.`,
+    text: `At the Pontificio Collegio Irlandese on Via dei Santi Quattro, Plunkett trained for the priesthood, was ordained on 1 January 1654, and served as professor of theology at Propaganda College for twelve years. Rome was both his refuge and his education — the city that shaped the man who would later return to Ireland to lead a persecuted church.`,
+    audioLabel: 'Rome — the Irish College and ordination',
+    audioDuration: '0:00',
+    lat: 41.8889,
+    lng: 12.4975,
+    tags: ['exile', 'education', 'ordination'],
+    audioSrc: null,
+    imageSrc: null,
+    locationImage: './assets/images/rome.jpg'
+  },
+  {
+    id: 'ghent',
+    number: '04',
+    name: `St Bavo's Cathedral`,
+    subtitle: 'Sint-Baafsplein, Ghent, Belgium',
+    era: '1 December 1669',
+    description: 'Ordained Archbishop of Armagh, quietly',
+    lore: `A commemorative plaque was unveiled in the cathedral crypt in 2008, marking the spot where Plunkett was made Archbishop — a ceremony deliberately held away from English eyes.`,
+    text: `Plunkett was ordained Archbishop of Armagh at St Bavo's Cathedral by Bishop Eugene D'Allamont of Ghent on the first Sunday of Advent, 1669. The ceremony was held quietly in Flanders rather than in Ireland or England, where the appointment of a Catholic archbishop would have invited immediate persecution. The connection between Ghent and Drogheda continues today through the 2009 gift of a True Cross relic to St Peter's.`,
+    audioLabel: `Ghent — the ordination at St Bavo's`,
+    audioDuration: '0:00',
+    lat: 51.0537,
+    lng: 3.7256,
+    tags: ['ordination', 'belgium', 'archbishop'],
+    audioSrc: null,
+    imageSrc: null,
+    locationImage: './assets/images/ghent.jpg'
+  },
+  {
+    id: 'louvain',
+    number: '05',
+    name: 'The Irish College, Louvain',
+    subtitle: 'Louvain (Leuven), Belgium',
+    era: '1669',
+    description: 'Among the Franciscans, before the crossing home',
+    lore: `Louvain was one of the great centres of Irish Catholic intellectual life in exile — scholars, theologians, and clergy gathered here throughout the seventeenth century, producing some of the most important Irish-language texts of the era.`,
+    text: `After his ordination in Ghent, Plunkett stayed briefly with the Franciscans at the Irish College in Louvain before making the crossing back to Ireland to take up his post. The college was part of a wider network of Irish institutions across continental Europe — in Rome, Paris, Salamanca, and here — that kept Irish Catholic scholarship alive while it was suppressed at home.`,
+    audioLabel: 'Louvain — the Irish Colleges network',
+    audioDuration: '0:00',
+    lat: 50.8798,
+    lng: 4.7005,
+    tags: ['franciscans', 'belgium', 'irish colleges'],
+    audioSrc: null,
+    imageSrc: null,
+    locationImage: './assets/images/louvain.jpg'
+  },
+  {
+    id: 'tyburn',
+    number: '06',
+    name: 'Tyburn',
+    subtitle: 'Marble Arch, London, England',
+    era: '1 July 1681',
+    description: 'The last Catholic martyr to die in England',
+    lore: `Plunkett was hanged, drawn and quartered at Tyburn on trumped-up charges of conspiracy. He forgave his accusers from the scaffold. Friends recovered his remains soon after.`,
+    text: `Oliver Plunkett was executed at Tyburn on 1 July 1681, convicted on fabricated evidence during the anti-Catholic hysteria following the so-called Popish Plot. He was the last Catholic to be martyred in England. Tyburn Convent, founded in 1903, now stands near the site and holds a chapel commemorating those executed there. His remains were exhumed by friends and eventually made their way, by a long route, back toward Ireland.`,
+    audioLabel: 'Tyburn — trial and martyrdom',
+    audioDuration: '0:00',
+    lat: 51.5142,
+    lng: -0.1589,
+    tags: ['martyrdom', 'execution', 'london'],
+    audioSrc: null,
+    imageSrc: null,
+    locationImage: './assets/images/tyburn.jpg'
+  },
+  {
+    id: 'lamspringe',
+    number: '07',
+    name: 'Lamspringe',
+    subtitle: 'Lower Saxony, Germany',
+    era: '1683–1883',
+    description: 'Two hundred years in a Benedictine monastery',
+    lore: `Plunkett had formed a close bond with a Benedictine monk imprisoned alongside him in Newgate. His remains were sent to that monk's monastery at Lamspringe, where they rested for two centuries.`,
+    text: `Exhumed from St Giles Cemetery, London in 1683, Plunkett's remains were sent to the Benedictine monastery at Lamspringe, where they remained for two hundred years before transfer to Downside Abbey in England, and eventually the relic of his head to Drogheda. The Benedictine connection — formed in the last months of his life, in a London prison cell — carried his memory across Europe long after his death.`,
+    audioLabel: 'Lamspringe — the long journey of the remains',
+    audioDuration: '0:00',
+    lat: 51.9572,
+    lng: 10.0027,
+    tags: ['benedictines', 'germany', 'remains'],
+    audioSrc: null,
+    imageSrc: null,
+    locationImage: './assets/images/lamspringe.jpg'
+  },
+  {
+    id: 'siena-convent',
+    number: '08',
+    name: 'Siena Convent',
+    subtitle: 'Cord Road, Drogheda',
+    era: '1796–1994',
+    description: 'Nearly two centuries guarding a relic',
+    lore: `The relic was kept by the Dominican nuns of Siena, a community founded by Plunkett's own grand-niece, Sister Catherine Plunkett. During the War of Independence, armed volunteers stood guard here for fear it would be seized.`,
+    text: `The Dominican community at Siena was founded in 1722 by Sister Catherine Plunkett, grand-niece of Oliver Plunkett, beginning life in a mud cabin on the south side of the Boyne before moving to a more substantial house on Dyer Street. It was here, around 1725, that the nuns received the relic of Plunkett's head, brought back from Rome forty years after his martyrdom — and for decades the sisters lived quietly, often disguising their community as a boarding house for women to avoid the attention of the authorities during the Penal years.
+
+In 1796, the growing community moved to a permanent convent on Cord Road, where they would remain for nearly two centuries. That secrecy did not end with the eighteenth century. During the War of Independence, with the Black and Tans active in the town, armed republican volunteers were positioned around the Siena community to defend the relic against seizure or desecration. [PLACEHOLDER — confirm and insert exact detail from the Bureau of Military History witness statement naming a Murray family relative among those who stood guard, once located and verified in the BMH archive.] Within months, in June 1921, the relic was formally translated to its present shrine in St Peter's Church — the stop just ahead on this trail. The Cord Road convent itself continued until a fire in 1994 forced the community to relocate to The Twenties, where they remain today.`,
+    audioLabel: 'Siena Convent — the long watch',
+    audioDuration: '0:00',
+    lat: 53.717150,
+    lng: -6.346015,
+    tags: ['relic', 'dominican nuns', 'war of independence'],
+    audioSrc: null,
+    imageSrc: null,
+    locationImage: null
   }
 ];
 
@@ -1070,7 +1104,7 @@ function animateWaveform() {
 
 function stopWaveformAnimation() {
   document.querySelectorAll('.wave-bar').forEach(b => {
-    b.style.background = 'rgba(232,224,208,0.2)';
+    b.style.background = 'rgba(243,236,217,0.2)';
   });
 }
 
@@ -1078,6 +1112,14 @@ function stopWaveformAnimation() {
 function launchAR() {
   if (!currentStop) return;
   logEvent('ar', currentStop.id);
+
+  // St Peter's uses the dedicated lip-sync AR experience instead of
+  // the standard image-tracking overlay used by other stops
+  if (currentStop.id === 'st-peters') {
+    if (window._audio) window._audio.pause();
+    window.location.href = './plunkett-ar.html';
+    return;
+  }
 
   document.getElementById('ar-stop-name').textContent = currentStop.name;
 
@@ -1099,14 +1141,14 @@ function launchAR() {
           <a-text
             value="${currentStop.name}"
             font="https://cdn.aframe.io/fonts/Exo2Bold.fnt"
-            color="#1a1612"
+            color="#163936"
             align="center"
             width="1.2"
             position="0 0.35 0"
             animation="property: opacity; from: 0; to: 1; dur: 1200; easing: easeInQuad">
           </a-text>
           <a-plane
-            color="#e8e0d0"
+            color="#f3ecd9"
             opacity="0.85"
             width="1" height="0.6"
             position="0 0 -0.001"
@@ -1115,7 +1157,7 @@ function launchAR() {
           <a-text
             value="${currentStop.era}"
             font="https://cdn.aframe.io/fonts/mozillavr.fnt"
-            color="#8b3a2a"
+            color="#b5583a"
             align="center"
             width="0.5"
             position="0 -0.35 0"
@@ -1176,7 +1218,7 @@ function launchAR() {
         }
       })
       .catch(() => {
-        container.style.background = 'linear-gradient(135deg, #1a1612 0%, #2a1f18 100%)';
+        container.style.background = 'linear-gradient(135deg, #163936 0%, #0d2422 100%)';
         addARDemoOverlay(container);
         if (audioTargets[0]) {
           window._audio.src = audioTargets[0];
@@ -1197,16 +1239,16 @@ function addARDemoOverlay(container) {
     pointer-events: none;`;
   overlay.innerHTML = `
     <div style="
-      border: 1px solid rgba(139,58,42,0.6);
+      border: 1px solid rgba(181,88,58,0.6);
       padding: 2rem 2.5rem;
       text-align: center;
-      background: rgba(26,22,18,0.55);
+      background: rgba(22,57,54,0.55);
       backdrop-filter: blur(4px);
       animation: fadeIn 1.2s ease forwards;
       opacity: 0;">
-      <p style="font-family:'Courier New',monospace;font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:#8b3a2a;margin-bottom:0.8rem;">${currentStop ? currentStop.era : ''}</p>
-      <p style="font-family:Georgia,serif;font-size:1.5rem;font-style:italic;color:#e8e0d0;margin-bottom:0.5rem;">${currentStop ? currentStop.name : ''}</p>
-      <p style="font-family:Georgia,serif;font-size:0.85rem;color:rgba(232,224,208,0.6);font-style:italic;">${currentStop ? currentStop.description : ''}</p>
+      <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;color:#b5583a;margin-bottom:0.8rem;">${currentStop ? currentStop.era : ''}</p>
+      <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:1.5rem;font-style:normal;color:#f3ecd9;margin-bottom:0.5rem;">${currentStop ? currentStop.name : ''}</p>
+      <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:1rem;color:rgba(243,236,217,0.6);font-style:normal;">${currentStop ? currentStop.description : ''}</p>
     </div>
     <style>@keyframes fadeIn{to{opacity:1}}</style>`;
   container.appendChild(overlay);
@@ -1237,7 +1279,7 @@ function stopARAudio() {
 // ── Analytics ────────────────────────────────────────────────────────
 // Silent event logging — never throws, never affects the trail experience.
 const ANALYTICS_ENDPOINT = 'https://streetsceal.ie/analytics/event';
-const TRAIL_ID = 'megalithic-trail';
+const TRAIL_ID = 'plunkett-trail';
 
 function logEvent(type, stop) {
   const body = { type, trail: TRAIL_ID };

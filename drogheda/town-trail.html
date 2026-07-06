@@ -3,37 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>StreetScéal — The Plunkett Trail</title>
+  <title>StreetScéal — Drogheda</title>
 
   <!-- MindAR + A-Frame for image tracking -->
-  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="./aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
+  <!-- Wwise Web sound engine — used only by stops with a wwiseEvent flag.
+       Module config must be defined BEFORE StreetScealWwise.js loads. -->
+  <script>
+    var Module = {
+      print: (text) => console.log('[Wwise]', text),
+      printErr: (text) => console.error('[Wwise]', text),
+      onRuntimeInitialized: () => { window._wwiseReady = true; }
+    };
+  </script>
+  <script src="./StreetScealTest.js"></script>
+
   <style>
-  /* ── Tokens ───────────────────────────────────────────────────── */
+/* ── Tokens ───────────────────────────────────────────────────── */
 :root {
-  --ink: #2c2416;
-  --paper: #f5f0e8;
-  --paper-soft: #ede8dc;
-  --paper-dark: #5a4a32;
-  --paper-muted: #73604a;
-  --rust: #8b5e2a;
-  --rust-light: #875a2b;
-  --ghost: rgba(44, 36, 22, 0.04);
-  --fog: rgba(245, 240, 232, 0.85);
-  --line: #d8ceba;
-  --display: 'Poppins', sans-serif;
-  --body: 'Inter', -apple-system, sans-serif;
-  --mono: 'Courier New', monospace;
+  --ink: #2b2620;
+  --paper: #f3ecd9;
+  --paper-soft: #e8dcbd;
+  --paper-dark: #163936;
+  --paper-muted: rgba(43, 38, 32, 0.68);
+  --rust: #b5583a;
+  --rust-light: #d5713f;
+  --ghost: rgba(43, 38, 32, 0.04);
+  --fog: rgba(243, 236, 217, 0.85);
+  --line: rgba(43, 38, 32, 0.16);
+  --display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;1,400&family=Inter:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
   height: 100%;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--body);
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.6;
   overflow: hidden;
 }
@@ -64,7 +74,7 @@ html, body {
 }
 .entry-eyebrow {
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: 0.85rem;
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--rust-light);
@@ -73,27 +83,37 @@ html, body {
 .entry-title {
   font-family: var(--display);
   font-size: clamp(2.4rem, 8vw, 3.8rem);
-  font-weight: 400;
+  font-weight: 800;
+  letter-spacing: -0.01em;
   line-height: 1.1;
   color: var(--ink);
   margin-bottom: 0.4rem;
 }
 .entry-title em {
-  font-style: italic;
+  font-style: normal;
   color: var(--rust);
 }
 .entry-subtitle {
   font-family: var(--body);
   font-style: italic;
-  font-size: 1rem;
+  font-size: 1.15rem;
   color: var(--paper-dark);
   margin-bottom: 3rem;
   max-width: 280px;
   line-height: 1.5;
 }
+.entry-copyright {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--paper-muted);
+  opacity: 0.6;
+}
 .entry-location {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.2em;
   color: var(--rust);
   margin-bottom: 3rem;
@@ -114,7 +134,7 @@ html, body {
 /* ── Button ───────────────────────────────────────────────────── */
 .btn-primary {
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.95rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--ink);
@@ -147,7 +167,7 @@ html, body {
 }
 .all-trails-link {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--rust-light);
@@ -166,13 +186,18 @@ html, body {
 }
 .trail-header-title {
   font-family: var(--display);
-  font-size: 1.1rem;
-  font-style: italic;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.trail-header-title em {
+  font-style: normal;
   color: var(--rust);
 }
 .trail-header-count {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.15em;
   color: var(--rust);
   text-transform: uppercase;
@@ -192,14 +217,14 @@ html, body {
   transition: background 0.2s;
   position: relative;
 }
-.stop-card:hover { background: #e4ddd0; }
+.stop-card:hover { background: #e8dcbd; }
 .stop-card.active {
   background: rgba(139, 94, 42, 0.08);
   border-left: 2px solid var(--rust);
 }
 .stop-number {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   color: var(--rust);
   letter-spacing: 0.1em;
   padding-top: 0.2rem;
@@ -208,7 +233,7 @@ html, body {
 .stop-info { flex: 1; }
 .stop-name {
   font-family: var(--display);
-  font-size: 1.05rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--ink);
   margin-bottom: 0.2rem;
@@ -216,21 +241,21 @@ html, body {
 .stop-description {
   font-family: var(--body);
   font-style: italic;
-  font-size: 0.82rem;
+  font-size: 1rem;
   color: var(--paper-muted);
   line-height: 1.45;
   margin-bottom: 0.5rem;
 }
 .stop-meta {
   font-family: var(--mono);
-  font-size: 0.58rem;
+  font-size: 0.82rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--rust-light);
 }
 .stop-proximity {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   color: var(--paper-muted);
   text-align: right;
   white-space: nowrap;
@@ -273,7 +298,7 @@ html, body {
 .gps-icon.active { background: #4a7a3a; animation: pulse 2s infinite; }
 .gps-text {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--paper-muted);
@@ -294,7 +319,7 @@ html, body {
 }
 .back-btn {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--rust-light);
@@ -309,7 +334,7 @@ html, body {
 }
 .stop-detail-eyebrow {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--rust);
@@ -327,14 +352,14 @@ html, body {
   font-family: var(--body);
   font-style: italic;
   color: var(--paper-dark);
-  font-size: 0.9rem;
+  font-size: 1.05rem;
 }
 .stop-body {
   padding: 1.5rem 1.5rem 8rem;
 }
 .stop-lore {
   font-family: var(--body);
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   line-height: 1.75;
   color: var(--paper-dark);
   margin-bottom: 2rem;
@@ -344,7 +369,7 @@ html, body {
 }
 .stop-text {
   font-family: var(--body);
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   line-height: 1.75;
   color: var(--ink);
   margin-bottom: 2rem;
@@ -358,7 +383,7 @@ html, body {
 }
 .audio-label {
   font-family: var(--mono);
-  font-size: 0.58rem;
+  font-size: 0.82rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--rust);
@@ -398,12 +423,31 @@ html, body {
 }
 .audio-duration {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   color: var(--paper-muted);
 }
 /* AR launch (button on stop-detail screen, still styled even though AR view itself is now parchment too) */
 .location-image-block {
   margin-bottom: 1.5rem;
+}
+.street-view-block {
+  margin-bottom: 1.5rem;
+}
+.street-view-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: rgba(139,94,42,0.03);
+  margin-top: 0.5rem;
+}
+.street-view-caption {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  color: rgba(107,88,64,0.55);
+  padding: 0.6rem 0.2rem 0;
 }
 .location-image-frame {
   position: relative;
@@ -422,7 +466,7 @@ html, body {
 }
 .location-image-caption {
   font-family: var(--mono);
-  font-size: 0.58rem;
+  font-size: 0.82rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--rust-light);
@@ -452,7 +496,7 @@ html, body {
   align-items: center;
   justify-content: center;
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(107,88,64,0.35);
@@ -466,7 +510,7 @@ html, body {
   border: 1px solid var(--rust);
   color: var(--ink);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.95rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   cursor: pointer;
@@ -484,7 +528,7 @@ html, body {
 }
 .ar-note {
   font-family: var(--mono);
-  font-size: 0.58rem;
+  font-size: 0.82rem;
   letter-spacing: 0.08em;
   color: rgba(107,88,64,0.55);
   text-align: center;
@@ -522,13 +566,13 @@ html, body {
 }
 .ar-stop-name {
   font-family: var(--display);
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-style: italic;
   color: var(--ink);
 }
 .ar-close-btn {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--paper-dark);
@@ -543,7 +587,7 @@ html, body {
   bottom: 2.5rem; left: 0; right: 0;
   text-align: center;
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--ink);
@@ -580,7 +624,7 @@ a-scene { position: absolute; inset: 0; }
   background: var(--rust);
   color: var(--paper);
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: 0.85rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   padding: 0.7rem 1.2rem;
@@ -597,6 +641,7 @@ a-scene { position: absolute; inset: 0; }
 /* scrollbar */
 ::-webkit-scrollbar { width: 2px; }
 ::-webkit-scrollbar-thumb { background: var(--rust); }
+
   </style>
 </head>
 <body>
@@ -606,11 +651,12 @@ a-scene { position: absolute; inset: 0; }
 ══════════════════════════════════════════════ -->
 <div class="screen" id="screen-entry">
   <div class="entry-rule"></div>
-  <p class="entry-eyebrow">The Plunkett Trail</p>
+  <p class="entry-eyebrow">Drogheda · Co. Louth</p>
   <h1 class="entry-title">Street<br><em>Scéal</em></h1>
-  <p class="entry-subtitle">A martyr's journey across Europe. From Drogheda to Ghent, Rome, London and beyond.</p>
-  <p class="entry-location">53°43′N · 6°21′W · to 51°03′N · 3°43′E</p>
+  <p class="entry-subtitle">Walk the streets of Drogheda. The stories are already there.</p>
+  <p class="entry-location">53°43′N · 6°21′W</p>
   <button class="btn-primary" id="btn-enter" onclick="enterTrail()">Begin the trail</button>
+  <p class="entry-copyright">© 2026 StreetScéal. All rights reserved.</p>
 </div>
 
 <!-- ══════════════════════════════════════════════
@@ -618,9 +664,9 @@ a-scene { position: absolute; inset: 0; }
 ══════════════════════════════════════════════ -->
 <div class="screen hidden" id="screen-trail" style="justify-content:flex-start; overflow-y:auto;">
   <div class="trail-header">
-    <a class="all-trails-link" href="./index.html">&larr; All trails</a>
+    <a class="all-trails-link" href="./map.html">&larr; All trails</a>
     <div class="trail-header-row">
-      <span class="trail-header-title">The Plunkett Trail</span>
+      <span class="trail-header-title">Town <em>Trail</em></span>
       <span class="trail-header-count" id="trail-count"></span>
     </div>
   </div>
@@ -654,16 +700,22 @@ a-scene { position: absolute; inset: 0; }
       <p class="location-image-caption" id="location-image-caption"></p>
     </div>
 
+    <div class="street-view-block" id="street-view-block" style="display:none;">
+      <p class="audio-label">Virtual visit — Street View</p>
+      <div class="street-view-frame" id="street-view-frame"></div>
+      <p class="street-view-caption">Drag to look around — this is the real street, today.</p>
+    </div>
+
     <div class="audio-block">
       <p class="audio-label">Archive audio</p>
       <div class="audio-player">
         <button class="audio-play-btn" onclick="toggleAudio()" id="audio-btn" aria-label="Play">
           <svg id="play-icon" width="14" height="16" viewBox="0 0 14 16" fill="none">
-            <path d="M2 1l11 7-11 7V1z" fill="#e8e0d0"/>
+            <path d="M2 1l11 7-11 7V1z" fill="#f3ecd9"/>
           </svg>
           <svg id="pause-icon" width="14" height="16" viewBox="0 0 14 16" fill="none" style="display:none">
-            <rect x="1" y="1" width="4" height="14" fill="#e8e0d0"/>
-            <rect x="9" y="1" width="4" height="14" fill="#e8e0d0"/>
+            <rect x="1" y="1" width="4" height="14" fill="#f3ecd9"/>
+            <rect x="9" y="1" width="4" height="14" fill="#f3ecd9"/>
           </svg>
         </button>
         <div class="audio-waveform" id="waveform"></div>
@@ -672,7 +724,7 @@ a-scene { position: absolute; inset: 0; }
     </div>
 
     <button class="ar-launch-btn" onclick="launchAR()">
-      <svg class="ar-icon" viewBox="0 0 24 24" fill="none" stroke="#e8e0d0" stroke-width="1.5">
+      <svg class="ar-icon" viewBox="0 0 24 24" fill="none" stroke="#f3ecd9" stroke-width="1.5">
         <path d="M2 8V4h4M18 4h4v4M2 16v4h4M18 20h4v-4"/>
         <circle cx="12" cy="12" r="3"/>
         <path d="M12 5v2M12 17v2M5 12H3M21 12h-2"/>
@@ -715,149 +767,165 @@ a-scene { position: absolute; inset: 0; }
 // Replace lat/lng with real coordinates; audioSrc/imageSrc with real files
 const STOPS = [
   {
-    id: 'st-peters',
+    id: 'white-horse',
     number: '01',
-    name: `St Peter's Church`,
-    subtitle: 'West Street, Drogheda',
-    era: '1921–present',
-    description: `The National Shrine — a link to the Town Trail`,
-    lore: `A relic of the True Cross, gifted by St Bavo's Cathedral in Ghent in 2009, connects this church directly to Belgium — the same cathedral where Plunkett was ordained Archbishop in 1669.`,
-    text: `The head of Saint Oliver Plunkett, Archbishop of Armagh, has been enshrined at St Peter's Church since 1921. Also on display is the door of the condemned cell from Newgate Prison, London, presented in 1951. This is the beginning and the end of the journey — the place his memory rests after a life that carried him across half of Europe. This stop connects the Plunkett Trail to the Town Trail.`,
-    audioLabel: `St Peter's Church — the shrine`,
-    audioDuration: '0:00',
-    lat: 53.715034,
-    lng: -6.352422,
-    tags: ['town trail', 'linking stop', 'shrine'],
-    audioSrc: './audio/GoodLuckYoungSage.wav',
-    imageSrc: './targets/st-peters.mind'
+    name: 'The White Horse Hotel',
+    subtitle: 'West Street, Drogheda · now The Marcy Hotel',
+    era: '1963',
+    description: 'Where Brendan Behan held court',
+    lore: '"He was sitting there at the bar, large as life. That was Brendan." — Paul Murphy, former editor, Drogheda Independent.',
+    text: 'In the summer of 1963, a young journalist walked into the White Horse Hotel on West Street to interview a man who had already become a legend. Paul Murphy, then working for the Drogheda Independent, found Brendan Behan at the bar. What followed was a conversation that stayed with him for sixty years.',
+    audioLabel: 'Paul Murphy, 2020',
+    audioDuration: '4:12',
+    lat: 53.714978,
+    lng: -6.353384,
+    tags: ['oral history', 'literary', '1963'],
+    // In a real build: audioSrc points to your actual .mp3 file
+    // imageSrc points to your .mind target file for AR tracking
+    audioSrc: './audio/white-horse.mp3',
+    imageSrc: './targets/white-horse.mind',
+    locationImage: './assets/images/white-horse.jpg'
   },
   {
-    id: 'loughcrew',
+    id: 'connollys-shop',
     number: '02',
-    name: 'Loughcrew',
-    subtitle: 'Oldcastle, Co. Meath',
-    era: '1625',
-    description: `Birthplace — a link to the Megalithic Trail`,
-    lore: `Plunkett was born here on 1 November 1625, on a hillside already four thousand years old, ringed by passage tombs whose builders no one living could name.`,
-    text: `Oliver Plunkett was born at Loughcrew on 1 November 1625, into a landscape shaped long before by Neolithic hands — the same passage tomb complex that catches the equinox light at Cairn T. He left for Rome as a young man and would not see Ireland again for over twenty years. This stop connects the Plunkett Trail to the Megalithic Trail.`,
-    audioLabel: `Loughcrew — birthplace and beginnings`,
-    audioDuration: '0:00',
-    lat: 53.744459,
-    lng: -7.112099,
-    tags: ['megalithic trail', 'linking stop', 'birthplace'],
-    audioSrc: null,
-    imageSrc: null,
-    locationImage: './assets/images/loughcrew-kerbstones.jpg'
+    name: "Connolly's Shop",
+    subtitle: 'Shop Street, Drogheda · now Wogan Interiors',
+    era: '1940s–60s',
+    description: 'Commerce, community, memory',
+    lore: `"You'd go in for one thing and come out knowing everything that had happened in the town that week." — Maura Byrne, Louth Archives OHA/0112(1).`,
+    text: `Michael Byrne worked in Connolly Brothers on Shop Street. His wife Maura remembers the rituals of the town as it was: the St John's Eve bonfires, the rhythms of a community mapped onto its streets and seasons. This work draws directly from their recorded testimony, held in the Louth County Archives.`,
+    audioLabel: 'Maura & Michael Byrne — Louth Archives OHA/0112(1)',
+    audioDuration: '6:38',
+    lat: 53.713760,
+    lng: -6.349491,
+    tags: ['oral history', 'archive', 'commerce'],
+    audioSrc: './audio/connollys-shop.mp3',
+    imageSrc: './targets/connollys-shop.mind'
   },
   {
-    id: 'rome',
+    id: 'millmount',
     number: '03',
-    name: 'The Irish College, Rome',
-    subtitle: 'Via dei Santi Quattro, Rome, Italy',
-    era: '1647–1669',
-    description: 'Twenty-two years of exile and study',
-    lore: `Plunkett arrived at the Irish College in Rome in 1647, a young man fleeing a country where his faith could not be practised openly. He would not set foot in Ireland again until he was Archbishop.`,
-    text: `At the Pontificio Collegio Irlandese on Via dei Santi Quattro, Plunkett trained for the priesthood, was ordained on 1 January 1654, and served as professor of theology at Propaganda College for twelve years. Rome was both his refuge and his education — the city that shaped the man who would later return to Ireland to lead a persecuted church.`,
-    audioLabel: 'Rome — the Irish College and ordination',
-    audioDuration: '0:00',
-    lat: 41.8889,
-    lng: 12.4975,
-    tags: ['exile', 'education', 'ordination'],
+    name: 'Millmount',
+    subtitle: 'Millmount Square, Drogheda',
+    era: 'Ancient–present',
+    description: 'The mound that remembers everything',
+    lore: 'Neolithic passage tomb. Viking settlement. Cromwellian siege. 1922 Civil War shelling. Every layer still present beneath the surface.',
+    text: 'Stand at Millmount and you stand on five thousand years of continuous human presence. The mound has been a burial site, a military fortification, a signal tower, and a site of political violence. It is now a museum. The town grew around it, grew from it, and cannot be understood without it.',
+    audioLabel: 'Millmount ambient soundscape',
+    audioDuration: '3:20',
+    lat: 53.711665,
+    lng: -6.349454,
+    tags: ['landscape', 'history', 'archaeology'],
     audioSrc: null,
-    imageSrc: null,
-    locationImage: './assets/images/rome.jpg'
+    imageSrc: './targets/millmount.mind',
+    locationImage: './assets/images/millmount.jpg'
   },
   {
-    id: 'ghent',
+    id: 'laurence-gate',
     number: '04',
-    name: `St Bavo's Cathedral`,
-    subtitle: 'Sint-Baafsplein, Ghent, Belgium',
-    era: '1 December 1669',
-    description: 'Ordained Archbishop of Armagh, quietly',
-    lore: `A commemorative plaque was unveiled in the cathedral crypt in 2008, marking the spot where Plunkett was made Archbishop — a ceremony deliberately held away from English eyes.`,
-    text: `Plunkett was ordained Archbishop of Armagh at St Bavo's Cathedral by Bishop Eugene D'Allamont of Ghent on the first Sunday of Advent, 1669. The ceremony was held quietly in Flanders rather than in Ireland or England, where the appointment of a Catholic archbishop would have invited immediate persecution. The connection between Ghent and Drogheda continues today through the 2009 gift of a True Cross relic to St Peter's.`,
-    audioLabel: `Ghent — the ordination at St Bavo's`,
-    audioDuration: '0:00',
-    lat: 51.0537,
-    lng: 3.7256,
-    tags: ['ordination', 'belgium', 'archbishop'],
+    name: "St Laurence's Gate",
+    subtitle: 'Laurence Street, Drogheda',
+    era: '13th century',
+    description: 'The last gate of the walled town',
+    lore: 'One of only two surviving gates of the medieval walls that once enclosed the entire settlement. The road through it has not changed in eight hundred years.',
+    text: "The barbican of St Laurence's Gate is the finest surviving example of a medieval town gate in Ireland. Generations have passed through this arch — merchants, pilgrims, soldiers, townspeople. To walk beneath it is to pass through every century at once.",
+    audioLabel: 'Archival soundscape — medieval Drogheda',
+    audioDuration: '2:55',
+    lat: 53.715960,
+    lng: -6.347152,
+    streetView: {
+      // Confirmed correct position and heading from the virtual-visit
+      // prototype — viewpoint sits south-southwest of the gate so the
+      // camera faces it directly rather than standing underneath it.
+      viewpointLat: 53.715778,
+      viewpointLng: -6.347269,
+      targetLat: 53.715960,
+      targetLng: -6.347152
+    },
+    tags: ['medieval', 'architecture', 'landscape'],
     audioSrc: null,
-    imageSrc: null,
-    locationImage: './assets/images/ghent.jpg'
+    imageSrc: './targets/laurences-gate.mind',
+    locationImage: './assets/images/laurence-gate.jpg'
   },
   {
-    id: 'louvain',
+    id: 'st-peters-church-of-ireland',
     number: '05',
-    name: 'The Irish College, Louvain',
-    subtitle: 'Louvain (Leuven), Belgium',
-    era: '1669',
-    description: 'Among the Franciscans, before the crossing home',
-    lore: `Louvain was one of the great centres of Irish Catholic intellectual life in exile — scholars, theologians, and clergy gathered here throughout the seventeenth century, producing some of the most important Irish-language texts of the era.`,
-    text: `After his ordination in Ghent, Plunkett stayed briefly with the Franciscans at the Irish College in Louvain before making the crossing back to Ireland to take up his post. The college was part of a wider network of Irish institutions across continental Europe — in Rome, Paris, Salamanca, and here — that kept Irish Catholic scholarship alive while it was suppressed at home.`,
-    audioLabel: 'Louvain — the Irish Colleges network',
+    name: `St Peter's Church of Ireland`,
+    subtitle: "Peter's Hill, Drogheda",
+    era: '1649–present',
+    description: 'Burned in the siege, rebuilt, full of strange and remarkable graves',
+    lore: `During the Siege of Drogheda in 1649, a group of defenders barricaded themselves in the steeple of the medieval church that stood here. Cromwell's forces set it alight. None survived.`,
+    text: `This is not the church most visitors come to Drogheda looking for — that is the Catholic St Peter's on West Street, with its shrine to Oliver Plunkett. This St Peter's, on Peter's Hill, is older and carries its own scars. During Cromwell's siege of the town in September 1649, defenders who barricaded themselves in the steeple were burned alive when Parliamentary forces set the church on fire. Around two thousand people died across the town in the storming that followed — soldiers and civilians alike, in a massacre that has never been forgotten.
+
+Oliver Plunkett was twenty-four years old in 1649, already two years into his training for the priesthood in Rome, having left Ireland specifically because Cromwell's regime was closing in on Catholic education and worship at home. The two stories — the burning steeple here, and the martyrdom that waited for Plunkett thirty-two years later at Tyburn — are not directly connected, but they rise from the same current: a century of conquest and persecution that shaped, and eventually claimed, a generation of Irish Catholic lives.
+
+The present church, rebuilt in Georgian style and consecrated in 1753, holds its own quieter histories. In the churchyard stands a sixteenth-century cadaver stone from the tomb of Sir Edmond Goldyng and his wife Elizabeth Fleming, carved with two shrouded skeletal figures — a rare survival of a memento mori tradition more common on the European continent than in Ireland. Buried here too is John Duggan, a Drogheda man who survived the Charge of the Light Brigade at Balaklava during the Crimean War, and who later served as sexton of this very church until his death in 1881.`,
+    audioLabel: "St Peter's Church of Ireland — fire, faith, and forgotten graves",
     audioDuration: '0:00',
-    lat: 50.8798,
-    lng: 4.7005,
-    tags: ['franciscans', 'belgium', 'irish colleges'],
+    wwiseEvent: 'StreetSceal_PlayStPeters', // flags this stop as using the Wwise engine instead of a plain audio file
+    lat: 53.716747,
+    lng: -6.350144,
+    tags: ['cromwell', 'siege', 'graves'],
     audioSrc: null,
     imageSrc: null,
-    locationImage: './assets/images/louvain.jpg'
-  },
-  {
-    id: 'tyburn',
-    number: '06',
-    name: 'Tyburn',
-    subtitle: 'Marble Arch, London, England',
-    era: '1 July 1681',
-    description: 'The last Catholic martyr to die in England',
-    lore: `Plunkett was hanged, drawn and quartered at Tyburn on trumped-up charges of conspiracy. He forgave his accusers from the scaffold. Friends recovered his remains soon after.`,
-    text: `Oliver Plunkett was executed at Tyburn on 1 July 1681, convicted on fabricated evidence during the anti-Catholic hysteria following the so-called Popish Plot. He was the last Catholic to be martyred in England. Tyburn Convent, founded in 1903, now stands near the site and holds a chapel commemorating those executed there. His remains were exhumed by friends and eventually made their way, by a long route, back toward Ireland.`,
-    audioLabel: 'Tyburn — trial and martyrdom',
-    audioDuration: '0:00',
-    lat: 51.5142,
-    lng: -0.1589,
-    tags: ['martyrdom', 'execution', 'london'],
-    audioSrc: null,
-    imageSrc: null,
-    locationImage: './assets/images/tyburn.jpg'
-  },
-  {
-    id: 'lamspringe',
-    number: '07',
-    name: 'Lamspringe',
-    subtitle: 'Lower Saxony, Germany',
-    era: '1683–1883',
-    description: 'Two hundred years in a Benedictine monastery',
-    lore: `Plunkett had formed a close bond with a Benedictine monk imprisoned alongside him in Newgate. His remains were sent to that monk's monastery at Lamspringe, where they rested for two centuries.`,
-    text: `Exhumed from St Giles Cemetery, London in 1683, Plunkett's remains were sent to the Benedictine monastery at Lamspringe, where they remained for two hundred years before transfer to Downside Abbey in England, and eventually the relic of his head to Drogheda. The Benedictine connection — formed in the last months of his life, in a London prison cell — carried his memory across Europe long after his death.`,
-    audioLabel: 'Lamspringe — the long journey of the remains',
-    audioDuration: '0:00',
-    lat: 51.9572,
-    lng: 10.0027,
-    tags: ['benedictines', 'germany', 'remains'],
-    audioSrc: null,
-    imageSrc: null,
-    locationImage: './assets/images/lamspringe.jpg'
+    locationImage: './assets/images/st-peters-coi.jpg'
   },
   {
     id: 'siena-convent',
-    number: '08',
+    number: '06',
     name: 'Siena Convent',
     subtitle: 'Cord Road, Drogheda',
     era: '1796–1994',
     description: 'Nearly two centuries guarding a relic',
-    lore: `The relic was kept by the Dominican nuns of Siena, a community founded by Plunkett's own grand-niece, Sister Catherine Plunkett. During the War of Independence, armed volunteers stood guard here for fear it would be seized.`,
+    lore: `The head of Oliver Plunkett was kept by the Dominican nuns of Siena, founded by his own grand-niece Sister Catherine Plunkett. During the War of Independence, armed volunteers stood guard for fear the relic would be seized.`,
     text: `The Dominican community at Siena was founded in 1722 by Sister Catherine Plunkett, grand-niece of Oliver Plunkett, beginning life in a mud cabin on the south side of the Boyne before moving to a more substantial house on Dyer Street. It was here, around 1725, that the nuns received the relic of Plunkett's head, brought back from Rome forty years after his martyrdom — and for decades the sisters lived quietly, often disguising their community as a boarding house for women to avoid the attention of the authorities during the Penal years.
 
-In 1796, the growing community moved to a permanent convent on Cord Road, where they would remain for nearly two centuries. That secrecy did not end with the eighteenth century. During the War of Independence, with the Black and Tans active in the town, armed republican volunteers were positioned around the Siena community to defend the relic against seizure or desecration. [PLACEHOLDER — confirm and insert exact detail from the Bureau of Military History witness statement naming a Murray family relative among those who stood guard, once located and verified in the BMH archive.] Within months, in June 1921, the relic was formally translated to its present shrine in St Peter's Church — the stop just ahead on this trail. The Cord Road convent itself continued until a fire in 1994 forced the community to relocate to The Twenties, where they remain today.`,
+In 1796, the growing community moved to a permanent convent on Cord Road, where they would remain for nearly two centuries. That secrecy did not end with the eighteenth century. During the War of Independence, with the Black and Tans active in the town, armed republican volunteers were positioned around the Siena community to defend the relic against seizure or desecration. [PLACEHOLDER — confirm and insert exact detail from the Bureau of Military History witness statement naming a Murray family relative among those who stood guard, once located and verified in the BMH archive.] Within months, in June 1921, the relic was formally translated to its present shrine in St Peter's Church, just ahead. The Cord Road convent itself continued until a fire in 1994 forced the community to relocate to The Twenties, where they remain today.`,
     audioLabel: 'Siena Convent — the long watch',
     audioDuration: '0:00',
     lat: 53.717150,
     lng: -6.346015,
-    tags: ['relic', 'dominican nuns', 'war of independence'],
+    tags: ['relic', 'war of independence'],
     audioSrc: null,
     imageSrc: null,
     locationImage: null
+  },
+  {
+    id: 'st-peters',
+    number: '07',
+    name: `St Peter's Church`,
+    subtitle: 'West Street, Drogheda',
+    era: '1921–present',
+    description: `The National Shrine`,
+    lore: `A relic of the True Cross, gifted by St Bavo's Cathedral in Ghent in 2009, connects this church directly to Belgium.`,
+    text: `The head of Saint Oliver Plunkett, Archbishop of Armagh, has been enshrined at St Peter's Church since 1921. Also on display is the door of the condemned cell from Newgate Prison, London.`,
+    audioLabel: `St Peter's Church — the shrine`,
+    audioDuration: '0:00',
+    lat: 53.715034,
+    lng: -6.352422,
+    tags: ['shrine'],
+    audioSrc: './audio/GoodLuckYoungSage.wav',
+    imageSrc: './targets/st-peters.mind',
+    locationImage: './assets/images/st-peters.jpg'
+  },
+  {
+    id: 'quayside',
+    number: '08',
+    name: 'The Quayside',
+    subtitle: 'West Gate, River Boyne, Drogheda',
+    era: '1826–1902',
+    description: `The Steampacket era — a link to the Diaspora Trail`,
+    lore: `The Town of Drogheda made her maiden voyage to Liverpool on 26 November 1826, the crossing taking fourteen hours. Within a generation it was a daily service. Branigan's Point on the river still carries the name of the man who once commanded these ships.`,
+    text: `In July 1825 the Drogheda Steam Packet Company was formed, and within a year the paddle steamer Town of Drogheda was making the crossing to Liverpool — fourteen hours that changed how the town connected to the world. By 1849 the route ran daily. Ships sailed from this quay to Liverpool and Glasgow for the better part of eighty years, carrying cattle, linen yarn, passengers, and the ordinary traffic of people leaving. Not every crossing ended safely: on 13 April 1847, the Grainne Ueile left Liverpool for Drogheda carrying grain urgently needed for a starving country, and caught fire north of Lambay Island. In the scramble for the lifeboats, several passengers drowned. A fishing smack, the Bessy of Ringsend, rescued sixty-eight survivors, though her master died attempting one final rescue. This stop connects the Town Trail to the Diaspora Trail — the same crossing, the same quay, the same fourteen hours to Liverpool.`,
+    audioLabel: 'Quayside — the Steampacket years',
+    audioDuration: '0:00',
+    lat: 53.713810,
+    lng: -6.348835,
+    tags: ['diaspora trail', 'linking stop', 'steampacket'],
+    audioSrc: null,
+    imageSrc: './targets/quayside.mind',
+    locationImage: './assets/images/quayside.jpg'
   }
 ];
 
@@ -995,8 +1063,8 @@ function openStop(id) {
   if (!stop) return;
   currentStop = stop;
   visitedStops.add(id);
-  logEvent('stop', id);
   updateTrailCount();
+  logEvent('stop', id);
 
   document.getElementById('detail-eyebrow').textContent = stop.era + ' · ' + stop.subtitle;
   document.getElementById('detail-title').textContent = stop.name;
@@ -1007,15 +1075,27 @@ function openStop(id) {
   buildWaveform();
   resetAudio();
   renderLocationImage(stop);
+  renderStreetView(stop);
 
   showScreen('stop');
   document.getElementById('screen-stop').scrollTop = 0;
 }
 
 // ── Location image ──────────────────────────────────────────────────
+// Skips rendering for stops that have a Street View block instead —
+// while that's being finalised across the trail, only Laurence's Gate
+// currently has streetView data, so only that stop hides its static
+// photo. Every other stop keeps the static image exactly as before.
 function renderLocationImage(stop) {
+  const block = document.getElementById('location-image-block');
   const frame = document.getElementById('location-image-frame');
   const caption = document.getElementById('location-image-caption');
+
+  if (stop.streetView) {
+    block.style.display = 'none';
+    return;
+  }
+  block.style.display = 'block';
 
   if (stop.locationImage) {
     frame.innerHTML = `<img src="${stop.locationImage}" alt="${stop.name}" loading="lazy">`;
@@ -1024,6 +1104,73 @@ function renderLocationImage(stop) {
     frame.innerHTML = `<div class="location-image-placeholder">Photo coming soon</div>`;
     caption.textContent = stop.subtitle;
   }
+}
+
+// ── Street View ──────────────────────────────────────────────────────
+// Only renders for stops with a streetView block in their data. Loads
+// the Google Maps JS API + Geometry library on first use and reuses it
+// for subsequent stops, rather than reloading the script every time.
+let googleMapsLoading = false;
+let googleMapsReady = false;
+const streetViewQueue = [];
+
+function loadGoogleMapsForStreetView(callback) {
+  if (googleMapsReady) { callback(); return; }
+  streetViewQueue.push(callback);
+  if (googleMapsLoading) return;
+  googleMapsLoading = true;
+
+  window.__onGoogleMapsReady = () => {
+    googleMapsReady = true;
+    streetViewQueue.forEach(cb => cb());
+    streetViewQueue.length = 0;
+  };
+
+  const script = document.createElement('script');
+  script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyASmpOeRPerSlZ7WcyEo_ecdFEAd4pIP3E&libraries=geometry&loading=async&callback=__onGoogleMapsReady';
+  script.async = true;
+  document.head.appendChild(script);
+}
+
+function renderStreetView(stop) {
+  const block = document.getElementById('street-view-block');
+  const frame = document.getElementById('street-view-frame');
+
+  if (!stop.streetView) {
+    block.style.display = 'none';
+    return;
+  }
+
+  block.style.display = 'block';
+  frame.innerHTML = ''; // clear any previous panorama before rendering a new one
+
+  loadGoogleMapsForStreetView(() => {
+    const sv = stop.streetView;
+    const streetViewService = new google.maps.StreetViewService();
+    const panorama = new google.maps.StreetViewPanorama(frame, {
+      position: { lat: sv.viewpointLat, lng: sv.viewpointLng },
+      pov: { heading: 0, pitch: 0 },
+      zoom: 1,
+      addressControl: false,
+      fullscreenControl: false,
+      motionTrackingControl: false
+    });
+
+    streetViewService.getPanorama(
+      { location: { lat: sv.viewpointLat, lng: sv.viewpointLng }, radius: 30 },
+      (data, status) => {
+        if (status === 'OK') {
+          panorama.setPano(data.location.pano);
+          const panoLocation = data.location.latLng;
+          const targetLocation = new google.maps.LatLng(sv.targetLat, sv.targetLng);
+          const heading = google.maps.geometry.spherical.computeHeading(panoLocation, targetLocation);
+          panorama.setPov({ heading, pitch: 0 });
+        } else {
+          frame.innerHTML = '<div class="location-image-placeholder">Street View unavailable at this location</div>';
+        }
+      }
+    );
+  });
 }
 
 // ── Waveform (decorative — replace with real Web Audio in production) ─
@@ -1039,6 +1186,9 @@ function buildWaveform() {
   }
 }
 
+let wwiseInitialized = false;
+let wwiseTickInterval = null;
+
 function toggleAudio() {
   audioPlaying = !audioPlaying;
   document.getElementById('play-icon').style.display = audioPlaying ? 'none' : 'block';
@@ -1046,7 +1196,9 @@ function toggleAudio() {
 
   if (audioPlaying) {
     logEvent('audio', currentStop.id);
-    if (currentStop.audioSrc) {
+    if (currentStop.wwiseEvent) {
+      playWwiseAudio(currentStop.wwiseEvent);
+    } else if (currentStop.audioSrc) {
         if (!window._audio) window._audio = new Audio();
         window._audio.src = currentStop.audioSrc;
         window._audio.play();
@@ -1060,14 +1212,49 @@ function toggleAudio() {
     }, 1000);
   } else {
     if (window._audio) window._audio.pause();
+    if (currentStop && currentStop.wwiseEvent) pauseWwiseTick();
     clearInterval(audioTick);
     stopWaveformAnimation();
+  }
+}
+
+// Initializes the Wwise engine on first use (requires the click that
+// triggered toggleAudio as its user gesture, satisfying browser
+// autoplay policy), then posts the given event and starts the
+// per-frame Tick loop needed to actually render audio on this build.
+function playWwiseAudio(eventName) {
+  if (!window._wwiseReady) {
+    console.warn('Wwise engine not ready yet — try again in a moment.');
+    return;
+  }
+  if (!wwiseInitialized) {
+    const result = Module.ccall('StreetSceal_Init', 'number', [], []);
+    if (result !== 1) {
+      console.error('Wwise failed to initialize.');
+      return;
+    }
+    wwiseInitialized = true;
+  }
+  if (!wwiseTickInterval) {
+    wwiseTickInterval = setInterval(() => Module.ccall('StreetSceal_Tick', null, [], []), 16);
+  }
+  Module.ccall(eventName, null, [], []);
+}
+
+// Stops the per-frame Tick loop (pausing audio processing) without
+// tearing down the whole engine — cheap to resume if the user presses
+// play again on the same stop.
+function pauseWwiseTick() {
+  if (wwiseTickInterval) {
+    clearInterval(wwiseTickInterval);
+    wwiseTickInterval = null;
   }
 }
 
 function resetAudio() {
   audioPlaying = false;
   clearInterval(audioTick);
+  pauseWwiseTick();
   audioSeconds = 0;
   document.getElementById('play-icon').style.display = 'block';
   document.getElementById('pause-icon').style.display = 'none';
@@ -1089,7 +1276,7 @@ function animateWaveform() {
 
 function stopWaveformAnimation() {
   document.querySelectorAll('.wave-bar').forEach(b => {
-    b.style.background = 'rgba(232,224,208,0.2)';
+    b.style.background = 'rgba(243,236,217,0.2)';
   });
 }
 
@@ -1126,14 +1313,14 @@ function launchAR() {
           <a-text
             value="${currentStop.name}"
             font="https://cdn.aframe.io/fonts/Exo2Bold.fnt"
-            color="#1a1612"
+            color="#163936"
             align="center"
             width="1.2"
             position="0 0.35 0"
             animation="property: opacity; from: 0; to: 1; dur: 1200; easing: easeInQuad">
           </a-text>
           <a-plane
-            color="#e8e0d0"
+            color="#f3ecd9"
             opacity="0.85"
             width="1" height="0.6"
             position="0 0 -0.001"
@@ -1142,7 +1329,7 @@ function launchAR() {
           <a-text
             value="${currentStop.era}"
             font="https://cdn.aframe.io/fonts/mozillavr.fnt"
-            color="#8b3a2a"
+            color="#b5583a"
             align="center"
             width="0.5"
             position="0 -0.35 0"
@@ -1203,7 +1390,7 @@ function launchAR() {
         }
       })
       .catch(() => {
-        container.style.background = 'linear-gradient(135deg, #1a1612 0%, #2a1f18 100%)';
+        container.style.background = 'linear-gradient(135deg, #163936 0%, #0d2422 100%)';
         addARDemoOverlay(container);
         if (audioTargets[0]) {
           window._audio.src = audioTargets[0];
@@ -1224,16 +1411,16 @@ function addARDemoOverlay(container) {
     pointer-events: none;`;
   overlay.innerHTML = `
     <div style="
-      border: 1px solid rgba(139,58,42,0.6);
+      border: 1px solid rgba(181,88,58,0.6);
       padding: 2rem 2.5rem;
       text-align: center;
-      background: rgba(26,22,18,0.55);
+      background: rgba(22,57,54,0.55);
       backdrop-filter: blur(4px);
       animation: fadeIn 1.2s ease forwards;
       opacity: 0;">
-      <p style="font-family:'Courier New',monospace;font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:#8b3a2a;margin-bottom:0.8rem;">${currentStop ? currentStop.era : ''}</p>
-      <p style="font-family:Georgia,serif;font-size:1.5rem;font-style:italic;color:#e8e0d0;margin-bottom:0.5rem;">${currentStop ? currentStop.name : ''}</p>
-      <p style="font-family:Georgia,serif;font-size:0.85rem;color:rgba(232,224,208,0.6);font-style:italic;">${currentStop ? currentStop.description : ''}</p>
+      <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;color:#b5583a;margin-bottom:0.8rem;">${currentStop ? currentStop.era : ''}</p>
+      <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:1.5rem;font-style:normal;color:#f3ecd9;margin-bottom:0.5rem;">${currentStop ? currentStop.name : ''}</p>
+      <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:1rem;color:rgba(243,236,217,0.6);font-style:normal;">${currentStop ? currentStop.description : ''}</p>
     </div>
     <style>@keyframes fadeIn{to{opacity:1}}</style>`;
   container.appendChild(overlay);
@@ -1261,10 +1448,11 @@ function stopARAudio() {
     }
   }
 }
+
 // ── Analytics ────────────────────────────────────────────────────────
 // Silent event logging — never throws, never affects the trail experience.
 const ANALYTICS_ENDPOINT = 'https://streetsceal.ie/analytics/event';
-const TRAIL_ID = 'plunkett-trail';
+const TRAIL_ID = 'town-trail';
 
 function logEvent(type, stop) {
   const body = { type, trail: TRAIL_ID };
@@ -1279,7 +1467,6 @@ function logEvent(type, stop) {
 
 // Log page load immediately
 logEvent('page');
-
 </script>
 
 </body>
