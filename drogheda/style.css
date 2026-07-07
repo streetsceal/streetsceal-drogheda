@@ -574,6 +574,17 @@ html, body {
   padding: 0.5rem 0;
   animation: fadeInOut 3s ease 1s forwards;
 }
+.ar-voice-toggle {
+  position: absolute;
+  bottom: 5.5rem;
+  left: 1.5rem;
+  right: 1.5rem;
+  margin: 0;
+  background: rgba(245,240,232,0.92);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  pointer-events: auto;
+}
 @keyframes fadeInOut {
   0% { opacity: 0; }
   20% { opacity: 1; }
@@ -624,3 +635,28 @@ a-scene { position: absolute; inset: 0; }
 /* scrollbar */
 ::-webkit-scrollbar { width: 2px; }
 ::-webkit-scrollbar-thumb { background: var(--rust); }
+
+/* ── Voice switch buttons (Connolly's Shop — Maura/Michael independent Play/Stop events) ── */
+.voice-toggle-block { margin: 1.25rem 0; }
+.voice-switch-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.voice-switch-btn {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  background: transparent;
+  border: 1px solid var(--rust);
+  border-radius: 4px;
+  color: var(--rust);
+  font-family: var(--body);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.voice-switch-btn:hover { background: var(--ghost); }
+.voice-switch-btn.active {
+  background: var(--rust);
+  color: var(--paper);
+}

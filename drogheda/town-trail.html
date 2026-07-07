@@ -84,6 +84,14 @@
       <p class="street-view-caption">Drag to look around — this is the real street, today.</p>
     </div>
 
+    <div class="voice-toggle-block" id="voice-toggle-block" style="display:none;">
+      <p class="audio-label">Whose voice?</p>
+      <div class="voice-switch-row">
+        <button class="voice-switch-btn active" id="voice-btn-maura" onclick="switchVoice('maura')">Maura</button>
+        <button class="voice-switch-btn" id="voice-btn-michael" onclick="switchVoice('michael')">Michael</button>
+      </div>
+    </div>
+
     <div class="audio-block">
       <p class="audio-label">Archive audio</p>
       <div class="audio-player">
@@ -131,6 +139,12 @@
     <div class="ar-frame-corner bl"></div>
     <div class="ar-frame-corner br"></div>
     <p class="ar-hint">Aim camera at the image</p>
+    <div class="voice-toggle-block ar-voice-toggle" id="voice-toggle-block-ar" style="display:none;">
+      <div class="voice-switch-row">
+        <button class="voice-switch-btn active" id="voice-btn-maura-ar" onclick="switchVoice('maura')">Maura</button>
+        <button class="voice-switch-btn" id="voice-btn-michael-ar" onclick="switchVoice('michael')">Michael</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -178,7 +192,7 @@ const STOPS = [
     lat: 53.713760,
     lng: -6.349491,
     tags: ['oral history', 'archive', 'commerce'],
-    audioSrc: './audio/connollys-shop.mp3',
+    voiceMixStop: true, // vertical mixing: soundscape loops throughout, Maura/Michael switch via independent Play/Stop events (parked the RTPC blend approach — see wwise_support_ticket.md)
     imageSrc: './targets/connollys-shop.mind'
   },
   {
@@ -462,6 +476,15 @@ function openStop(id) {
   renderLocationImage(stop);
   renderStreetView(stop);
 
+  // Voice buttons only apply to Connolly's Shop-style voice-mix stops.
+  // Reset to Maura each time the stop is opened fresh.
+  document.getElementById('voice-toggle-block').style.display = stop.voiceMixStop ? 'block' : 'none';
+  if (stop.voiceMixStop) {
+    currentVoice = 'maura';
+    document.getElementById('voice-btn-maura').classList.add('active');
+    document.getElementById('voice-btn-michael').classList.remove('active');
+  }
+
   showScreen('stop');
   document.getElementById('screen-stop').scrollTop = 0;
 }
@@ -573,6 +596,45 @@ function buildWaveform() {
 
 let wwiseInitialized = false;
 let wwiseTickInterval = null;
+let currentVoice = 'maura'; // which voice is active at Connolly's Shop — 'maura' or 'michael'
+
+// Switches the active voice at Connolly's Shop: stops whichever voice
+// was playing, starts the other, and keeps both button pairs (stop-detail
+// screen and AR overlay) in sync. Soundscape is untouched by this —
+// it just keeps looping underneath, started once when the stop opens.
+function switchVoice(voice) {
+  if (voice === currentVoice) return; // already playing, nothing to do
+  if (!wwiseInitialized) {
+    currentVoice = voice; // still update UI/state even if engine isn't up yet
+  } else if (voice === 'michael') {
+    Module.ccall('StreetSceal_StopMaura', null, [], []);
+    Module.ccall('StreetSceal_PlayMichael', null, [], []);
+    currentVoice = 'michael';
+  } else {
+    Module.ccall('StreetSceal_StopMichael', null, [], []);
+    Module.ccall('StreetSceal_PlayMaura', null, [], []);
+    currentVoice = 'maura';
+  }
+  document.getElementById('voice-btn-maura').classList.toggle('active', currentVoice === 'maura');
+  document.getElementById('voice-btn-michael').classList.toggle('active', currentVoice === 'michael');
+  document.getElementById('voice-btn-maura-ar').classList.toggle('active', currentVoice === 'maura');
+  document.getElementById('voice-btn-michael-ar').classList.toggle('active', currentVoice === 'michael');
+}
+
+// Starts Connolly's Shop: soundscape loops continuously, Maura starts
+// as the default voice. Called on AR launch (the user gesture there
+// satisfies the browser's autoplay policy).
+function startVoiceMix() {
+  if (!ensureWwiseReady()) return;
+  Module.ccall('StreetSceal_StopAll', null, [], []);
+  currentVoice = 'maura';
+  document.getElementById('voice-btn-maura').classList.add('active');
+  document.getElementById('voice-btn-michael').classList.remove('active');
+  document.getElementById('voice-btn-maura-ar').classList.add('active');
+  document.getElementById('voice-btn-michael-ar').classList.remove('active');
+  Module.ccall('StreetSceal_PlaySoundscape', null, [], []);
+  Module.ccall('StreetSceal_PlayMaura', null, [], []);
+}
 
 function toggleAudio() {
   audioPlaying = !audioPlaying;
@@ -581,7 +643,9 @@ function toggleAudio() {
 
   if (audioPlaying) {
     logEvent('audio', currentStop.id);
-    if (currentStop.wwiseEvent) {
+    if (currentStop.voiceMixStop) {
+      startVoiceMix();
+    } else if (currentStop.wwiseEvent) {
       playWwiseAudio(currentStop.wwiseEvent);
     } else if (currentStop.audioSrc) {
         if (!window._audio) window._audio = new Audio();
@@ -597,39 +661,53 @@ function toggleAudio() {
     }, 1000);
   } else {
     if (window._audio) window._audio.pause();
-    if (currentStop && currentStop.wwiseEvent) pauseWwiseTick();
+    if (currentStop && (currentStop.wwiseEvent || currentStop.voiceMixStop)) pauseWwiseTick();
     clearInterval(audioTick);
     stopWaveformAnimation();
   }
 }
 
 // Initializes the Wwise engine on first use (requires the click that
-// triggered toggleAudio as its user gesture, satisfying browser
-// autoplay policy), then posts the given event and starts the
-// per-frame Tick loop needed to actually render audio on this build.
-function playWwiseAudio(eventName) {
+// triggered this as its user gesture, satisfying browser autoplay
+// policy) and starts the per-frame Tick loop needed to actually
+// render audio. Shared by both the single-event path (St Peter's) and
+// the independent-events path (Connolly's Shop voice mix).
+function ensureWwiseReady() {
   if (!window._wwiseReady) {
     console.warn('Wwise engine not ready yet — try again in a moment.');
-    return;
+    return false;
   }
   if (!wwiseInitialized) {
     const result = Module.ccall('StreetSceal_Init', 'number', [], []);
     if (result !== 1) {
       console.error('Wwise failed to initialize.');
-      return;
+      return false;
     }
     wwiseInitialized = true;
   }
   if (!wwiseTickInterval) {
     wwiseTickInterval = setInterval(() => Module.ccall('StreetSceal_Tick', null, [], []), 16);
   }
+  return true;
+}
+
+function playWwiseAudio(eventName) {
+  if (!ensureWwiseReady()) return;
+  // Always stop whatever was previously playing before posting a new
+  // event — covers both switching stops and resuming the same stop
+  // after a pause, so nothing frozen-in-place ever resumes unexpectedly
+  // alongside a different stop's audio.
+  Module.ccall('StreetSceal_StopAll', null, [], []);
   Module.ccall(eventName, null, [], []);
 }
 
-// Stops the per-frame Tick loop (pausing audio processing) without
-// tearing down the whole engine — cheap to resume if the user presses
-// play again on the same stop.
+// Stops the per-frame Tick loop AND actually stops any playing audio
+// (via StreetSceal_StopAll), so pausing is true silence rather than a
+// freeze-in-place that could resume alongside a different stop later.
 function pauseWwiseTick() {
+  if (wwiseInitialized) {
+    Module.ccall('StreetSceal_StopAll', null, [], []);
+  }
   if (wwiseTickInterval) {
     clearInterval(wwiseTickInterval);
     wwiseTickInterval = null;
@@ -670,10 +748,24 @@ function launchAR() {
   if (!currentStop) return;
   logEvent('ar', currentStop.id);
 
+  // Show the voice buttons in the AR overlay too, since that's where
+  // Wwise voice-mix stops actually auto-start audio (see below).
+  document.getElementById('voice-toggle-block-ar').style.display = currentStop.voiceMixStop ? 'block' : 'none';
+  if (currentStop.voiceMixStop) {
+    document.getElementById('voice-btn-maura-ar').classList.toggle('active', currentVoice === 'maura');
+    document.getElementById('voice-btn-michael-ar').classList.toggle('active', currentVoice === 'michael');
+  }
+
   // For Wwise stops, auto-start audio on AR launch — the button tap
   // counts as a user gesture, satisfying browser autoplay policy.
   // Image-tracking stops handle audio via their own target-detection trigger.
-  if (currentStop.wwiseEvent && !audioPlaying) {
+  if (currentStop.voiceMixStop && !audioPlaying) {
+    audioPlaying = true;
+    document.getElementById('play-icon').style.display = 'none';
+    document.getElementById('pause-icon').style.display = 'block';
+    startVoiceMix();
+    animateWaveform();
+  } else if (currentStop.wwiseEvent && !audioPlaying) {
     audioPlaying = true;
     document.getElementById('play-icon').style.display = 'none';
     document.getElementById('pause-icon').style.display = 'block';
