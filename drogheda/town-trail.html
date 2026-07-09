@@ -85,13 +85,15 @@
     </div>
 
     <div class="voice-toggle-block" id="voice-toggle-block" style="display:none;">
-      <p class="audio-label">Whose voice?</p>
+      <p class="audio-label">Drag to switch between Maura &amp; Michael's memories</p>
       <div class="voice-slider-row">
         <span class="voice-slider-label">Maura</span>
+        <span class="voice-drag-cue">‹</span>
         <input type="range" min="0" max="100" value="0" step="1"
                class="voice-slider" id="voice-slider"
                oninput="setVoiceChoice(this.value)"
-               aria-label="Blend between Maura and Michael's voice">
+               aria-label="Drag to blend between Maura and Michael's voice">
+        <span class="voice-drag-cue">›</span>
         <span class="voice-slider-label">Michael</span>
       </div>
     </div>
@@ -144,12 +146,15 @@
     <div class="ar-frame-corner br"></div>
     <p class="ar-hint">Aim camera at the image</p>
     <div class="voice-toggle-block ar-voice-toggle" id="voice-toggle-block-ar" style="display:none;">
+      <p class="voice-drag-label-ar">Drag to switch voices</p>
       <div class="voice-slider-row">
         <span class="voice-slider-label">Maura</span>
+        <span class="voice-drag-cue">‹</span>
         <input type="range" min="0" max="100" value="0" step="1"
                class="voice-slider" id="voice-slider-ar"
                oninput="setVoiceChoice(this.value)"
-               aria-label="Blend between Maura and Michael's voice">
+               aria-label="Drag to blend between Maura and Michael's voice">
+        <span class="voice-drag-cue">›</span>
         <span class="voice-slider-label">Michael</span>
       </div>
     </div>
@@ -202,8 +207,7 @@ const STOPS = [
     tags: ['oral history', 'archive', 'commerce'],
     wwiseEvent: 'StreetSceal_PlayShop', // soundscape + Maura/Michael blend, live-scrubbed via voiceChoice RTPC — the originally-intended design, revived once the real root cause (mono downmix phase cancellation, not a platform bug) was found and fixed
     voiceToggle: true, // shows the Maura/Michael blend slider and drives the voiceChoice RTPC
-    imageSrc: './targets/connollys-shop.mind',
-    locationImage: './assets/images/wogans.jpg'
+    imageSrc: './targets/connollys-shop.mind'
   },
   {
     id: 'millmount',
