@@ -84,6 +84,18 @@
       <p class="street-view-caption">Drag to look around — this is the real street, today.</p>
     </div>
 
+    <div class="voice-toggle-block" id="voice-toggle-block" style="display:none;">
+      <p class="audio-label">Whose voice?</p>
+      <div class="voice-slider-row">
+        <span class="voice-slider-label">Maura</span>
+        <input type="range" min="0" max="100" value="0" step="1"
+               class="voice-slider" id="voice-slider"
+               oninput="setVoiceChoice(this.value)"
+               aria-label="Blend between Maura and Michael's voice">
+        <span class="voice-slider-label">Michael</span>
+      </div>
+    </div>
+
     <div class="audio-block">
       <p class="audio-label">Archive audio</p>
       <div class="audio-player">
@@ -131,6 +143,16 @@
     <div class="ar-frame-corner bl"></div>
     <div class="ar-frame-corner br"></div>
     <p class="ar-hint">Aim camera at the image</p>
+    <div class="voice-toggle-block ar-voice-toggle" id="voice-toggle-block-ar" style="display:none;">
+      <div class="voice-slider-row">
+        <span class="voice-slider-label">Maura</span>
+        <input type="range" min="0" max="100" value="0" step="1"
+               class="voice-slider" id="voice-slider-ar"
+               oninput="setVoiceChoice(this.value)"
+               aria-label="Blend between Maura and Michael's voice">
+        <span class="voice-slider-label">Michael</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -171,16 +193,16 @@ const STOPS = [
     subtitle: 'Shop Street, Drogheda · now Wogan Interiors',
     era: '1940s–60s',
     description: 'Commerce, community, memory',
-    lore: `"They sell groceries, or they sell meals and everything, and machinery to the farmer." — Michael Byrne, Louth Archives OHA/0112(1).`,
-    text: `Michael Byrne worked in Connolly Brothers on Shop Street. His recorded testimony traces the rhythms of a community mapped onto its streets and seasons. This work draws directly from his recorded testimony, held alongside his wife Maura's in the Louth County Archives.`,
-    audioLabel: 'Michael Byrne — Louth Archives OHA/0112(1)',
+    lore: `"You'd go in for one thing and come out knowing everything that had happened in the town that week." — Maura Byrne, Louth Archives OHA/0112(1).`,
+    text: `Michael Byrne worked in Connolly Brothers on Shop Street. His wife Maura remembers the rhythms of a community mapped onto its streets and seasons. This work draws directly from their recorded testimony, held in the Louth County Archives.`,
+    audioLabel: 'Maura & Michael Byrne — Louth Archives OHA/0112(1)',
     audioDuration: '6:38',
     lat: 53.713760,
     lng: -6.349491,
     tags: ['oral history', 'archive', 'commerce'],
-    wwiseEvent: 'StreetSceal_PlayMichael', // combined ambience + randomized clips in one Playlist Container, matching St Peter's exactly. Maura's streamed audio was dropped after testing showed it unreliable in the compiled Web build (see wwise_support_ticket.md)
-    imageSrc: './targets/connollys-shop.mind',
-    locationImage: './assets/images/wogans.jpg'
+    wwiseEvent: 'StreetSceal_PlayShop', // soundscape + Maura/Michael blend, live-scrubbed via voiceChoice RTPC — the originally-intended design, revived once the real root cause (mono downmix phase cancellation, not a platform bug) was found and fixed
+    voiceToggle: true, // shows the Maura/Michael blend slider and drives the voiceChoice RTPC
+    imageSrc: './targets/connollys-shop.mind'
   },
   {
     id: 'millmount',
@@ -463,6 +485,14 @@ function openStop(id) {
   renderLocationImage(stop);
   renderStreetView(stop);
 
+  // Voice slider only applies to stops with a Maura/Michael RTPC choice.
+  // Reset to Maura (0) each time the stop is opened fresh.
+  document.getElementById('voice-toggle-block').style.display = stop.voiceToggle ? 'block' : 'none';
+  if (stop.voiceToggle) {
+    voiceChoice = 0;
+    document.getElementById('voice-slider').value = 0;
+  }
+
   showScreen('stop');
   document.getElementById('screen-stop').scrollTop = 0;
 }
@@ -627,6 +657,32 @@ function ensureWwiseReady() {
   return true;
 }
 
+let voiceChoice = 0; // 0-100 blend position — Connolly's Shop Maura/Michael blend
+
+// Sends the current voiceChoice value to the Wwise engine, if it's
+// initialized. Safe to call even before audio starts — Wwise just
+// holds the RTPC value until the event is next posted.
+function applyVoiceChoiceRTPC(value) {
+  if (wwiseInitialized) {
+    Module.ccall('StreetSceal_SetVoiceChoice', null, ['number'], [value]);
+  }
+}
+
+// Called continuously while the slider is dragged (oninput, not just
+// onchange). Since voiceChoice drives a Blend Container in Wwise,
+// this crossfades Maura/Michael live, in real time — no need to
+// restart the event, since a blend container re-reads the RTPC
+// every audio frame rather than only at PostEvent time.
+function setVoiceChoice(value) {
+  voiceChoice = Number(value);
+  applyVoiceChoiceRTPC(voiceChoice);
+  // Two sliders exist (stop-detail screen and AR overlay) since audio
+  // for Wwise stops plays in both places — keep them in sync regardless
+  // of which one the person actually dragged.
+  document.getElementById('voice-slider').value = voiceChoice;
+  document.getElementById('voice-slider-ar').value = voiceChoice;
+}
+
 function playWwiseAudio(eventName) {
   if (!ensureWwiseReady()) return;
   // Always stop whatever was previously playing before posting a new
@@ -634,6 +690,11 @@ function playWwiseAudio(eventName) {
   // after a pause, so nothing frozen-in-place ever resumes unexpectedly
   // alongside a different stop's audio.
   Module.ccall('StreetSceal_StopAll', null, [], []);
+  // Set the RTPC before posting the event, so the correct blend
+  // position is already in effect when audio starts.
+  if (currentStop && currentStop.voiceToggle) {
+    applyVoiceChoiceRTPC(voiceChoice);
+  }
   Module.ccall(eventName, null, [], []);
 }
 
@@ -683,6 +744,13 @@ function stopWaveformAnimation() {
 function launchAR() {
   if (!currentStop) return;
   logEvent('ar', currentStop.id);
+
+  // Show the voice slider in the AR overlay too, since that's where
+  // Wwise stops actually auto-start audio (see below).
+  document.getElementById('voice-toggle-block-ar').style.display = currentStop.voiceToggle ? 'block' : 'none';
+  if (currentStop.voiceToggle) {
+    document.getElementById('voice-slider-ar').value = voiceChoice;
+  }
 
   // For Wwise stops, auto-start audio on AR launch — the button tap
   // counts as a user gesture, satisfying browser autoplay policy.
