@@ -922,7 +922,22 @@ function closeAR() {
 }
 
 function stopARAudio() {
-  if (window._audio) {
+  if (currentStop && currentStop.wwiseEvent) {
+    // Wwise-driven stop (St Peter's, Connolly's Shop) — toggle via the
+    // same audioPlaying state and play/pause functions the main screen's
+    // button uses, so AR and the stop-detail screen never fall out of sync.
+    audioPlaying = !audioPlaying;
+    document.getElementById('ar-audio-btn').textContent = audioPlaying ? '⏸ Audio' : '▶ Audio';
+    document.getElementById('play-icon').style.display = audioPlaying ? 'none' : 'block';
+    document.getElementById('pause-icon').style.display = audioPlaying ? 'block' : 'none';
+    if (audioPlaying) {
+      playWwiseAudio(currentStop.wwiseEvent);
+      animateWaveform();
+    } else {
+      pauseWwiseTick();
+      stopWaveformAnimation();
+    }
+  } else if (window._audio) {
     if (window._audio.paused) {
       window._audio.play().catch(e => console.warn(e));
       document.getElementById('ar-audio-btn').textContent = '⏸ Audio';
