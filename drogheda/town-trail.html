@@ -84,14 +84,6 @@
       <p class="street-view-caption">Drag to look around — this is the real street, today.</p>
     </div>
 
-    <div class="voice-toggle-block" id="voice-toggle-block" style="display:none;">
-      <p class="audio-label">Whose voice?</p>
-      <div class="voice-switch-row">
-        <button class="voice-switch-btn active" id="voice-btn-maura" onclick="switchVoice('maura')">Maura</button>
-        <button class="voice-switch-btn" id="voice-btn-michael" onclick="switchVoice('michael')">Michael</button>
-      </div>
-    </div>
-
     <div class="audio-block">
       <p class="audio-label">Archive audio</p>
       <div class="audio-player">
@@ -139,12 +131,6 @@
     <div class="ar-frame-corner bl"></div>
     <div class="ar-frame-corner br"></div>
     <p class="ar-hint">Aim camera at the image</p>
-    <div class="voice-toggle-block ar-voice-toggle" id="voice-toggle-block-ar" style="display:none;">
-      <div class="voice-switch-row">
-        <button class="voice-switch-btn active" id="voice-btn-maura-ar" onclick="switchVoice('maura')">Maura</button>
-        <button class="voice-switch-btn" id="voice-btn-michael-ar" onclick="switchVoice('michael')">Michael</button>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -185,14 +171,14 @@ const STOPS = [
     subtitle: 'Shop Street, Drogheda · now Wogan Interiors',
     era: '1940s–60s',
     description: 'Commerce, community, memory',
-    lore: `"You'd go in for one thing and come out knowing everything that had happened in the town that week." — Maura Byrne, Louth Archives OHA/0112(1).`,
-    text: `Michael Byrne worked in Connolly Brothers on Shop Street. His wife Maura remembers the rituals of the town as it was: the St John's Eve bonfires, the rhythms of a community mapped onto its streets and seasons. This work draws directly from their recorded testimony, held in the Louth County Archives.`,
-    audioLabel: 'Maura & Michael Byrne — Louth Archives OHA/0112(1)',
+    lore: `"They sell groceries, or they sell meals and everything, and machinery to the farmer." — Michael Byrne, Louth Archives OHA/0112(1).`,
+    text: `Michael Byrne worked in Connolly Brothers on Shop Street. His recorded testimony traces the rhythms of a community mapped onto its streets and seasons. This work draws directly from his recorded testimony, held alongside his wife Maura's in the Louth County Archives.`,
+    audioLabel: 'Michael Byrne — Louth Archives OHA/0112(1)',
     audioDuration: '6:38',
     lat: 53.713760,
     lng: -6.349491,
     tags: ['oral history', 'archive', 'commerce'],
-    voiceMixStop: true, // vertical mixing: soundscape loops throughout, Maura/Michael switch via independent Play/Stop events (parked the RTPC blend approach — see wwise_support_ticket.md)
+    wwiseEvent: 'StreetSceal_PlayMichael', // combined ambience + randomized clips in one Playlist Container, matching St Peter's exactly. Maura's streamed audio was dropped after testing showed it unreliable in the compiled Web build (see wwise_support_ticket.md)
     imageSrc: './targets/connollys-shop.mind'
   },
   {
@@ -476,15 +462,6 @@ function openStop(id) {
   renderLocationImage(stop);
   renderStreetView(stop);
 
-  // Voice buttons only apply to Connolly's Shop-style voice-mix stops.
-  // Reset to Maura each time the stop is opened fresh.
-  document.getElementById('voice-toggle-block').style.display = stop.voiceMixStop ? 'block' : 'none';
-  if (stop.voiceMixStop) {
-    currentVoice = 'maura';
-    document.getElementById('voice-btn-maura').classList.add('active');
-    document.getElementById('voice-btn-michael').classList.remove('active');
-  }
-
   showScreen('stop');
   document.getElementById('screen-stop').scrollTop = 0;
 }
@@ -596,46 +573,6 @@ function buildWaveform() {
 
 let wwiseInitialized = false;
 let wwiseTickInterval = null;
-let currentVoice = 'maura'; // which voice is active at Connolly's Shop — 'maura' or 'michael'
-
-// Switches the active voice at Connolly's Shop: stops whichever voice
-// was playing, starts the other, and keeps both button pairs (stop-detail
-// screen and AR overlay) in sync. Soundscape is untouched by this —
-// it just keeps looping underneath, started once when the stop opens.
-function switchVoice(voice) {
-  if (voice === currentVoice) return; // already playing, nothing to do
-  if (!wwiseInitialized) {
-    currentVoice = voice; // still update UI/state even if engine isn't up yet
-  } else if (voice === 'michael') {
-    Module.ccall('StreetSceal_StopMaura', null, [], []);
-    Module.ccall('StreetSceal_PlayMichael', null, [], []);
-    currentVoice = 'michael';
-  } else {
-    Module.ccall('StreetSceal_StopMichael', null, [], []);
-    Module.ccall('StreetSceal_PlayMaura', null, [], []);
-    currentVoice = 'maura';
-  }
-  document.getElementById('voice-btn-maura').classList.toggle('active', currentVoice === 'maura');
-  document.getElementById('voice-btn-michael').classList.toggle('active', currentVoice === 'michael');
-  document.getElementById('voice-btn-maura-ar').classList.toggle('active', currentVoice === 'maura');
-  document.getElementById('voice-btn-michael-ar').classList.toggle('active', currentVoice === 'michael');
-}
-
-// Starts Connolly's Shop: soundscape loops continuously, Maura starts
-// as the default voice. Called on AR launch (the user gesture there
-// satisfies the browser's autoplay policy).
-function startVoiceMix() {
-  if (!ensureWwiseReady()) return;
-  Module.ccall('StreetSceal_StopAll', null, [], []);
-  currentVoice = 'maura';
-  document.getElementById('voice-btn-maura').classList.add('active');
-  document.getElementById('voice-btn-michael').classList.remove('active');
-  document.getElementById('voice-btn-maura-ar').classList.add('active');
-  document.getElementById('voice-btn-michael-ar').classList.remove('active');
-  Module.ccall('StreetSceal_PlaySoundscape', null, [], []);
-  Module.ccall('StreetSceal_PlayMaura', null, [], []);
-}
-
 function toggleAudio() {
   audioPlaying = !audioPlaying;
   document.getElementById('play-icon').style.display = audioPlaying ? 'none' : 'block';
@@ -643,9 +580,7 @@ function toggleAudio() {
 
   if (audioPlaying) {
     logEvent('audio', currentStop.id);
-    if (currentStop.voiceMixStop) {
-      startVoiceMix();
-    } else if (currentStop.wwiseEvent) {
+    if (currentStop.wwiseEvent) {
       playWwiseAudio(currentStop.wwiseEvent);
     } else if (currentStop.audioSrc) {
         if (!window._audio) window._audio = new Audio();
@@ -661,7 +596,7 @@ function toggleAudio() {
     }, 1000);
   } else {
     if (window._audio) window._audio.pause();
-    if (currentStop && (currentStop.wwiseEvent || currentStop.voiceMixStop)) pauseWwiseTick();
+    if (currentStop && currentStop.wwiseEvent) pauseWwiseTick();
     clearInterval(audioTick);
     stopWaveformAnimation();
   }
@@ -748,24 +683,10 @@ function launchAR() {
   if (!currentStop) return;
   logEvent('ar', currentStop.id);
 
-  // Show the voice buttons in the AR overlay too, since that's where
-  // Wwise voice-mix stops actually auto-start audio (see below).
-  document.getElementById('voice-toggle-block-ar').style.display = currentStop.voiceMixStop ? 'block' : 'none';
-  if (currentStop.voiceMixStop) {
-    document.getElementById('voice-btn-maura-ar').classList.toggle('active', currentVoice === 'maura');
-    document.getElementById('voice-btn-michael-ar').classList.toggle('active', currentVoice === 'michael');
-  }
-
   // For Wwise stops, auto-start audio on AR launch — the button tap
   // counts as a user gesture, satisfying browser autoplay policy.
   // Image-tracking stops handle audio via their own target-detection trigger.
-  if (currentStop.voiceMixStop && !audioPlaying) {
-    audioPlaying = true;
-    document.getElementById('play-icon').style.display = 'none';
-    document.getElementById('pause-icon').style.display = 'block';
-    startVoiceMix();
-    animateWaveform();
-  } else if (currentStop.wwiseEvent && !audioPlaying) {
+  if (currentStop.wwiseEvent && !audioPlaying) {
     audioPlaying = true;
     document.getElementById('play-icon').style.display = 'none';
     document.getElementById('pause-icon').style.display = 'block';
