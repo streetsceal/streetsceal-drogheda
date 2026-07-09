@@ -85,16 +85,10 @@
     </div>
 
     <div class="voice-toggle-block" id="voice-toggle-block" style="display:none;">
-      <p class="audio-label">Drag to switch between Maura &amp; Michael's memories</p>
-      <div class="voice-slider-row">
-        <span class="voice-slider-label">Maura</span>
-        <span class="voice-drag-cue">‹</span>
-        <input type="range" min="0" max="100" value="0" step="1"
-               class="voice-slider" id="voice-slider"
-               oninput="setVoiceChoice(this.value)"
-               aria-label="Drag to blend between Maura and Michael's voice">
-        <span class="voice-drag-cue">›</span>
-        <span class="voice-slider-label">Michael</span>
+      <p class="audio-label">Choose a testimony to hear over the soundscape</p>
+      <div class="voice-choice-row">
+        <button class="voice-choice-btn" id="voice-btn-maura" onclick="selectVoice('maura')">Maura's story</button>
+        <button class="voice-choice-btn" id="voice-btn-michael" onclick="selectVoice('michael')">Michael's story</button>
       </div>
     </div>
 
@@ -146,16 +140,10 @@
     <div class="ar-frame-corner br"></div>
     <p class="ar-hint">Aim camera at the image</p>
     <div class="voice-toggle-block ar-voice-toggle" id="voice-toggle-block-ar" style="display:none;">
-      <p class="voice-drag-label-ar">Drag to switch voices</p>
-      <div class="voice-slider-row">
-        <span class="voice-slider-label">Maura</span>
-        <span class="voice-drag-cue">‹</span>
-        <input type="range" min="0" max="100" value="0" step="1"
-               class="voice-slider" id="voice-slider-ar"
-               oninput="setVoiceChoice(this.value)"
-               aria-label="Drag to blend between Maura and Michael's voice">
-        <span class="voice-drag-cue">›</span>
-        <span class="voice-slider-label">Michael</span>
+      <p class="voice-drag-label-ar">Choose a testimony</p>
+      <div class="voice-choice-row">
+        <button class="voice-choice-btn" id="voice-btn-maura-ar" onclick="selectVoice('maura')">Maura's story</button>
+        <button class="voice-choice-btn" id="voice-btn-michael-ar" onclick="selectVoice('michael')">Michael's story</button>
       </div>
     </div>
   </div>
@@ -491,12 +479,18 @@ function openStop(id) {
   renderLocationImage(stop);
   renderStreetView(stop);
 
-  // Voice slider only applies to stops with a Maura/Michael RTPC choice.
-  // Reset to Maura (0) each time the stop is opened fresh.
+  // Voice buttons only apply to stops with a Maura/Michael RTPC choice.
+  // Reset to soundscape-only (no testimony selected) each time the
+  // stop is opened fresh — matches the intended "hear the artwork
+  // first" experience.
   document.getElementById('voice-toggle-block').style.display = stop.voiceToggle ? 'block' : 'none';
   if (stop.voiceToggle) {
-    voiceChoice = 0;
-    document.getElementById('voice-slider').value = 0;
+    voiceChoice = 50;
+    voiceSelected = null;
+    document.getElementById('voice-btn-maura').classList.remove('active');
+    document.getElementById('voice-btn-michael').classList.remove('active');
+    document.getElementById('voice-btn-maura-ar').classList.remove('active');
+    document.getElementById('voice-btn-michael-ar').classList.remove('active');
   }
 
   showScreen('stop');
@@ -663,7 +657,9 @@ function ensureWwiseReady() {
   return true;
 }
 
-let voiceChoice = 0; // 0-100 blend position — Connolly's Shop Maura/Michael blend
+let voiceChoice = 50; // 0-100 blend position — 50 sits in the gap between Maura's (0-45) and Michael's (48-100) curves, so this is silence-for-testimony/soundscape-only until a voice is chosen
+let voiceSelected = null; // 'maura' | 'michael' | null (soundscape only)
+let voiceAnimFrame = null;
 
 // Sends the current voiceChoice value to the Wwise engine, if it's
 // initialized. Safe to call even before audio starts — Wwise just
@@ -674,19 +670,43 @@ function applyVoiceChoiceRTPC(value) {
   }
 }
 
-// Called continuously while the slider is dragged (oninput, not just
-// onchange). Since voiceChoice drives a Blend Container in Wwise,
-// this crossfades Maura/Michael live, in real time — no need to
-// restart the event, since a blend container re-reads the RTPC
-// every audio frame rather than only at PostEvent time.
-function setVoiceChoice(value) {
-  voiceChoice = Number(value);
-  applyVoiceChoiceRTPC(voiceChoice);
-  // Two sliders exist (stop-detail screen and AR overlay) since audio
-  // for Wwise stops plays in both places — keep them in sync regardless
-  // of which one the person actually dragged.
-  document.getElementById('voice-slider').value = voiceChoice;
-  document.getElementById('voice-slider-ar').value = voiceChoice;
+// Smoothly animates voiceChoice from its current value to a target
+// (0 = full Maura, 50 = neither/soundscape only, 100 = full Michael)
+// over ~900ms, applying the RTPC every frame — since it's a live
+// Blend Container crossfade, this produces a real fade rather than
+// an abrupt jump.
+function animateVoiceChoice(target, durationMs = 900) {
+  if (voiceAnimFrame) cancelAnimationFrame(voiceAnimFrame);
+  const start = voiceChoice;
+  const startTime = performance.now();
+  function step(now) {
+    const t = Math.min((now - startTime) / durationMs, 1);
+    const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; // ease-in-out
+    voiceChoice = start + (target - start) * eased;
+    applyVoiceChoiceRTPC(voiceChoice);
+    if (t < 1) {
+      voiceAnimFrame = requestAnimationFrame(step);
+    } else {
+      voiceChoice = target;
+      applyVoiceChoiceRTPC(voiceChoice);
+      voiceAnimFrame = null;
+    }
+  }
+  voiceAnimFrame = requestAnimationFrame(step);
+}
+
+// Called by the Maura's Story / Michael's Story buttons. Fades the
+// chosen voice in (and the other out, since they're mutually
+// exclusive on the same 0-100 range) and keeps both button pairs
+// (stop-detail screen and AR overlay) in sync.
+function selectVoice(voice) {
+  if (voice === voiceSelected) return; // already selected, nothing to do
+  voiceSelected = voice;
+  animateVoiceChoice(voice === 'maura' ? 0 : 100);
+  document.getElementById('voice-btn-maura').classList.toggle('active', voice === 'maura');
+  document.getElementById('voice-btn-michael').classList.toggle('active', voice === 'michael');
+  document.getElementById('voice-btn-maura-ar').classList.toggle('active', voice === 'maura');
+  document.getElementById('voice-btn-michael-ar').classList.toggle('active', voice === 'michael');
 }
 
 function playWwiseAudio(eventName) {
@@ -751,11 +771,12 @@ function launchAR() {
   if (!currentStop) return;
   logEvent('ar', currentStop.id);
 
-  // Show the voice slider in the AR overlay too, since that's where
+  // Show the voice buttons in the AR overlay too, since that's where
   // Wwise stops actually auto-start audio (see below).
   document.getElementById('voice-toggle-block-ar').style.display = currentStop.voiceToggle ? 'block' : 'none';
   if (currentStop.voiceToggle) {
-    document.getElementById('voice-slider-ar').value = voiceChoice;
+    document.getElementById('voice-btn-maura-ar').classList.toggle('active', voiceSelected === 'maura');
+    document.getElementById('voice-btn-michael-ar').classList.toggle('active', voiceSelected === 'michael');
   }
 
   // For Wwise stops, auto-start audio on AR launch — the button tap
