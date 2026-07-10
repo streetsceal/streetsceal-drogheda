@@ -188,13 +188,13 @@ const STOPS = [
     description: 'Commerce, community, memory',
     lore: `"You'd go in for one thing and come out knowing everything that had happened in the town that week." — Maura Byrne, Louth Archives OHA/0112(1).`,
     text: `Michael Byrne worked in Connolly Brothers on Shop Street. His wife Maura remembers the rhythms of a community mapped onto its streets and seasons. This work draws directly from their recorded testimony, held in the Louth County Archives.`,
-    audioLabel: 'Maura & Michael Byrne — Louth Archives OHA/0112(1)',
+    audioLabel: "Soundscape, composed from Maura & Michael's testimony",
     audioDuration: '6:38',
     lat: 53.713760,
     lng: -6.349491,
     tags: ['oral history', 'archive', 'commerce'],
-    wwiseEvent: 'StreetSceal_PlayShop', // soundscape + Maura/Michael blend, live-scrubbed via voiceChoice RTPC — the originally-intended design, revived once the real root cause (mono downmix phase cancellation, not a platform bug) was found and fixed
-    voiceToggle: true, // shows the Maura/Michael blend slider and drives the voiceChoice RTPC
+    wwiseSoundscapeEvent: 'StreetSceal_PlaySoundscape', // ambient bed, independently playable
+    voiceToggle: true, // shows the Maura/Michael buttons, each independently playable via the testimony event + voiceChoice RTPC
     imageSrc: './targets/connollys-shop.mind',
     locationImage: './assets/images/wogans.jpg'
   },
@@ -479,13 +479,12 @@ function openStop(id) {
   renderLocationImage(stop);
   renderStreetView(stop);
 
-  // Voice buttons only apply to stops with a Maura/Michael RTPC choice.
-  // Reset to soundscape-only (no testimony selected) each time the
-  // stop is opened fresh — matches the intended "hear the artwork
-  // first" experience.
+  // Voice buttons only apply to stops with an independent Maura/Michael
+  // testimony choice. Reset to "not playing, no voice selected" each
+  // time the stop is opened fresh — all three (soundscape, Maura,
+  // Michael) start silent and are opted into individually.
   document.getElementById('voice-toggle-block').style.display = stop.voiceToggle ? 'block' : 'none';
   if (stop.voiceToggle) {
-    voiceChoice = 50;
     voiceSelected = null;
     document.getElementById('voice-btn-maura').classList.remove('active');
     document.getElementById('voice-btn-michael').classList.remove('active');
@@ -605,6 +604,33 @@ function buildWaveform() {
 let wwiseInitialized = false;
 let wwiseTickInterval = null;
 function toggleAudio() {
+  // Split architecture (Connolly's Shop): this round button controls
+  // soundscape only, fully independently of the Maura/Michael testimony
+  // buttons — each of the three (soundscape, Maura, Michael) is now
+  // separately startable/stoppable, per user testing feedback.
+  if (currentStop.wwiseSoundscapeEvent) {
+    if (!ensureWwiseReady()) return;
+    audioPlaying = !audioPlaying;
+    document.getElementById('play-icon').style.display = audioPlaying ? 'none' : 'block';
+    document.getElementById('pause-icon').style.display = audioPlaying ? 'block' : 'none';
+    if (audioPlaying) {
+      logEvent('audio', currentStop.id);
+      Module.ccall('StreetSceal_PlaySoundscape', null, [], []);
+      animateWaveform();
+      audioTick = setInterval(() => {
+        audioSeconds++;
+        const m = Math.floor(audioSeconds / 60);
+        const s = String(audioSeconds % 60).padStart(2, '0');
+        document.getElementById('audio-dur').textContent = m + ':' + s;
+      }, 1000);
+    } else {
+      Module.ccall('StreetSceal_StopSoundscape', null, [], []);
+      clearInterval(audioTick);
+      stopWaveformAnimation();
+    }
+    return;
+  }
+
   audioPlaying = !audioPlaying;
   document.getElementById('play-icon').style.display = audioPlaying ? 'none' : 'block';
   document.getElementById('pause-icon').style.display = audioPlaying ? 'block' : 'none';
@@ -657,8 +683,8 @@ function ensureWwiseReady() {
   return true;
 }
 
-let voiceChoice = 50; // 0-100 blend position — 50 sits in the gap between Maura's (0-45) and Michael's (48-100) curves, so this is silence-for-testimony/soundscape-only until a voice is chosen
-let voiceSelected = null; // 'maura' | 'michael' | null (soundscape only)
+let voiceChoice = 0; // 0-100 blend position within the testimony event — 0 = Maura, 100 = Michael
+let voiceSelected = null; // 'maura' | 'michael' | null (testimony not currently playing)
 let voiceAnimFrame = null;
 
 // Sends the current voiceChoice value to the Wwise engine, if it's
@@ -671,10 +697,12 @@ function applyVoiceChoiceRTPC(value) {
 }
 
 // Smoothly animates voiceChoice from its current value to a target
-// (0 = full Maura, 50 = neither/soundscape only, 100 = full Michael)
-// over ~900ms, applying the RTPC every frame — since it's a live
-// Blend Container crossfade, this produces a real fade rather than
-// an abrupt jump.
+// (0 = full Maura, 100 = full Michael) over ~900ms, applying the RTPC
+// every frame — since it's a live Blend Container crossfade, this
+// produces a real fade rather than an abrupt jump. Only meaningful
+// while testimony is already playing (switching between the two
+// voices) — starting fresh sets the RTPC directly instead, see
+// selectVoice.
 function animateVoiceChoice(target, durationMs = 900) {
   if (voiceAnimFrame) cancelAnimationFrame(voiceAnimFrame);
   const start = voiceChoice;
@@ -695,19 +723,37 @@ function animateVoiceChoice(target, durationMs = 900) {
   voiceAnimFrame = requestAnimationFrame(step);
 }
 
-// Called by the Maura's Story / Michael's Story buttons. Fades the
-// chosen voice in (and the other out, since they're mutually
-// exclusive on the same 0-100 range) and keeps both button pairs
-// (stop-detail screen and AR overlay) in sync. A second click on the
-// already-active voice deselects it, fading back to soundscape-only —
-// the way back to "just the artwork" without leaving the stop.
+// Called by the Maura's Story / Michael's Story buttons. Testimony is
+// now a fully independent event from soundscape (per user testing
+// feedback — all three should be startable/stoppable on their own):
+// - Tapping a voice when testimony isn't playing starts it fresh, set
+//   to that voice.
+// - Tapping the OTHER voice while testimony is already playing just
+//   crossfades live via the RTPC — no need to restart the event.
+// - Tapping the SAME, already-active voice again stops testimony
+//   entirely (with a fade, handled in main.cpp), the way back to
+//   silence for testimony without needing to leave the stop.
 function selectVoice(voice) {
+  if (!ensureWwiseReady()) return;
   if (voice === voiceSelected) {
+    Module.ccall('StreetSceal_StopTestimony', null, [], []);
     voiceSelected = null;
-    animateVoiceChoice(50);
-  } else {
+  } else if (voiceSelected === null) {
+    // Not currently playing — set the RTPC to the chosen voice BEFORE
+    // posting the event fresh, with a couple of ticks in between so
+    // the value is fully committed before the blend container makes
+    // its initial voice selection (same reasoning/pattern as the
+    // earlier "Maura audible immediately" fix).
+    voiceChoice = voice === 'maura' ? 0 : 100;
+    applyVoiceChoiceRTPC(voiceChoice);
+    Module.ccall('StreetSceal_Tick', null, [], []);
+    Module.ccall('StreetSceal_Tick', null, [], []);
+    Module.ccall('StreetSceal_PlayTestimony', null, [], []);
     voiceSelected = voice;
+  } else {
+    // Already playing the other voice — live crossfade, no restart.
     animateVoiceChoice(voice === 'maura' ? 0 : 100);
+    voiceSelected = voice;
   }
   document.getElementById('voice-btn-maura').classList.toggle('active', voiceSelected === 'maura');
   document.getElementById('voice-btn-michael').classList.toggle('active', voiceSelected === 'michael');
@@ -720,20 +766,12 @@ function playWwiseAudio(eventName) {
   // Always stop whatever was previously playing before posting a new
   // event — covers both switching stops and resuming the same stop
   // after a pause, so nothing frozen-in-place ever resumes unexpectedly
-  // alongside a different stop's audio.
+  // alongside a different stop's audio. (Used by St Peter's single-
+  // event path only — Connolly's Shop's split soundscape/testimony
+  // controls call their own dedicated functions instead, see toggleAudio
+  // and selectVoice, since a blunt StopAll here would wrongly kill
+  // whichever of the two isn't the one currently being toggled.)
   Module.ccall('StreetSceal_StopAll', null, [], []);
-  // Set the RTPC before posting the event, so the correct blend
-  // position is already in effect when audio starts. A couple of
-  // ticks in between give the engine a moment to fully commit the
-  // value — without this, the blend container's very first voice
-  // selection could briefly use a stale/default RTPC value (observed:
-  // Maura audible immediately on Play instead of the intended
-  // soundscape-only starting state).
-  if (currentStop && currentStop.voiceToggle) {
-    applyVoiceChoiceRTPC(voiceChoice);
-    Module.ccall('StreetSceal_Tick', null, [], []);
-    Module.ccall('StreetSceal_Tick', null, [], []);
-  }
   Module.ccall(eventName, null, [], []);
 }
 
@@ -795,7 +833,17 @@ function launchAR() {
   // For Wwise stops, auto-start audio on AR launch — the button tap
   // counts as a user gesture, satisfying browser autoplay policy.
   // Image-tracking stops handle audio via their own target-detection trigger.
-  if (currentStop.wwiseEvent && !audioPlaying) {
+  // Split-architecture stops (Connolly's Shop) only auto-start soundscape —
+  // Maura/Michael stay fully opt-in via their own buttons.
+  if (currentStop.wwiseSoundscapeEvent && !audioPlaying) {
+    if (ensureWwiseReady()) {
+      audioPlaying = true;
+      document.getElementById('play-icon').style.display = 'none';
+      document.getElementById('pause-icon').style.display = 'block';
+      Module.ccall('StreetSceal_PlaySoundscape', null, [], []);
+      animateWaveform();
+    }
+  } else if (currentStop.wwiseEvent && !audioPlaying) {
     audioPlaying = true;
     document.getElementById('play-icon').style.display = 'none';
     document.getElementById('pause-icon').style.display = 'block';
@@ -956,10 +1004,26 @@ function closeAR() {
 }
 
 function stopARAudio() {
-  if (currentStop && currentStop.wwiseEvent) {
-    // Wwise-driven stop (St Peter's, Connolly's Shop) — toggle via the
-    // same audioPlaying state and play/pause functions the main screen's
-    // button uses, so AR and the stop-detail screen never fall out of sync.
+  if (currentStop && currentStop.wwiseSoundscapeEvent) {
+    // Split architecture (Connolly's Shop) — this button controls
+    // soundscape only, independently of Maura/Michael's testimony,
+    // same as the round button on the stop-detail screen.
+    if (!ensureWwiseReady()) return;
+    audioPlaying = !audioPlaying;
+    document.getElementById('ar-audio-btn').textContent = audioPlaying ? '⏸ Audio' : '▶ Audio';
+    document.getElementById('play-icon').style.display = audioPlaying ? 'none' : 'block';
+    document.getElementById('pause-icon').style.display = audioPlaying ? 'block' : 'none';
+    if (audioPlaying) {
+      Module.ccall('StreetSceal_PlaySoundscape', null, [], []);
+      animateWaveform();
+    } else {
+      Module.ccall('StreetSceal_StopSoundscape', null, [], []);
+      stopWaveformAnimation();
+    }
+  } else if (currentStop && currentStop.wwiseEvent) {
+    // Wwise-driven stop (St Peter's) — toggle via the same audioPlaying
+    // state and play/pause functions the main screen's button uses, so
+    // AR and the stop-detail screen never fall out of sync.
     audioPlaying = !audioPlaying;
     document.getElementById('ar-audio-btn').textContent = audioPlaying ? '⏸ Audio' : '▶ Audio';
     document.getElementById('play-icon').style.display = audioPlaying ? 'none' : 'block';
