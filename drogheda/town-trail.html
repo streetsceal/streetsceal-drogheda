@@ -93,7 +93,7 @@
     </div>
 
     <div class="audio-block">
-      <p class="audio-label">Archive audio</p>
+      <p class="audio-label" id="audio-label">Archive audio</p>
       <div class="audio-player">
         <button class="audio-play-btn" onclick="toggleAudio()" id="audio-btn" aria-label="Play">
           <svg id="play-icon" width="14" height="16" viewBox="0 0 14 16" fill="none">
@@ -473,6 +473,7 @@ function openStop(id) {
   document.getElementById('detail-subtitle').textContent = stop.description;
   document.getElementById('detail-lore').textContent = stop.lore;
   document.getElementById('detail-text').textContent = stop.text;
+  document.getElementById('audio-label').textContent = stop.audioLabel || 'Archive audio';
   document.getElementById('audio-dur').textContent = stop.audioDuration;
   buildWaveform();
   resetAudio();
