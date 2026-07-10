@@ -192,6 +192,19 @@ const STOPS = [
     audioDuration: '6:38',
     lat: 53.713760,
     lng: -6.349491,
+    streetView: {
+      // Using the shop's own coordinates for both viewpoint and target —
+      // StreetViewService searches a 30m radius for the nearest real
+      // panorama and auto-computes heading toward the target, so this
+      // doesn't need to be pixel-perfect. Worth checking the resulting
+      // angle once live and nudging viewpointLat/Lng if it's not facing
+      // the shopfront cleanly (see St Laurence's Gate for an example of
+      // a refined viewpoint).
+      viewpointLat: 53.713760,
+      viewpointLng: -6.349491,
+      targetLat: 53.713760,
+      targetLng: -6.349491
+    },
     tags: ['oral history', 'archive', 'commerce'],
     wwiseSoundscapeEvent: 'StreetSceal_PlaySoundscape', // ambient bed, independently playable
     voiceToggle: true, // shows the Maura/Michael buttons, each independently playable via the testimony event + voiceChoice RTPC
