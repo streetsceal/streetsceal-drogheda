@@ -698,15 +698,21 @@ function animateVoiceChoice(target, durationMs = 900) {
 // Called by the Maura's Story / Michael's Story buttons. Fades the
 // chosen voice in (and the other out, since they're mutually
 // exclusive on the same 0-100 range) and keeps both button pairs
-// (stop-detail screen and AR overlay) in sync.
+// (stop-detail screen and AR overlay) in sync. A second click on the
+// already-active voice deselects it, fading back to soundscape-only —
+// the way back to "just the artwork" without leaving the stop.
 function selectVoice(voice) {
-  if (voice === voiceSelected) return; // already selected, nothing to do
-  voiceSelected = voice;
-  animateVoiceChoice(voice === 'maura' ? 0 : 100);
-  document.getElementById('voice-btn-maura').classList.toggle('active', voice === 'maura');
-  document.getElementById('voice-btn-michael').classList.toggle('active', voice === 'michael');
-  document.getElementById('voice-btn-maura-ar').classList.toggle('active', voice === 'maura');
-  document.getElementById('voice-btn-michael-ar').classList.toggle('active', voice === 'michael');
+  if (voice === voiceSelected) {
+    voiceSelected = null;
+    animateVoiceChoice(50);
+  } else {
+    voiceSelected = voice;
+    animateVoiceChoice(voice === 'maura' ? 0 : 100);
+  }
+  document.getElementById('voice-btn-maura').classList.toggle('active', voiceSelected === 'maura');
+  document.getElementById('voice-btn-michael').classList.toggle('active', voiceSelected === 'michael');
+  document.getElementById('voice-btn-maura-ar').classList.toggle('active', voiceSelected === 'maura');
+  document.getElementById('voice-btn-michael-ar').classList.toggle('active', voiceSelected === 'michael');
 }
 
 function playWwiseAudio(eventName) {
@@ -717,9 +723,16 @@ function playWwiseAudio(eventName) {
   // alongside a different stop's audio.
   Module.ccall('StreetSceal_StopAll', null, [], []);
   // Set the RTPC before posting the event, so the correct blend
-  // position is already in effect when audio starts.
+  // position is already in effect when audio starts. A couple of
+  // ticks in between give the engine a moment to fully commit the
+  // value — without this, the blend container's very first voice
+  // selection could briefly use a stale/default RTPC value (observed:
+  // Maura audible immediately on Play instead of the intended
+  // soundscape-only starting state).
   if (currentStop && currentStop.voiceToggle) {
     applyVoiceChoiceRTPC(voiceChoice);
+    Module.ccall('StreetSceal_Tick', null, [], []);
+    Module.ccall('StreetSceal_Tick', null, [], []);
   }
   Module.ccall(eventName, null, [], []);
 }
