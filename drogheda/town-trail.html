@@ -109,6 +109,11 @@
       </div>
     </div>
 
+    <div class="callout-block" id="callout-block" style="display:none;">
+  <p class="audio-label">Got a story of your own?</p>
+  <a class="all-trails-link" href="contact.html?stop=connollys-shop">Got a Connolly's story? Tell us →</a>
+</div>
+
     <button class="ar-launch-btn" onclick="launchAR()">
       <svg class="ar-icon" viewBox="0 0 24 24" fill="none" stroke="#f3ecd9" stroke-width="1.5">
         <path d="M2 8V4h4M18 4h4v4M2 16v4h4M18 20h4v-4"/>
@@ -208,6 +213,7 @@ const STOPS = [
     tags: ['oral history', 'archive', 'commerce'],
     wwiseSoundscapeEvent: 'StreetSceal_PlaySoundscape', // ambient bed, independently playable
     voiceToggle: true, // shows the Maura/Michael buttons, each independently playable via the testimony event + voiceChoice RTPC
+    contactCallout: true, // shows "Got a Connolly's story? Tell us" link 
     imageSrc: './targets/connollys-shop.mind',
     locationImage: './assets/images/wogans.jpg'
   },
@@ -498,6 +504,7 @@ function openStop(id) {
   // time the stop is opened fresh — all three (soundscape, Maura,
   // Michael) start silent and are opted into individually.
   document.getElementById('voice-toggle-block').style.display = stop.voiceToggle ? 'block' : 'none';
+  document.getElementById('callout-block').style.display = stop.contactCallout ? 'block' : 'none';
   if (stop.voiceToggle) {
     voiceSelected = null;
     document.getElementById('voice-btn-maura').classList.remove('active');
