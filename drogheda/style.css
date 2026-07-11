@@ -636,6 +636,25 @@ a-scene { position: absolute; inset: 0; }
 ::-webkit-scrollbar { width: 2px; }
 ::-webkit-scrollbar-thumb { background: var(--rust); }
 
+/* ── Contact callout (e.g. Connolly's Shop → Share a memory) ──── */
+.callout-block {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+.callout-prompt {
+  font-family: var(--body);
+  font-style: italic;
+  color: var(--paper-muted);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+.callout-btn {
+  display: inline-block;
+  text-decoration: none;
+}
+
 /* ── Voice choice buttons (Connolly's Shop — Maura/Michael testimony) ── */
 .voice-toggle-block { margin: 1.25rem 0; }
 .voice-choice-row {
