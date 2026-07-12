@@ -186,7 +186,8 @@ const STOPS = [
       viewpointLat: 53.7150831,
       viewpointLng: -6.353659,
       targetLat: 53.7149875,
-      targetLng: -6.3537651
+      targetLng: -6.3537651,
+      headingOffset: 0 // very close already — nudge by a few degrees (+/-) once you can see it live
     },
     tags: ['oral history', 'literary', '1963'],
     // In a real build: audioSrc points to your actual .mp3 file
@@ -243,13 +244,11 @@ const STOPS = [
     lat: 53.711665,
     lng: -6.349454,
     streetView: {
-      // Millmount is a raised mound/museum site set back from the road —
-      // the nearest real panorama may be some distance away and could
-      // face the wrong direction entirely. Worth checking this one first
-      // once live, and adjusting to a nearby road-facing viewpoint if the
-      // auto-result looks wrong, rather than assuming it'll just work.
-      viewpointLat: 53.711665,
-      viewpointLng: -6.349454,
+      // Viewpoint confirmed via Pegman drop, 12/07/2026 (pano id
+      // 2GvXTOLDTNRQBnfQ2nQ_Hw) — previous coordinate was pinpointing too
+      // tight/close; this one looks at the mound properly from the street.
+      viewpointLat: 53.7117103,
+      viewpointLng: -6.3501919,
       targetLat: 53.711665,
       targetLng: -6.349454
     },
@@ -673,7 +672,12 @@ function renderStreetView(stop) {
           panorama.setPano(data.location.pano);
           const panoLocation = data.location.latLng;
           const targetLocation = new google.maps.LatLng(sv.targetLat, sv.targetLng);
-          const heading = google.maps.geometry.spherical.computeHeading(panoLocation, targetLocation);
+          const heading = google.maps.geometry.spherical.computeHeading(panoLocation, targetLocation)
+            + (sv.headingOffset || 0);
+          // headingOffset (degrees) is a manual nudge on top of the computed
+          // heading — positive rotates clockwise (right), negative rotates
+          // counter-clockwise (left). Add it to any stop's streetView block
+          // and adjust in small steps (5-15) once you can see the result.
           panorama.setPov({ heading, pitch: 0 });
         } else {
           // No panorama within range — fall back to the static photo
