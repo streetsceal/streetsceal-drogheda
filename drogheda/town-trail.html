@@ -178,13 +178,13 @@ const STOPS = [
     lat: 53.715028,
     lng: -6.353767,
     streetView: {
-      // Using the stop's own coordinates for both viewpoint and target, same
-      // as Connolly's shop — check the resulting angle once live and nudge
-      // viewpointLat/Lng if it's not facing the frontage cleanly.
-      viewpointLat: 53.715028,
-      viewpointLng: -6.353767,
-      targetLat: 53.715028,
-      targetLng: -6.353767
+      // Coordinates confirmed from Google Maps place page, 12/07/2026.
+      // Combined with the OUTDOOR source restriction above, this should
+      // now land on the street-level view rather than an indoor tour.
+      viewpointLat: 53.7149875,
+      viewpointLng: -6.3537651,
+      targetLat: 53.7149875,
+      targetLng: -6.3537651
     },
     tags: ['oral history', 'literary', '1963'],
     // In a real build: audioSrc points to your actual .mp3 file
@@ -655,7 +655,16 @@ function renderStreetView(stop) {
     });
 
     streetViewService.getPanorama(
-      { location: { lat: sv.viewpointLat, lng: sv.viewpointLng }, radius: 30 },
+      {
+        location: { lat: sv.viewpointLat, lng: sv.viewpointLng },
+        radius: 30,
+        source: google.maps.StreetViewSource.OUTDOOR
+        // Without this, StreetViewService searches ALL panorama sources,
+        // including indoor business photosphere tours — which is exactly
+        // what was happening at White Horse Hotel (landing in a corridor
+        // instead of the street). Restricting to OUTDOOR fixes this for
+        // every stop, not just that one.
+      },
       (data, status) => {
         if (status === 'OK') {
           panorama.setPano(data.location.pano);
