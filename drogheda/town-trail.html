@@ -121,7 +121,7 @@
 
     <div class="callout-block" id="callout-block" style="display:none;">
       <p class="callout-prompt" id="callout-prompt">Got a memory of this place?</p>
-      <a class="btn-primary callout-btn" id="callout-link" href="streetsceal-contact.html">Share your story</a>
+      <a class="btn-primary callout-btn" id="callout-link" href="/streetsceal-contact.html">Share your story</a>
     </div>
   </div>
 </div>
@@ -580,7 +580,7 @@ function openStop(id) {
   document.getElementById('callout-block').style.display = stop.contactCallout ? 'block' : 'none';
   if (stop.contactCallout) {
     document.getElementById('callout-prompt').textContent = 'Got a memory of ' + stop.name + '?';
-    document.getElementById('callout-link').setAttribute('href', 'streetsceal-contact.html?stop=' + stop.id);
+    document.getElementById('callout-link').setAttribute('href', '/streetsceal-contact.html?stop=' + stop.id);
   }
   if (stop.voiceToggle) {
     voiceSelected = null;

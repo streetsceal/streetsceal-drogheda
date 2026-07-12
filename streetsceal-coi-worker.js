@@ -22,6 +22,16 @@
  *    in TOWN_HOSTS below, plus its own /athlone/ folder in the repo
  *    and its own DNS record — no other changes needed.
  *
+ *    SHARED_PATHS is a narrow exception to this: a handful of files
+ *    (currently just the contact/callout form) are the same across
+ *    every town, live at repo root instead of inside a town folder,
+ *    and are reached identically from any town subdomain — checked
+ *    before the town-folder rewrite so they're never prefixed. Pages
+ *    that link to a shared path must use an absolute reference (e.g.
+ *    href="/streetsceal-contact.html", leading slash), since a plain
+ *    relative link from inside a town folder would resolve to that
+ *    folder, not repo root.
+ *
  * 2. CROSS-ORIGIN ISOLATION HEADERS (existing)
  *    GitHub Pages doesn't let you set custom HTTP response headers.
  *    Wwise's web build needs SharedArrayBuffer, which only works if
@@ -52,6 +62,15 @@ const TOWN_HOSTS = {
   // 'athlone.streetsceal.ie': { folder: '/athlone', rootPage: '/athlone/map.html' },
 };
 
+// Paths that are shared across every town rather than belonging to one
+// town's folder — e.g. the contact/callout form. These live at repo
+// root and are reached identically from any town subdomain, bypassing
+// the normal town-folder prefix below. Add a leading slash exactly as
+// the path appears in links (e.g. href="/streetsceal-contact.html").
+const SHARED_PATHS = [
+  '/streetsceal-contact.html',
+];
+
 // Paths (as they exist in the repo, i.e. AFTER the /drogheda prefix is
 // applied) that need the COOP/COEP cross-origin-isolation headers.
 const COI_PATHS = [
@@ -66,7 +85,13 @@ export default {
 
     // Work out which path to actually request from the origin.
     let originPath = url.pathname;
-    if (town) {
+    if (SHARED_PATHS.includes(url.pathname)) {
+      // Town-independent file — served from repo root regardless of
+      // which town subdomain the request arrived on. Must be checked
+      // before the town-folder rewrite below, or it would incorrectly
+      // get prefixed with e.g. /drogheda.
+      originPath = url.pathname;
+    } else if (town) {
       originPath = url.pathname === '/' ? town.rootPage : town.folder + url.pathname;
     }
 

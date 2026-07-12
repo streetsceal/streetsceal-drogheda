@@ -67,6 +67,12 @@
       <p class="location-image-caption" id="location-image-caption"></p>
     </div>
 
+    <div class="street-view-block" id="street-view-block" style="display:none;">
+      <p class="audio-label">Virtual visit — Street View</p>
+      <div class="street-view-frame" id="street-view-frame"></div>
+      <p class="street-view-caption">Drag to look around — this is the real street, today.</p>
+    </div>
+
     <div class="audio-block">
       <p class="audio-label">Archive audio</p>
       <div class="audio-player">
@@ -93,6 +99,11 @@
       Open in AR
     </button>
     <p class="ar-note">Point your camera at the image at this location.<br>Audio plays automatically.</p>
+
+    <div class="callout-block" id="callout-block" style="display:none;">
+      <p class="callout-prompt" id="callout-prompt">Got a memory of this place?</p>
+      <a class="btn-primary callout-btn" id="callout-link" href="/streetsceal-contact.html">Share your story</a>
+    </div>
   </div>
 </div>
 
@@ -143,6 +154,7 @@ const STOPS = [
     tags: ['town trail', 'linking stop', 'archaeology'],
     audioSrc: null,
     imageSrc: './targets/millmount.mind',
+    contactCallout: true,
     locationImage: './assets/images/millmount.jpg'
   },
   {
@@ -161,6 +173,7 @@ const STOPS = [
     tags: ['passage tomb', 'solstice', 'unesco'],
     audioSrc: null,
     imageSrc: null,
+    contactCallout: true,
     locationImage: './assets/images/newgrange.jpg'
   },
   {
@@ -179,6 +192,7 @@ const STOPS = [
     tags: ['passage tomb', 'megalithic art', 'unesco'],
     audioSrc: null,
     imageSrc: null,
+    contactCallout: true,
     locationImage: './assets/images/knowth.jpg'
   },
   {
@@ -197,6 +211,7 @@ const STOPS = [
     tags: ['passage tomb', 'unesco', 'boyne valley'],
     audioSrc: null,
     imageSrc: null,
+    contactCallout: true,
     locationImage: './assets/images/dowth.jpg'
   },
   {
@@ -215,6 +230,7 @@ const STOPS = [
     tags: ['passage tomb', 'rock art', 'hidden gem'],
     audioSrc: null,
     imageSrc: null,
+    contactCallout: true,
     locationImage: './assets/images/fourknocks.jpg'
   },
   {
@@ -233,6 +249,7 @@ const STOPS = [
     tags: ['ceremonial', 'high kings', 'landscape'],
     audioSrc: null,
     imageSrc: null,
+    contactCallout: true,
     locationImage: './assets/images/hill-of-tara.jpg'
   },
   {
@@ -251,6 +268,7 @@ const STOPS = [
     tags: ['equinox'],
     audioSrc: null,
     imageSrc: null,
+    contactCallout: true,
     locationImage: './assets/images/loughcrew.jpg'
   }
 ];
@@ -408,15 +426,31 @@ function openStop(id) {
   buildWaveform();
   resetAudio();
   renderLocationImage(stop);
+  renderStreetView(stop);
+
+  document.getElementById('callout-block').style.display = stop.contactCallout ? 'block' : 'none';
+  if (stop.contactCallout) {
+    document.getElementById('callout-prompt').textContent = 'Got a memory of ' + stop.name + '?';
+    document.getElementById('callout-link').setAttribute('href', '/streetsceal-contact.html?stop=' + stop.id);
+  }
 
   showScreen('stop');
   document.getElementById('screen-stop').scrollTop = 0;
 }
 
 // ── Location image ──────────────────────────────────────────────────
+// Always renders the static photo first. If the stop also has Street
+// View data, renderStreetView() hides this block optimistically and
+// tries to load a live panorama — falling back to re-showing this same
+// static image (rather than a text placeholder) if no panorama is
+// found nearby. So every stop needs a locationImage as the safety net,
+// even ones that also have streetView data.
 function renderLocationImage(stop) {
+  const block = document.getElementById('location-image-block');
   const frame = document.getElementById('location-image-frame');
   const caption = document.getElementById('location-image-caption');
+
+  block.style.display = 'block';
 
   if (stop.locationImage) {
     frame.innerHTML = `<img src="${stop.locationImage}" alt="${stop.name}" loading="lazy">`;
@@ -425,6 +459,91 @@ function renderLocationImage(stop) {
     frame.innerHTML = `<div class="location-image-placeholder">Photo coming soon</div>`;
     caption.textContent = stop.subtitle;
   }
+}
+
+// ── Street View ──────────────────────────────────────────────────────
+// Only renders for stops with a streetView block in their data. Loads
+// the Google Maps JS API + Geometry library on first use and reuses it
+// for subsequent stops, rather than reloading the script every time.
+let googleMapsLoading = false;
+let googleMapsReady = false;
+const streetViewQueue = [];
+
+function loadGoogleMapsForStreetView(callback) {
+  if (googleMapsReady) { callback(); return; }
+  streetViewQueue.push(callback);
+  if (googleMapsLoading) return;
+  googleMapsLoading = true;
+
+  window.__onGoogleMapsReady = () => {
+    googleMapsReady = true;
+    streetViewQueue.forEach(cb => cb());
+    streetViewQueue.length = 0;
+  };
+
+  const script = document.createElement('script');
+  script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyASmpOeRPerSlZ7WcyEo_ecdFEAd4pIP3E&libraries=geometry&loading=async&callback=__onGoogleMapsReady';
+  script.async = true;
+  document.head.appendChild(script);
+}
+
+function renderStreetView(stop) {
+  const svBlock = document.getElementById('street-view-block');
+  const frame = document.getElementById('street-view-frame');
+  const imgBlock = document.getElementById('location-image-block');
+
+  if (!stop.streetView) {
+    svBlock.style.display = 'none';
+    return; // location-image-block was already rendered by renderLocationImage()
+  }
+
+  // Optimistically show Street View and hide the static photo — most
+  // stops will have real coverage. If the lookup below fails, we hide
+  // this block again and let the static image (already rendered) show
+  // through instead, rather than displaying a text placeholder.
+  svBlock.style.display = 'block';
+  imgBlock.style.display = 'none';
+  frame.innerHTML = ''; // clear any previous panorama before rendering a new one
+
+  loadGoogleMapsForStreetView(() => {
+    const sv = stop.streetView;
+    const streetViewService = new google.maps.StreetViewService();
+    const panorama = new google.maps.StreetViewPanorama(frame, {
+      position: { lat: sv.viewpointLat, lng: sv.viewpointLng },
+      pov: { heading: 0, pitch: 0 },
+      zoom: 1,
+      addressControl: false,
+      fullscreenControl: false,
+      motionTrackingControl: false
+    });
+
+    streetViewService.getPanorama(
+      {
+        location: { lat: sv.viewpointLat, lng: sv.viewpointLng },
+        radius: 15,
+        source: google.maps.StreetViewSource.OUTDOOR
+      },
+      (data, status) => {
+        if (status === 'OK') {
+          panorama.setPano(data.location.pano);
+          const panoLocation = data.location.latLng;
+          const targetLocation = new google.maps.LatLng(sv.targetLat, sv.targetLng);
+          const heading = google.maps.geometry.spherical.computeHeading(panoLocation, targetLocation)
+            + (sv.headingOffset || 0);
+          // headingOffset (degrees): positive rotates right, negative left.
+          const pitch = sv.pitchOffset || 0;
+          // pitchOffset (degrees): positive tilts up, negative tilts down.
+          panorama.setPov({ heading, pitch });
+        } else {
+          // No panorama within range — fall back to the static photo
+          // rendered by renderLocationImage(), rather than a dead-end
+          // text message.
+          svBlock.style.display = 'none';
+          imgBlock.style.display = 'block';
+        }
+      }
+    );
+  });
 }
 
 // ── Waveform (decorative — replace with real Web Audio in production) ─
