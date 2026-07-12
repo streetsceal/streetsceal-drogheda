@@ -177,6 +177,15 @@ const STOPS = [
     audioDuration: '4:12',
     lat: 53.715028,
     lng: -6.353767,
+    streetView: {
+      // Using the stop's own coordinates for both viewpoint and target, same
+      // as Connolly's shop — check the resulting angle once live and nudge
+      // viewpointLat/Lng if it's not facing the frontage cleanly.
+      viewpointLat: 53.715028,
+      viewpointLng: -6.353767,
+      targetLat: 53.715028,
+      targetLng: -6.353767
+    },
     tags: ['oral history', 'literary', '1963'],
     // In a real build: audioSrc points to your actual .mp3 file
     // imageSrc points to your .mind target file for AR tracking
@@ -231,6 +240,17 @@ const STOPS = [
     audioDuration: '3:20',
     lat: 53.711665,
     lng: -6.349454,
+    streetView: {
+      // Millmount is a raised mound/museum site set back from the road —
+      // the nearest real panorama may be some distance away and could
+      // face the wrong direction entirely. Worth checking this one first
+      // once live, and adjusting to a nearby road-facing viewpoint if the
+      // auto-result looks wrong, rather than assuming it'll just work.
+      viewpointLat: 53.711665,
+      viewpointLng: -6.349454,
+      targetLat: 53.711665,
+      targetLng: -6.349454
+    },
     tags: ['landscape', 'history', 'archaeology'],
     audioSrc: null,
     contactCallout: true,
@@ -283,6 +303,12 @@ The present church, rebuilt in Georgian style and consecrated in 1753, holds its
     wwiseEvent: 'StreetSceal_PlayStPeters', // flags this stop as using the Wwise engine instead of a plain audio file
     lat: 53.716747,
     lng: -6.350144,
+    streetView: {
+      viewpointLat: 53.716747,
+      viewpointLng: -6.350144,
+      targetLat: 53.716747,
+      targetLng: -6.350144
+    },
     tags: ['cromwell', 'siege', 'graves'],
     audioSrc: null,
     imageSrc: null,
@@ -304,6 +330,15 @@ In 1796, the growing community moved to a permanent convent on Cord Road, where 
     audioDuration: '0:00',
     lat: 53.717150,
     lng: -6.346015,
+    streetView: {
+      // Convent grounds set back from the road — like Millmount, the
+      // auto-picked viewpoint may end up some distance away or facing
+      // the wrong way. Check this one on-site before trusting it.
+      viewpointLat: 53.717150,
+      viewpointLng: -6.346015,
+      targetLat: 53.717150,
+      targetLng: -6.346015
+    },
     tags: ['relic', 'war of independence'],
     audioSrc: null,
     imageSrc: null,
@@ -323,6 +358,12 @@ In 1796, the growing community moved to a permanent convent on Cord Road, where 
     audioDuration: '0:00',
     lat: 53.715034,
     lng: -6.352422,
+    streetView: {
+      viewpointLat: 53.715034,
+      viewpointLng: -6.352422,
+      targetLat: 53.715034,
+      targetLng: -6.352422
+    },
     tags: ['shrine'],
     audioSrc: './audio/GoodLuckYoungSage.wav',
     contactCallout: true,
@@ -342,6 +383,12 @@ In 1796, the growing community moved to a permanent convent on Cord Road, where 
     audioDuration: '0:00',
     lat: 53.713810,
     lng: -6.348835,
+    streetView: {
+      viewpointLat: 53.713810,
+      viewpointLng: -6.348835,
+      targetLat: 53.713810,
+      targetLng: -6.348835
+    },
     tags: ['diaspora trail', 'linking stop', 'steampacket'],
     audioSrc: null,
     contactCallout: true,
@@ -529,19 +576,17 @@ function openStop(id) {
 }
 
 // ── Location image ──────────────────────────────────────────────────
-// Skips rendering for stops that have a Street View block instead —
-// while that's being finalised across the trail, only Laurence's Gate
-// currently has streetView data, so only that stop hides its static
-// photo. Every other stop keeps the static image exactly as before.
+// Always renders the static photo first. If the stop also has Street
+// View data, renderStreetView() hides this block optimistically and
+// tries to load a live panorama — falling back to re-showing this same
+// static image (rather than a text placeholder) if no panorama is
+// found nearby. So every stop needs a locationImage as the safety net,
+// even ones that also have streetView data.
 function renderLocationImage(stop) {
   const block = document.getElementById('location-image-block');
   const frame = document.getElementById('location-image-frame');
   const caption = document.getElementById('location-image-caption');
 
-  if (stop.streetView) {
-    block.style.display = 'none';
-    return;
-  }
   block.style.display = 'block';
 
   if (stop.locationImage) {
@@ -580,15 +625,21 @@ function loadGoogleMapsForStreetView(callback) {
 }
 
 function renderStreetView(stop) {
-  const block = document.getElementById('street-view-block');
+  const svBlock = document.getElementById('street-view-block');
   const frame = document.getElementById('street-view-frame');
+  const imgBlock = document.getElementById('location-image-block');
 
   if (!stop.streetView) {
-    block.style.display = 'none';
-    return;
+    svBlock.style.display = 'none';
+    return; // location-image-block was already rendered by renderLocationImage()
   }
 
-  block.style.display = 'block';
+  // Optimistically show Street View and hide the static photo — most
+  // stops will have real coverage. If the lookup below fails, we hide
+  // this block again and let the static image (already rendered) show
+  // through instead, rather than displaying a text placeholder.
+  svBlock.style.display = 'block';
+  imgBlock.style.display = 'none';
   frame.innerHTML = ''; // clear any previous panorama before rendering a new one
 
   loadGoogleMapsForStreetView(() => {
@@ -613,7 +664,11 @@ function renderStreetView(stop) {
           const heading = google.maps.geometry.spherical.computeHeading(panoLocation, targetLocation);
           panorama.setPov({ heading, pitch: 0 });
         } else {
-          frame.innerHTML = '<div class="location-image-placeholder">Street View unavailable at this location</div>';
+          // No panorama within range — fall back to the static photo
+          // rendered by renderLocationImage(), rather than a dead-end
+          // text message.
+          svBlock.style.display = 'none';
+          imgBlock.style.display = 'block';
         }
       }
     );
