@@ -181,6 +181,18 @@ const STOPS = [
     audioDuration: '0:00',
     lat: 53.694692,
     lng: -6.475402,
+    streetView: {
+      // Viewpoint confirmed via Pegman drop, 12/07/2026 (pano id
+      // xZymjaiySxqvFt-nL9fPcg). Target set to the place's own plotted
+      // coordinate from the same Maps link, slightly different from the
+      // stop's lat/lng above.
+      viewpointLat: 53.6933785,
+      viewpointLng: -6.4763912,
+      targetLat: 53.6947119,
+      targetLng: -6.4754917,
+      headingOffset: 0,
+      pitchOffset: 0
+    },
     tags: ['passage tomb', 'solstice', 'unesco'],
     audioSrc: null,
     imageSrc: null,
@@ -200,6 +212,20 @@ const STOPS = [
     audioDuration: '0:00',
     lat: 53.700958,
     lng: -6.490358,
+    streetView: {
+      // From a Google-hosted user photosphere, not a standard drag-around
+      // Street View (confirmed 12/07/2026, pano id CIHM0ogKEICAgIDkmM2iHA).
+      // Uncertain whether this resolves under the OUTDOOR-only restriction
+      // in renderStreetView() — if not, it'll gracefully fall back to the
+      // static locationImage below rather than showing nothing, so no harm
+      // in trying. Worth a visual check once live either way.
+      viewpointLat: 53.7015526,
+      viewpointLng: -6.4907455,
+      targetLat: 53.7051654,
+      targetLng: -6.4906243,
+      headingOffset: 0,
+      pitchOffset: 0
+    },
     tags: ['passage tomb', 'megalithic art', 'unesco'],
     audioSrc: null,
     imageSrc: null,
