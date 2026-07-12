@@ -120,8 +120,8 @@
     <p class="ar-note">Point your camera at the image at this location.<br>Audio plays automatically.</p>
 
     <div class="callout-block" id="callout-block" style="display:none;">
-      <p class="callout-prompt">Got a memory of Connolly's shop?</p>
-      <a class="btn-primary callout-btn" href="streetsceal-contact.html?stop=connollys-shop">Share your story</a>
+      <p class="callout-prompt" id="callout-prompt">Got a memory of this place?</p>
+      <a class="btn-primary callout-btn" id="callout-link" href="streetsceal-contact.html">Share your story</a>
     </div>
   </div>
 </div>
@@ -181,6 +181,7 @@ const STOPS = [
     // In a real build: audioSrc points to your actual .mp3 file
     // imageSrc points to your .mind target file for AR tracking
     audioSrc: './audio/white-horse.mp3',
+    contactCallout: true,
     imageSrc: './targets/white-horse.mind',
     locationImage: './assets/images/white-horse.jpg'
   },
@@ -232,6 +233,7 @@ const STOPS = [
     lng: -6.349454,
     tags: ['landscape', 'history', 'archaeology'],
     audioSrc: null,
+    contactCallout: true,
     imageSrc: './targets/millmount.mind',
     locationImage: './assets/images/millmount.jpg'
   },
@@ -259,6 +261,7 @@ const STOPS = [
     },
     tags: ['medieval', 'architecture', 'landscape'],
     audioSrc: null,
+    contactCallout: true,
     imageSrc: './targets/laurences-gate.mind',
     locationImage: './assets/images/laurence-gate.jpg'
   },
@@ -283,6 +286,7 @@ The present church, rebuilt in Georgian style and consecrated in 1753, holds its
     tags: ['cromwell', 'siege', 'graves'],
     audioSrc: null,
     imageSrc: null,
+    contactCallout: true,
     locationImage: './assets/images/st-peters-coi.jpg'
   },
   {
@@ -303,6 +307,7 @@ In 1796, the growing community moved to a permanent convent on Cord Road, where 
     tags: ['relic', 'war of independence'],
     audioSrc: null,
     imageSrc: null,
+    contactCallout: true,
     locationImage: null
   },
   {
@@ -320,6 +325,7 @@ In 1796, the growing community moved to a permanent convent on Cord Road, where 
     lng: -6.352422,
     tags: ['shrine'],
     audioSrc: './audio/GoodLuckYoungSage.wav',
+    contactCallout: true,
     imageSrc: './targets/st-peters.mind',
     locationImage: './assets/images/st-peters.jpg'
   },
@@ -338,6 +344,7 @@ In 1796, the growing community moved to a permanent convent on Cord Road, where 
     lng: -6.348835,
     tags: ['diaspora trail', 'linking stop', 'steampacket'],
     audioSrc: null,
+    contactCallout: true,
     imageSrc: './targets/quayside.mind',
     locationImage: './assets/images/quayside.jpg'
   }
@@ -505,6 +512,10 @@ function openStop(id) {
   // Michael) start silent and are opted into individually.
   document.getElementById('voice-toggle-block').style.display = stop.voiceToggle ? 'block' : 'none';
   document.getElementById('callout-block').style.display = stop.contactCallout ? 'block' : 'none';
+  if (stop.contactCallout) {
+    document.getElementById('callout-prompt').textContent = 'Got a memory of ' + stop.name + '?';
+    document.getElementById('callout-link').setAttribute('href', 'streetsceal-contact.html?stop=' + stop.id);
+  }
   if (stop.voiceToggle) {
     voiceSelected = null;
     document.getElementById('voice-btn-maura').classList.remove('active');
