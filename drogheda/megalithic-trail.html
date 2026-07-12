@@ -213,14 +213,12 @@ const STOPS = [
     lat: 53.700958,
     lng: -6.490358,
     streetView: {
-      // From a Google-hosted user photosphere, not a standard drag-around
-      // Street View (confirmed 12/07/2026, pano id CIHM0ogKEICAgIDkmM2iHA).
-      // Uncertain whether this resolves under the OUTDOOR-only restriction
-      // in renderStreetView() — if not, it'll gracefully fall back to the
-      // static locationImage below rather than showing nothing, so no harm
-      // in trying. Worth a visual check once live either way.
-      viewpointLat: 53.7015526,
-      viewpointLng: -6.4907455,
+      // Viewpoint confirmed via Pegman drop, 12/07/2026 (pano id
+      // sT9smuQSSVs6gT5pfF7MFA) — replaces an earlier attempt using a
+      // Google-hosted photosphere, which worked less reliably than a
+      // proper drag-around Street View.
+      viewpointLat: 53.701484,
+      viewpointLng: -6.4902211,
       targetLat: 53.7051654,
       targetLng: -6.4906243,
       headingOffset: 0,
