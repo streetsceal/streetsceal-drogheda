@@ -305,10 +305,14 @@ The present church, rebuilt in Georgian style and consecrated in 1753, holds its
     lat: 53.716747,
     lng: -6.350144,
     streetView: {
-      viewpointLat: 53.716747,
-      viewpointLng: -6.350144,
+      // Viewpoint confirmed via Pegman drop, 12/07/2026 (pano id
+      // ldrq7zVIXFJSYoi9gsihvA), from Magdalene Street — the closest
+      // clean angle available; at least it's showing an outdoor view now.
+      viewpointLat: 53.7162482,
+      viewpointLng: -6.3511445,
       targetLat: 53.716747,
-      targetLng: -6.350144
+      targetLng: -6.350144,
+      headingOffset: 0 // nudge once you can see how close the angle actually is
     },
     tags: ['cromwell', 'siege', 'graves'],
     audioSrc: null,
@@ -678,7 +682,13 @@ function renderStreetView(stop) {
           // heading — positive rotates clockwise (right), negative rotates
           // counter-clockwise (left). Add it to any stop's streetView block
           // and adjust in small steps (5-15) once you can see the result.
-          panorama.setPov({ heading, pitch: 0 });
+          const pitch = sv.pitchOffset || 0;
+          // pitchOffset (degrees) tilts the camera up/down — positive tilts
+          // up (useful for towers/steeples/tall facades shot from close by),
+          // negative tilts down. Defaults to 0 (level with the horizon) if
+          // not set. Same opt-in pattern as headingOffset — only add it to
+          // a stop's streetView block if that stop actually needs it.
+          panorama.setPov({ heading, pitch });
         } else {
           // No panorama within range — fall back to the static photo
           // rendered by renderLocationImage(), rather than a dead-end
