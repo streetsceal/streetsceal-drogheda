@@ -138,7 +138,7 @@ function initMap() {
     });
 
     const info = new google.maps.InfoWindow({
-      content: `<strong>${stop.name}</strong><br><span style="font-size:12px;">Tap marker again to route here</span>`
+      content: `<strong>${stop.name}</strong>`
     });
 
     marker.addListener('click', () => {
@@ -161,9 +161,16 @@ function selectStop(stop) {
 }
 
 function drawRouteToSelected() {
-  if (!selectedStopId || !liveLatLng) return;
+  if (!selectedStopId) return;
   const stop = stops.find(s => s.id === selectedStopId);
   if (!stop) return;
+
+  if (!liveLatLng) {
+    // Never fail silently — the earlier version left the person tapping
+    // with no feedback at all if location wasn't ready yet.
+    setStatus(`Selected ${stop.name} — waiting for your location…`);
+    return;
+  }
 
   if (routeLine) routeLine.setMap(null);
 
