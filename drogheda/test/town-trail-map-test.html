@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>StreetScéal — Town Trail Map Test (hidden)</title>
+<title>StreetScéal — Town Trail Map Test v2 (hidden)</title>
 <style>
   :root {
     --parchment: #f4ecdc;
@@ -29,6 +29,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
   }
   #banner strong { color: #e8c9a0; }
   #status {
@@ -49,31 +50,44 @@
     padding: 8px 12px;
     font-size: 12px;
     color: var(--ink);
-    max-width: 220px;
+    max-width: 240px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   }
   .legend div { margin: 2px 0; }
   .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+  #clear-route {
+    display: none;
+    position: absolute;
+    top: 48px;
+    right: 16px;
+    background: var(--parchment);
+    border: 1px solid var(--teal);
+    color: var(--ink);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
 
 <div id="banner">
-  <span><strong>HIDDEN TEST</strong> — Town Trail straight-line route (not linked from live site)</span>
+  <span><strong>HIDDEN TEST v2</strong> — tap any stop, get a straight-line route from where you are</span>
   <span id="status">Locating map…</span>
 </div>
 
 <div id="map"></div>
+<button id="clear-route">Clear route</button>
 
 <div class="legend">
-  <div><span class="dot" style="background:#c8a96e"></span>Trail stops (numbered, in order)</div>
+  <div><span class="dot" style="background:#c8a96e"></span>Trail stops — tap to route to it</div>
   <div><span class="dot" style="background:#3a7bd5"></span>Your live position</div>
-  <div style="margin-top:6px; opacity:0.75;">Straight-line connector — not a real walking route.</div>
+  <div style="margin-top:6px; opacity:0.75;">No fixed order — choose any stop, any time.</div>
 </div>
 
 <script>
-// ── Town Trail stop data (copied from trails.json, same order as the
-// live trail) ──────────────────────────────────────────────────────
+// ── Town Trail stop data (from trails.json) — no ordering implied ──
 const stops = [
   { id: "white-horse", name: "The White Horse Hotel", lat: 53.714978, lng: -6.353384 },
   { id: "connollys-shop", name: "Connolly's Shop", lat: 53.71376, lng: -6.349491 },
@@ -87,7 +101,10 @@ const stops = [
 
 let map;
 let liveMarker = null;
-let watchId = null;
+let liveLatLng = null;
+let routeLine = null;
+let selectedStopId = null;
+const stopMarkers = {};
 
 function setStatus(text) {
   document.getElementById('status').textContent = text;
@@ -100,25 +117,19 @@ function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     zoom: 16,
     center: bounds.getCenter(),
-    disableDefaultUI: false,
-    styles: [] // add a custom map style here later if you want parchment/teal theming on the map tiles themselves
+    disableDefaultUI: false
   });
   map.fitBounds(bounds, 60);
 
-  // Numbered markers
-  stops.forEach((stop, i) => {
+  // Unordered stop markers — plain gold dots, no numbers, no implied sequence
+  stops.forEach((stop) => {
     const marker = new google.maps.Marker({
       position: { lat: stop.lat, lng: stop.lng },
       map,
-      label: {
-        text: String(i + 1),
-        color: '#f4ecdc',
-        fontWeight: 'bold'
-      },
       title: stop.name,
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
-        scale: 14,
+        scale: 10,
         fillColor: '#c8a96e',
         fillOpacity: 1,
         strokeColor: '#1f2320',
@@ -127,22 +138,57 @@ function initMap() {
     });
 
     const info = new google.maps.InfoWindow({
-      content: `<strong>${i + 1}. ${stop.name}</strong>`
+      content: `<strong>${stop.name}</strong><br><span style="font-size:12px;">Tap marker again to route here</span>`
     });
-    marker.addListener('click', () => info.open(map, marker));
+
+    marker.addListener('click', () => {
+      info.open(map, marker);
+      selectStop(stop);
+    });
+
+    stopMarkers[stop.id] = marker;
   });
 
-  // Straight-line connector, stop to stop, in trail order
-  new google.maps.Polyline({
-    path: stops.map(s => ({ lat: s.lat, lng: s.lng })),
-    map,
-    strokeColor: '#c8a96e',
-    strokeOpacity: 0.9,
-    strokeWeight: 4
-  });
-
-  setStatus('Map ready');
+  setStatus('Map ready — tap a stop');
   startWatchingPosition();
+
+  document.getElementById('clear-route').addEventListener('click', clearRoute);
+}
+
+function selectStop(stop) {
+  selectedStopId = stop.id;
+  drawRouteToSelected();
+}
+
+function drawRouteToSelected() {
+  if (!selectedStopId || !liveLatLng) return;
+  const stop = stops.find(s => s.id === selectedStopId);
+  if (!stop) return;
+
+  if (routeLine) routeLine.setMap(null);
+
+  routeLine = new google.maps.Polyline({
+    path: [liveLatLng, { lat: stop.lat, lng: stop.lng }],
+    map,
+    strokeColor: '#3a7bd5',
+    strokeOpacity: 0.9,
+    strokeWeight: 4,
+    icons: [{
+      icon: { path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 3 },
+      offset: '0',
+      repeat: '14px'
+    }]
+  });
+
+  document.getElementById('clear-route').style.display = 'block';
+  setStatus(`Routing to ${stop.name} (straight line — real walking route comes later)`);
+}
+
+function clearRoute() {
+  if (routeLine) { routeLine.setMap(null); routeLine = null; }
+  selectedStopId = null;
+  document.getElementById('clear-route').style.display = 'none';
+  setStatus('Route cleared — tap a stop');
 }
 
 function startWatchingPosition() {
@@ -150,13 +196,13 @@ function startWatchingPosition() {
     setStatus('Geolocation not available in this browser');
     return;
   }
-  watchId = navigator.geolocation.watchPosition(
+  navigator.geolocation.watchPosition(
     (pos) => {
       const { latitude, longitude } = pos.coords;
-      setStatus('Live position found');
+      liveLatLng = { lat: latitude, lng: longitude };
       if (!liveMarker) {
         liveMarker = new google.maps.Marker({
-          position: { lat: latitude, lng: longitude },
+          position: liveLatLng,
           map,
           title: 'You are here',
           icon: {
@@ -170,11 +216,13 @@ function startWatchingPosition() {
           zIndex: 999
         });
       } else {
-        liveMarker.setPosition({ lat: latitude, lng: longitude });
+        liveMarker.setPosition(liveLatLng);
       }
+      // Keep the route line updated as the person walks, if a stop is selected
+      if (selectedStopId) drawRouteToSelected();
     },
-    (err) => {
-      setStatus('Location permission not granted — showing route only');
+    () => {
+      setStatus('Location permission not granted — tap a stop to preview, route needs location');
     },
     { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
   );
