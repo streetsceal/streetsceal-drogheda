@@ -181,11 +181,11 @@ Each new town is a self-contained folder in this same repository, sharing the la
 **Historian and writer:** Martina Murray
 **Seed funding:** Droichead Arts, 2021
 **Archival partnership:** Louth County Archives
-**Original commission:** Culture Night 2020
+**Original commission:** ThirtyThree-45, 2020
 
 Claire Fitch is a composer, sound designer, and lecturer at Dundalk Institute of Technology. Her practice spans electroacoustic composition, oral history, and site-specific audio art.
 
-Martina Murray is a historian, writer, and author based in Co. Louth. She is a contributor to Totally Dublin and founder of Greenlight. Her historical research and narrative writing forms the documentary core of the StreetScéal trails.
+Martina Murray is a historian, writer, and author based in Co. Louth. She is a contributor to Totally Dublin and founder of Greenlight Consulting. Her historical research and narrative writing forms the documentary core of the StreetScéal trails.
 
 [clairefitch.github.io](https://clairefitch.github.io) · [fitchsounds.com](https://fitchsounds.com)
 
