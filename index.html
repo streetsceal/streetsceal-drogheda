@@ -446,7 +446,24 @@
 </section>
 
 <footer class="site-footer">
-  © 2026 StreetScéal. All rights reserved.
+  <p>
+    © 2026 StreetScéal. All rights reserved.
+  </p>
+  <p class="site-footer-legal">
+    StreetScéal is a registered business name of a partnership between
+    Claire Fitch and Martina Murray.
+    Registered business name no. 794278.
+  </p>
+  <p class="site-footer-contact">
+    Contact: <a href="#" id="contact-email">Email us</a>
+    <noscript>hello [at] streetsceal [dot] ie</noscript>
+  </p>
+  <script>
+    const u = "hello", d = "streetsceal.ie";
+    const a = document.getElementById("contact-email");
+    a.href = "mail" + "to:" + u + "@" + d;
+    a.textContent = u + "@" + d;
+  </script>
 </footer>
 
 <script>
