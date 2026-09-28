@@ -689,13 +689,10 @@ a-scene { position: absolute; inset: 0; }
   margin-bottom: 0.5rem;
 }
 
-/* ── Site footer (legal — app screens) ────────────────────────── */
-/* Used if a footer is added to any app screen. The landing page   */
-/* (index.html) has its own inline footer rules and does not use   */
-/* this stylesheet.                                                 */
+/* ── Site footer (legal details) ──────────────────────────────── */
 .site-footer {
   margin-top: 1.5rem;
-  padding: 0 1.5rem 1.5rem;
+  max-width: 320px;
   text-align: center;
   font-family: var(--mono);
   font-size: 0.75rem;
@@ -703,7 +700,6 @@ a-scene { position: absolute; inset: 0; }
   line-height: 1.5;
   color: var(--paper-muted);
 }
-.site-footer p { margin: 0; }
 .site-footer p + p { margin-top: 0.4rem; }
 .site-footer-legal,
 .site-footer-contact { opacity: 0.75; }

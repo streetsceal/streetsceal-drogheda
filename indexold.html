@@ -307,18 +307,6 @@
     font-size: 0.95rem;
     color: rgba(43,38,32,0.6);
   }
-  .site-footer p { margin: 0; }
-  .site-footer p + p { margin-top: 0.4rem; }
-  .site-footer-legal,
-  .site-footer-contact {
-    font-size: 0.8rem;
-    opacity: 0.85;
-  }
-  .site-footer a {
-    color: var(--rust);
-    text-decoration: none;
-  }
-  .site-footer a:hover { text-decoration: underline; }
 
   @media (max-width: 480px) {
     .pin__label--live { font-size: 20px; }
@@ -470,18 +458,13 @@
     Contact: <a href="#" id="contact-email">Email us</a>
     <noscript>hello [at] streetsceal [dot] ie</noscript>
   </p>
+  <script>
+    const u = "hello", d = "streetsceal.ie";
+    const a = document.getElementById("contact-email");
+    a.href = "mail" + "to:" + u + "@" + d;
+    a.textContent = u + "@" + d;
+  </script>
 </footer>
-
-<script>
-  (function () {
-    var user = "hello", domain = "streetsceal.ie";
-    var link = document.getElementById("contact-email");
-    if (link) {
-      link.href = "mail" + "to:" + user + "@" + domain;
-      link.textContent = user + "@" + domain;
-    }
-  })();
-</script>
 
 <script>
   const toast = document.getElementById('toast');
