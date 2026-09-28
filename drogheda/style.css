@@ -688,3 +688,26 @@ a-scene { position: absolute; inset: 0; }
   text-align: center;
   margin-bottom: 0.5rem;
 }
+
+/* ── Site footer (legal details) ──────────────────────────────── */
+.site-footer {
+  margin-top: 1.5rem;
+  max-width: 320px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  line-height: 1.5;
+  color: var(--paper-muted);
+}
+.site-footer p + p { margin-top: 0.4rem; }
+.site-footer-legal,
+.site-footer-contact { opacity: 0.75; }
+.site-footer a {
+  color: var(--rust);
+  text-decoration: none;
+}
+.site-footer a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
